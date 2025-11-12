@@ -15,6 +15,7 @@ import type {
   CreateDocumentData,
   UpdateDocumentData,
 } from '@/types/database';
+import { getCache } from '@/lib/api-cache';
 import type {
   BeneficiaryDocument,
   UserDocument,
@@ -57,6 +58,16 @@ export {
   createApiClient
 };
 
+/**
+ * Generic API client for making requests to Convex API routes
+ */
+export async function apiRequest<T>(
+  endpoint: string,
+  options?: RequestInit & { cache?: boolean },
+  cacheKey?: string
+): Promise<ConvexResponse<T>> {
+  const cache = getCache<ConvexResponse<T>>('api');
+  
   // Try to get from cache first (for GET requests)
   if (!options?.method || options.method === 'GET') {
     const cachedData = cache?.get(cacheKey || endpoint);

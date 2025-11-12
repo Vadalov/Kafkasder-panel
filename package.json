@@ -131,7 +131,7 @@
     "@types/react-dom": "^19",
     "@types/twilio": "^3.19.2",
     "@vitejs/plugin-react": "^4.0.4",
-    "@vitest/coverage-v8": "^4.0.6",
+    "@vitest/coverage-v8": "^4.0.8",
     "@vitest/ui": "^4.0.6",
     "dotenv": "^17.2.3",
     "eslint": "^9",
@@ -146,7 +146,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5",
-    "vitest": "^4.0.6",
+    "vitest": "^4.0.8",
     "web-vitals": "^5.1.0"
   }
 }
