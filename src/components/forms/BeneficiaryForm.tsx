@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -63,7 +63,7 @@ function FieldWithValidation({
   validation,
   required,
   children,
-  errorId
+  errorId,
 }: FieldWithValidationProps) {
   const getValidationIcon = () => {
     switch (validation) {
@@ -88,11 +88,7 @@ function FieldWithValidation({
         </div>
       </div>
       {error && (
-        <p
-          id={errorId}
-          className="text-sm text-red-600 flex items-center gap-1"
-          role="alert"
-        >
+        <p id={errorId} className="text-sm text-red-600 flex items-center gap-1" role="alert">
           <AlertCircle className="h-4 w-4" />
           {error}
         </p>
@@ -104,7 +100,9 @@ function FieldWithValidation({
 export function BeneficiaryForm({ onSuccess, onCancel }: BeneficiaryFormProps) {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fieldValidation, setFieldValidation] = useState<Record<string, 'valid' | 'invalid' | 'pending'>>({});
+  const [fieldValidation, setFieldValidation] = useState<
+    Record<string, 'valid' | 'invalid' | 'pending'>
+  >({});
 
   const {
     register,
@@ -147,14 +145,65 @@ export function BeneficiaryForm({ onSuccess, onCancel }: BeneficiaryFormProps) {
   });
 
   // Real-time field validation
-  const validateField = async (fieldName: keyof BeneficiaryFormData, value: unknown) => {
-    try {
-      await beneficiarySchema.shape[fieldName].parseAsync(value);
-      setFieldValidation(prev => ({ ...prev, [fieldName]: 'valid' }));
-    } catch {
-      setFieldValidation(prev => ({ ...prev, [fieldName]: 'invalid' }));
-    }
-  };
+  const validateField = useCallback(
+    async (fieldName: keyof BeneficiaryFormData, value: unknown) => {
+      try {
+        await beneficiarySchema.shape[fieldName].parseAsync(value);
+        setFieldValidation((prev) => ({ ...prev, [fieldName]: 'valid' }));
+      } catch {
+        setFieldValidation((prev) => ({ ...prev, [fieldName]: 'invalid' }));
+      }
+    },
+    []
+  );
+
+  // Optimized onChange handlers
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      register('name').onChange(e);
+      if (e.target.value.length > 0) {
+        validateField('name', e.target.value);
+      }
+    },
+    [register, validateField]
+  );
+
+  const handleTCChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/\D/g, '');
+      e.target.value = value;
+      register('tc_no').onChange(e);
+      if (value.length > 0) {
+        validateField('tc_no', value);
+      }
+    },
+    [register, validateField]
+  );
+
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 10) value = value.slice(0, 10);
+
+      // Format as 0555 123 45 67
+      if (value.length >= 4) {
+        value = `${value.slice(0, 4)} ${value.slice(4)}`;
+      }
+      if (value.length >= 8) {
+        value = `${value.slice(0, 8)} ${value.slice(8)}`;
+      }
+      if (value.length >= 11) {
+        value = `${value.slice(0, 11)} ${value.slice(11)}`;
+      }
+
+      e.target.value = value;
+      register('phone').onChange(e);
+      if (value.replace(/\s/g, '').length > 0) {
+        validateField('phone', value.replace(/\s/g, ''));
+      }
+    },
+    [register, validateField]
+  );
 
   const onSubmit = async (data: BeneficiaryFormData) => {
     setIsSubmitting(true);
@@ -166,13 +215,13 @@ export function BeneficiaryForm({ onSuccess, onCancel }: BeneficiaryFormProps) {
   };
 
   return (
-  <Card className="w-full max-w-2xl mx-auto relative">
-  <CardHeader>
-  <CardTitle>Yeni İhtiyaç Sahibi Ekle</CardTitle>
-  <CardDescription>İhtiyaç sahibi bilgilerini girerek yeni kayıt oluşturun</CardDescription>
-  </CardHeader>
-  <CardContent className="relative">
-  {/* Loading Overlay */}
+    <Card className="w-full max-w-2xl mx-auto relative">
+      <CardHeader>
+        <CardTitle>Yeni İhtiyaç Sahibi Ekle</CardTitle>
+        <CardDescription>İhtiyaç sahibi bilgilerini girerek yeni kayıt oluşturun</CardDescription>
+      </CardHeader>
+      <CardContent className="relative">
+        {/* Loading Overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
             <div className="flex flex-col items-center gap-3 p-6 bg-background rounded-lg shadow-lg border">
@@ -188,26 +237,21 @@ export function BeneficiaryForm({ onSuccess, onCancel }: BeneficiaryFormProps) {
             <h3 className="text-lg font-medium">Kişisel Bilgiler</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FieldWithValidation
-            label="Ad Soyad"
-            error={errors.name?.message}
-            validation={fieldValidation.name}
-              required
+              <FieldWithValidation
+                label="Ad Soyad"
+                error={errors.name?.message}
+                validation={fieldValidation.name}
+                required
                 errorId="name-error"
-            >
-            <Input
-            id="name"
-            {...register('name')}
-            placeholder="Ahmet Yılmaz"
-            onChange={(e) => {
-            register('name').onChange(e);
-            if (e.target.value.length > 0) {
-            validateField('name', e.target.value);
-            }
-            }}
-            aria-describedby={errors.name ? 'name-error' : undefined}
-            aria-invalid={!!errors.name}
-              disabled={isSubmitting}
+              >
+                <Input
+                  id="name"
+                  {...register('name')}
+                  placeholder="Ahmet Yılmaz"
+                  onChange={handleNameChange}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
+                  aria-invalid={!!errors.name}
+                  disabled={isSubmitting}
                 />
               </FieldWithValidation>
 
@@ -219,30 +263,22 @@ export function BeneficiaryForm({ onSuccess, onCancel }: BeneficiaryFormProps) {
                 errorId="tc_no-error"
               >
                 <Input
-                id="tc_no"
-                {...register('tc_no')}
-                placeholder="12345678901"
-                maxLength={11}
-                onChange={(e) => {
-                // Only allow numbers
-                const value = e.target.value.replace(/\D/g, '');
-                e.target.value = value;
-                register('tc_no').onChange(e);
-                if (value.length > 0) {
-                validateField('tc_no', value);
-                }
-                }}
-                aria-describedby={errors.tc_no ? 'tc_no-error' : undefined}
-                aria-invalid={!!errors.tc_no}
+                  id="tc_no"
+                  {...register('tc_no')}
+                  placeholder="12345678901"
+                  maxLength={11}
+                  onChange={handleTCChange}
+                  aria-describedby={errors.tc_no ? 'tc_no-error' : undefined}
+                  aria-invalid={!!errors.tc_no}
                   disabled={isSubmitting}
                 />
               </FieldWithValidation>
             </div>
 
             <FieldWithValidation
-            label="Telefon"
-            error={errors.phone?.message}
-            validation={fieldValidation.phone}
+              label="Telefon"
+              error={errors.phone?.message}
+              validation={fieldValidation.phone}
               required
               errorId="phone-error"
             >
@@ -250,29 +286,8 @@ export function BeneficiaryForm({ onSuccess, onCancel }: BeneficiaryFormProps) {
                 id="phone"
                 {...register('phone')}
                 placeholder="0555 123 45 67"
-                onChange={(e) => {
-                  // Format Turkish phone number
-                  let value = e.target.value.replace(/\D/g, '');
-                  if (value.length > 10) value = value.slice(0, 10);
-
-                  // Format as 0555 123 45 67
-                  if (value.length >= 4) {
-                    value = `${value.slice(0, 4)  } ${  value.slice(4)}`;
-                  }
-                  if (value.length >= 7) {
-                    value = `${value.slice(0, 8)  } ${  value.slice(8)}`;
-                  }
-                  if (value.length >= 10) {
-                    value = `${value.slice(0, 11)  } ${  value.slice(11)}`;
-                  }
-
-                  e.target.value = value;
-                  register('phone').onChange(e);
-                  if (value.replace(/\s/g, '').length > 0) {
-                    validateField('phone', value.replace(/\s/g, ''));
-                  }
-                }}
-                maxLength={14} // 0555 123 45 67 = 14 characters
+                onChange={handlePhoneChange}
+                maxLength={14}
                 aria-describedby={errors.phone ? 'phone-error' : undefined}
                 aria-invalid={!!errors.phone}
                 disabled={isSubmitting}

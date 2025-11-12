@@ -1,5 +1,7 @@
 'use client';
 
+import logger from '@/lib/logger';
+
 /**
  * Authentication Store (Zustand)
  * Real authentication using server-side API routes and Convex backend
@@ -251,7 +253,7 @@ export const useAuthStore = create<AuthStore>()(
                 method: 'POST',
               });
             } catch (error) {
-              console.error('Logout error:', error);
+              logger.error('Logout error', { error });
             }
 
             // Clear localStorage
