@@ -280,6 +280,50 @@ export const getSystemStats = query({
   },
 });
 
+// Dashboard statistics with trends
+export const getDashboardStats = query({
+  args: {},
+  handler: async (ctx) => {
+    const [allBeneficiaries, allDonations, allUsers, totalDonationAmount] = await Promise.all([
+      ctx.db.query('beneficiaries').collect(),
+      ctx.db.query('donations').collect(),
+      ctx.db.query('users').collect(),
+      ctx.db
+        .query('donations')
+        .filter((q) => q.eq(q.field('status'), 'completed'))
+        .collect()
+        .then((donations) => donations.reduce((sum, d) => sum + (d.amount || 0), 0)),
+    ]);
+
+    // Get counts for last 30 days
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const recentBeneficiaries = allBeneficiaries.filter((b) => b._creationTime >= thirtyDaysAgo);
+    const recentDonations = allDonations.filter((d) => d._creationTime >= thirtyDaysAgo);
+    const activeUsers = allUsers.filter(
+      (u) => u.isActive && u.lastLogin && new Date(u.lastLogin).getTime() >= thirtyDaysAgo
+    );
+
+    return {
+      beneficiaries: {
+        total: allBeneficiaries.length,
+        recent: recentBeneficiaries.length,
+        trend: recentBeneficiaries.length,
+      },
+      donations: {
+        total: allDonations.length,
+        recent: recentDonations.length,
+        totalAmount: totalDonationAmount,
+        trend: recentDonations.length,
+      },
+      users: {
+        total: allUsers.length,
+        active: activeUsers.length,
+      },
+      timestamp: new Date().toISOString(),
+    };
+  },
+});
+
 // Alert management
 export const createAlert = mutation({
   args: {

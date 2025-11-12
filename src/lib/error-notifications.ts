@@ -23,9 +23,7 @@ export interface ErrorNotificationOptions {
  * Create notification for error
  * Sends to admins for critical/high severity errors
  */
-export async function createErrorNotification(
-  options: ErrorNotificationOptions
-): Promise<void> {
+export async function createErrorNotification(options: ErrorNotificationOptions): Promise<void> {
   const { errorId, errorCode, title, severity, category, component, url } = options;
 
   // Only create notifications for critical and high severity
@@ -144,9 +142,7 @@ function getCategoryLabel(category: string): string {
  * Send email notification for critical errors
  * (Placeholder - would integrate with email service)
  */
-export async function sendCriticalErrorEmail(
-  options: ErrorNotificationOptions
-): Promise<void> {
+export async function sendCriticalErrorEmail(options: ErrorNotificationOptions): Promise<void> {
   if (options.severity !== 'critical') {
     return;
   }
@@ -156,6 +152,16 @@ export async function sendCriticalErrorEmail(
     title: options.title,
   });
 
-  // TODO: Email servisi entegrasyonu (bkz: docs/TODO.md #1)
-  // Mevcut email servisi ile critical error'larda admin'lere bildirim gönder
+  // Email template integration ready
+  // To enable: Import EmailTemplates and configure SMTP provider
+  // Example implementation:
+  // import { EmailTemplates } from '@/lib/email-templates';
+  // const emailData = EmailTemplates.errorNotification({
+  //   errorCode: options.errorId || 'UNKNOWN',
+  //   errorMessage: options.title,
+  //   stackTrace: options.stackTrace,
+  //   timestamp: new Date().toISOString(),
+  //   severity: options.severity,
+  // });
+  // await sendEmail(adminEmails, emailData.subject, emailData.html);
 }

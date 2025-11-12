@@ -38,7 +38,13 @@ export function ExportButtons({
   if (compact) {
     return (
       <div className="relative">
-        <Button variant={variant} size={size} onClick={() => setIsOpen(!isOpen)} className="gap-1">
+        <Button
+          variant={variant}
+          size={size}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Dışa aktarma seçeneklerini aç"
+          className="gap-1"
+        >
           <Download className="h-4 w-4" />
           {showLabel && 'İndir'}
         </Button>
@@ -50,6 +56,7 @@ export function ExportButtons({
                 exportCSV(data, filename, columns);
                 setIsOpen(false);
               }}
+              aria-label="CSV formatında indir"
               className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex items-center gap-2"
             >
               <FileSpreadsheet className="h-4 w-4" />
@@ -60,6 +67,7 @@ export function ExportButtons({
                 exportJSON(data, filename);
                 setIsOpen(false);
               }}
+              aria-label="JSON formatında indir"
               className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex items-center gap-2"
             >
               <FileJson className="h-4 w-4" />
@@ -70,6 +78,7 @@ export function ExportButtons({
                 exportHTML(data, filename, title, columns);
                 setIsOpen(false);
               }}
+              aria-label="HTML formatında indir"
               className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex items-center gap-2"
             >
               <FileText className="h-4 w-4" />
@@ -80,6 +89,7 @@ export function ExportButtons({
                 printTable(data, title, columns);
                 setIsOpen(false);
               }}
+              aria-label="Tabloyu yazdır"
               className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex items-center gap-2 border-t"
             >
               <Download className="h-4 w-4" />
@@ -97,6 +107,7 @@ export function ExportButtons({
         variant={variant}
         size={size}
         onClick={() => exportCSV(data, filename, columns)}
+        aria-label="CSV formatında indir"
         title="CSV formatında indir"
         className="gap-1"
       >
@@ -108,6 +119,7 @@ export function ExportButtons({
         variant={variant}
         size={size}
         onClick={() => exportJSON(data, filename)}
+        aria-label="JSON formatında indir"
         title="JSON formatında indir"
         className="gap-1"
       >
@@ -119,6 +131,7 @@ export function ExportButtons({
         variant={variant}
         size={size}
         onClick={() => exportHTML(data, filename, title, columns)}
+        aria-label="HTML formatında indir"
         title="HTML formatında indir"
         className="gap-1"
       >
@@ -130,6 +143,7 @@ export function ExportButtons({
         variant={variant}
         size={size}
         onClick={() => printTable(data, title, columns)}
+        aria-label="Tabloyu yazdır"
         title="Yazdır"
         className="gap-1"
       >
@@ -182,7 +196,13 @@ export function SimpleExportButton({
   }
 
   return (
-    <Button variant={variant} size={size} onClick={handleExport} className="gap-1">
+    <Button
+      variant={variant}
+      size={size}
+      onClick={handleExport}
+      aria-label={`${label} - ${format.toUpperCase()} formatında`}
+      className="gap-1"
+    >
       <Download className="h-4 w-4" />
       {label}
     </Button>

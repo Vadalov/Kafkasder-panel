@@ -256,7 +256,7 @@ export class RateLimitMonitor {
   }
 
   // Yardımcı methodlar
-  private static getTotalRequests(cutoffTime: Date): number {
+  private static getTotalRequests(_cutoffTime: Date): number {
     // Bu basit bir approximation - gerçek uygulamada bir log sisteminden gelecek
     return RateLimiter.getStats().totalRequests;
   }

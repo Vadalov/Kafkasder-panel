@@ -4,7 +4,7 @@
  * Client-side wrapper that calls Next.js API routes which internally use Convex.
  * This provides a clean interface for components to use while keeping the actual
  * Convex implementation hidden behind API routes.
- * 
+ *
  * @deprecated Use the new CRUD factory from './crud-factory' for better DRY principle
  */
 
@@ -41,7 +41,7 @@ import {
   aidApplications,
   partners,
   scholarships,
-  createApiClient
+  createApiClient,
 } from './crud-factory';
 
 // Re-export the factory-created clients
@@ -55,7 +55,7 @@ export {
   aidApplications,
   partners,
   scholarships,
-  createApiClient
+  createApiClient,
 };
 
 /**
@@ -67,7 +67,7 @@ export async function apiRequest<T>(
   cacheKey?: string
 ): Promise<ConvexResponse<T>> {
   const cache = getCache<ConvexResponse<T>>('api');
-  
+
   // Try to get from cache first (for GET requests)
   if (!options?.method || options.method === 'GET') {
     const cachedData = cache?.get(cacheKey || endpoint);
@@ -121,7 +121,9 @@ export async function apiRequest<T>(
 export const convexApiClient = {
   // Beneficiaries
   beneficiaries: {
-    getBeneficiaries: async (params?: QueryParams): Promise<ConvexResponse<BeneficiaryDocument[]>> => {
+    getBeneficiaries: async (
+      params?: QueryParams
+    ): Promise<ConvexResponse<BeneficiaryDocument[]>> => {
       const searchParams = new URLSearchParams();
       if (params?.page) searchParams.set('page', params.page.toString());
       if (params?.limit) searchParams.set('limit', params.limit.toString());
@@ -132,12 +134,7 @@ export const convexApiClient = {
       const endpoint = `/api/beneficiaries?${searchParams.toString()}`;
       const cacheKey = `beneficiaries:${searchParams.toString()}`;
 
-      return apiRequest<BeneficiaryDocument[]>(
-        endpoint,
-        undefined,
-        cacheKey,
-        'beneficiaries'
-      );
+      return apiRequest<BeneficiaryDocument[]>(endpoint, undefined, cacheKey, 'beneficiaries');
     },
     getBeneficiary: async (id: string): Promise<ConvexResponse<BeneficiaryDocument>> => {
       return apiRequest<BeneficiaryDocument>(`/api/beneficiaries/${id}`);
@@ -164,7 +161,7 @@ export const convexApiClient = {
         method: 'DELETE',
       });
     },
-    getAidHistory: async (beneficiaryId: string) => {
+    getAidHistory: async (_beneficiaryId: string) => {
       // Stub implementation - returns empty array
       return [];
     },
@@ -181,12 +178,7 @@ export const convexApiClient = {
       const endpoint = `/api/donations?${searchParams.toString()}`;
       const cacheKey = `donations:${searchParams.toString()}`;
 
-      return apiRequest<DonationDocument[]>(
-        endpoint,
-        undefined,
-        cacheKey,
-        'donations'
-      );
+      return apiRequest<DonationDocument[]>(endpoint, undefined, cacheKey, 'donations');
     },
     getDonation: async (id: string): Promise<ConvexResponse<DonationDocument>> => {
       return apiRequest<DonationDocument>(`/api/donations/${id}`);
@@ -224,7 +216,8 @@ export const convexApiClient = {
       if (params?.search) searchParams.set('search', params.search);
       if (params?.filters?.status) searchParams.set('status', String(params.filters.status));
       if (params?.filters?.priority) searchParams.set('priority', String(params.filters.priority));
-      if (params?.filters?.assigned_to) searchParams.set('assigned_to', String(params.filters.assigned_to));
+      if (params?.filters?.assigned_to)
+        searchParams.set('assigned_to', String(params.filters.assigned_to));
 
       return apiRequest<TaskDocument[]>(`/api/tasks?${searchParams.toString()}`);
     },
@@ -275,7 +268,10 @@ export const convexApiClient = {
 
       return apiRequest<MeetingDocument[]>(`/api/meetings?${searchParams.toString()}`);
     },
-    getMeetingsByTab: async (userId: string, tab: string): Promise<ConvexResponse<MeetingDocument[]>> => {
+    getMeetingsByTab: async (
+      userId: string,
+      tab: string
+    ): Promise<ConvexResponse<MeetingDocument[]>> => {
       // Helper method for backward compatibility
       return convexApiClient.meetings.getMeetings({
         filters: { status: tab === 'all' ? undefined : tab },
@@ -339,9 +335,7 @@ export const convexApiClient = {
         `/api/meeting-decisions?${searchParams.toString()}`
       );
     },
-    getDecision: async (
-      id: string
-    ): Promise<ConvexResponse<MeetingDecisionDocument>> => {
+    getDecision: async (id: string): Promise<ConvexResponse<MeetingDecisionDocument>> => {
       return apiRequest<MeetingDecisionDocument>(`/api/meeting-decisions/${id}`);
     },
     createDecision: async (
@@ -390,12 +384,8 @@ export const convexApiClient = {
         `/api/meeting-action-items?${searchParams.toString()}`
       );
     },
-    getActionItem: async (
-      id: string
-    ): Promise<ConvexResponse<MeetingActionItemDocument>> => {
-      return apiRequest<MeetingActionItemDocument>(
-        `/api/meeting-action-items/${id}`
-      );
+    getActionItem: async (id: string): Promise<ConvexResponse<MeetingActionItemDocument>> => {
+      return apiRequest<MeetingActionItemDocument>(`/api/meeting-action-items/${id}`);
     },
     createActionItem: async (
       data: CreateDocumentData<MeetingActionItemDocument>
@@ -452,12 +442,8 @@ export const convexApiClient = {
         `/api/workflow-notifications?${searchParams.toString()}`
       );
     },
-    getNotification: async (
-      id: string
-    ): Promise<ConvexResponse<WorkflowNotificationDocument>> => {
-      return apiRequest<WorkflowNotificationDocument>(
-        `/api/workflow-notifications/${id}`
-      );
+    getNotification: async (id: string): Promise<ConvexResponse<WorkflowNotificationDocument>> => {
+      return apiRequest<WorkflowNotificationDocument>(`/api/workflow-notifications/${id}`);
     },
     createNotification: async (
       data: CreateDocumentData<WorkflowNotificationDocument>
@@ -471,25 +457,19 @@ export const convexApiClient = {
       id: string,
       sent_at?: string
     ): Promise<ConvexResponse<WorkflowNotificationDocument>> => {
-      return apiRequest<WorkflowNotificationDocument>(
-        `/api/workflow-notifications/${id}`,
-        {
-          method: 'PATCH',
-          body: JSON.stringify({ status: 'gonderildi', sent_at }),
-        }
-      );
+      return apiRequest<WorkflowNotificationDocument>(`/api/workflow-notifications/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'gonderildi', sent_at }),
+      });
     },
     markNotificationRead: async (
       id: string,
       read_at?: string
     ): Promise<ConvexResponse<WorkflowNotificationDocument>> => {
-      return apiRequest<WorkflowNotificationDocument>(
-        `/api/workflow-notifications/${id}`,
-        {
-          method: 'PATCH',
-          body: JSON.stringify({ status: 'okundu', read_at }),
-        }
-      );
+      return apiRequest<WorkflowNotificationDocument>(`/api/workflow-notifications/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'okundu', read_at }),
+      });
     },
     deleteNotification: async (id: string): Promise<ConvexResponse<null>> => {
       return apiRequest<null>(`/api/workflow-notifications/${id}`, {
@@ -546,10 +526,7 @@ export const convexApiClient = {
         method: 'DELETE',
       });
     },
-    markAsRead: async (
-      id: string,
-      userId: string
-    ): Promise<ConvexResponse<MessageDocument>> => {
+    markAsRead: async (id: string, _userId: string): Promise<ConvexResponse<MessageDocument>> => {
       return apiRequest<MessageDocument>(`/api/messages/${id}`, {
         method: 'PUT',
         body: JSON.stringify({ is_read: true }),
@@ -622,14 +599,17 @@ export const convexApiClient = {
       if (params?.search) searchParams.set('search', params.search);
       if (params?.filters?.type) searchParams.set('type', String(params.filters.type));
       if (params?.filters?.status) searchParams.set('status', String(params.filters.status));
-      if (params?.filters?.partnership_type) searchParams.set('partnership_type', String(params.filters.partnership_type));
+      if (params?.filters?.partnership_type)
+        searchParams.set('partnership_type', String(params.filters.partnership_type));
 
       return apiRequest<PartnerDocument[]>(`/api/partners?${searchParams.toString()}`);
     },
     getPartner: async (id: string): Promise<ConvexResponse<PartnerDocument>> => {
       return apiRequest<PartnerDocument>(`/api/partners/${id}`);
     },
-    createPartner: async (data: CreateDocumentData<PartnerDocument>): Promise<ConvexResponse<PartnerDocument>> => {
+    createPartner: async (
+      data: CreateDocumentData<PartnerDocument>
+    ): Promise<ConvexResponse<PartnerDocument>> => {
       return apiRequest<PartnerDocument>('/api/partners', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -653,32 +633,32 @@ export const convexApiClient = {
 
   // Aid Applications
   aidApplications: {
-    getAidApplications: async (params?: QueryParams & {
-      filters?: {
-        stage?: string;
-        status?: string;
-        beneficiary_id?: string;
-      };
-    }): Promise<ConvexResponse<AidApplicationDocument[]>> => {
+    getAidApplications: async (
+      params?: QueryParams & {
+        filters?: {
+          stage?: string;
+          status?: string;
+          beneficiary_id?: string;
+        };
+      }
+    ): Promise<ConvexResponse<AidApplicationDocument[]>> => {
       const searchParams = new URLSearchParams();
       if (params?.page) searchParams.set('page', params.page.toString());
       if (params?.limit) searchParams.set('limit', params.limit.toString());
       if (params?.search) searchParams.set('search', params.search);
       if (params?.filters?.stage) searchParams.set('stage', params.filters.stage);
       if (params?.filters?.status) searchParams.set('status', params.filters.status);
-      if (params?.filters?.beneficiary_id) searchParams.set('beneficiary_id', params.filters.beneficiary_id);
+      if (params?.filters?.beneficiary_id)
+        searchParams.set('beneficiary_id', params.filters.beneficiary_id);
 
       const endpoint = `/api/aid-applications?${searchParams.toString()}`;
       const cacheKey = `aid-applications:${searchParams.toString()}`;
 
-      return apiRequest<AidApplicationDocument[]>(
-        endpoint,
-        undefined,
-        cacheKey,
-        'default'
-      );
+      return apiRequest<AidApplicationDocument[]>(endpoint, undefined, cacheKey, 'default');
     },
-    getAidApplication: async (id: string): Promise<ConvexResponse<AidApplicationDocument | null>> => {
+    getAidApplication: async (
+      id: string
+    ): Promise<ConvexResponse<AidApplicationDocument | null>> => {
       return apiRequest<AidApplicationDocument | null>(`/api/aid-applications/${id}`);
     },
     createAidApplication: async (
@@ -729,7 +709,7 @@ export const cacheUtils = {
    * Invalidate cache for multiple data types
    */
   invalidateCaches: (dataTypes: string[]) => {
-    dataTypes.forEach(type => {
+    dataTypes.forEach((type) => {
       const cache = getCache<unknown>(type);
       cache.clear();
     });
@@ -755,10 +735,9 @@ export const cacheUtils = {
    * Clear all caches
    */
   clearAllCaches: () => {
-    ['beneficiaries', 'donations', 'tasks', 'meetings', 'default'].forEach(type => {
+    ['beneficiaries', 'donations', 'tasks', 'meetings', 'default'].forEach((type) => {
       const cache = getCache<unknown>(type);
       cache.clear();
     });
   },
 };
-

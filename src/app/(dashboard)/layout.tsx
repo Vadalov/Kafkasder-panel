@@ -153,7 +153,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => { window.removeEventListener('storage', handleStorageChange); };
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // Detect scroll for header shadow effect - OPTIMIZED
@@ -313,6 +315,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50/50">
+      {/* Skip to main content link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Ana içeriğe atla
+      </a>
+
       {/* Premium Header */}
       <header
         className={cn(
@@ -373,7 +383,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2">
             <Popover open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-100/80 transition-all duration-200 active:scale-95">
+                <button
+                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-100/80 transition-all duration-200 active:scale-95"
+                  aria-label="Kullanıcı menüsünü aç"
+                >
                   <Avatar size="sm" className="h-8 w-8 ring-2 ring-slate-200">
                     <AvatarImage src={user?.avatar ?? undefined} alt={user?.name} />
                     <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white text-xs font-semibold">
@@ -402,10 +415,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         {user?.name || 'Kullanıcı'}
                       </p>
                       <p className="text-xs text-slate-500 truncate mt-0.5">{user?.email || ''}</p>
-                      <Badge
-                        variant={getRoleBadgeVariant(user?.role)}
-                        className="text-xs mt-2"
-                      >
+                      <Badge variant={getRoleBadgeVariant(user?.role)} className="text-xs mt-2">
                         {user?.role || 'Viewer'}
                       </Badge>
                     </div>
@@ -457,7 +467,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
 
         {/* Main Content - OPTIMIZED PAGE TRANSITIONS */}
-        <main className="flex-1 w-full min-h-[calc(100vh-4rem)]">
+        <main id="main-content" className="flex-1 w-full min-h-[calc(100vh-4rem)]" tabIndex={-1}>
           <div className="p-6 lg:p-8 max-w-7xl mx-auto">
             <BreadcrumbNav />
             <AnimatePresence mode="wait" initial={false}>
@@ -486,10 +496,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
 
         {/* Advanced Search Modal */}
-        <AdvancedSearchModal
-          isOpen={isSearchOpen}
-          onClose={closeSearch}
-        />
+        <AdvancedSearchModal isOpen={isSearchOpen} onClose={closeSearch} />
 
         {/* Analytics & Performance Monitoring */}
         <AnalyticsTrackerComponent
@@ -498,11 +505,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           trackUserInteractions={true}
         />
 
-        <KeyboardShortcuts
-          shortcuts={keyboardShortcuts}
-          enabled={true}
-          showHelpDialog={true}
-        />
+        <KeyboardShortcuts shortcuts={keyboardShortcuts} enabled={true} showHelpDialog={true} />
 
         <PerformanceMonitor
           enableWebVitals={true}

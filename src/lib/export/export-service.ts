@@ -1,0 +1,317 @@
+/**
+ * Export Service
+ * Provides unified export functionality for PDF, Excel, and CSV formats
+ */
+
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+
+// Types
+export interface ExportColumn {
+  header: string;
+  key: string;
+  width?: number;
+  formatter?: (value: any) => string;
+}
+
+export interface ExportOptions {
+  title?: string;
+  subtitle?: string;
+  filename?: string;
+  orientation?: 'portrait' | 'landscape';
+  columns: ExportColumn[];
+  data: any[];
+  includeDate?: boolean;
+  includeFooter?: boolean;
+}
+
+export interface PDFExportOptions extends ExportOptions {
+  pageFormat?: 'a4' | 'letter';
+  showLogo?: boolean;
+  logoUrl?: string;
+}
+
+export interface ExcelExportOptions extends ExportOptions {
+  sheetName?: string;
+  includeTotal?: boolean;
+  totalColumns?: string[];
+}
+
+export interface CSVExportOptions {
+  filename?: string;
+  columns: ExportColumn[];
+  data: any[];
+  delimiter?: string;
+}
+
+/**
+ * Export data to PDF format
+ */
+export async function exportToPDF(options: PDFExportOptions): Promise<void> {
+  const {
+    title = 'Rapor',
+    subtitle,
+    filename = `${title}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.pdf`,
+    orientation = 'portrait',
+    pageFormat = 'a4',
+    columns,
+    data,
+    includeDate = true,
+    includeFooter = true,
+  } = options;
+
+  // Initialize jsPDF
+  const doc = new jsPDF({
+    orientation,
+    unit: 'mm',
+    format: pageFormat,
+  });
+
+  // Add title
+  doc.setFontSize(18);
+  doc.text(title, 14, 20);
+
+  let yPosition = 30;
+
+  // Add subtitle
+  if (subtitle) {
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(subtitle, 14, yPosition);
+    yPosition += 10;
+  }
+
+  // Add date
+  if (includeDate) {
+    doc.setFontSize(10);
+    doc.setTextColor(150);
+    doc.text(`Tarih: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, yPosition);
+    yPosition += 10;
+  }
+
+  // Prepare table data
+  const headers = columns.map((col) => col.header);
+  const tableData = data.map((row) =>
+    columns.map((col) => {
+      const value = row[col.key];
+      return col.formatter ? col.formatter(value) : String(value ?? '');
+    })
+  );
+
+  // Add table
+  autoTable(doc, {
+    head: [headers],
+    body: tableData,
+    startY: yPosition,
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+    },
+    headStyles: {
+      fillColor: [41, 128, 185],
+      textColor: 255,
+      fontStyle: 'bold',
+    },
+    alternateRowStyles: {
+      fillColor: [245, 245, 245],
+    },
+    columnStyles: columns.reduce((acc, col, index) => {
+      if (col.width) {
+        acc[index] = { cellWidth: col.width };
+      }
+      return acc;
+    }, {} as any),
+  });
+
+  // Add footer
+  if (includeFooter) {
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(
+        `Sayfa ${i} / ${pageCount}`,
+        doc.internal.pageSize.getWidth() / 2,
+        doc.internal.pageSize.getHeight() - 10,
+        { align: 'center' }
+      );
+    }
+  }
+
+  // Save the PDF
+  doc.save(filename);
+}
+
+/**
+ * Export data to Excel format
+ */
+export async function exportToExcel(options: ExcelExportOptions): Promise<void> {
+  const {
+    title = 'Rapor',
+    filename = `${title}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
+    sheetName = 'Sayfa1',
+    columns,
+    data,
+    includeTotal = false,
+    totalColumns = [],
+  } = options;
+
+  // Prepare headers
+  const headers = columns.map((col) => col.header);
+
+  // Prepare data rows
+  const rows = data.map((row) =>
+    columns.map((col) => {
+      const value = row[col.key];
+      return col.formatter ? col.formatter(value) : (value ?? '');
+    })
+  );
+
+  // Add totals if requested
+  if (includeTotal && totalColumns.length > 0) {
+    const totalRow = columns.map((col) => {
+      if (totalColumns.includes(col.key)) {
+        const sum = data.reduce((acc, row) => {
+          const value = parseFloat(row[col.key]) || 0;
+          return acc + value;
+        }, 0);
+        return col.formatter ? col.formatter(sum) : sum;
+      }
+      return col.key === columns[0].key ? 'TOPLAM' : '';
+    });
+    rows.push(totalRow);
+  }
+
+  // Create worksheet
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+  // Set column widths
+  const colWidths = columns.map((col) => ({
+    wch: col.width ? col.width / 5 : 15, // Convert mm to characters (approximate)
+  }));
+  ws['!cols'] = colWidths;
+
+  // Style headers (bold)
+  const headerRange = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+  for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+    const address = `${XLSX.utils.encode_col(C)}1`;
+    if (!ws[address]) continue;
+    ws[address].s = {
+      font: { bold: true },
+      fill: { fgColor: { rgb: 'E0E0E0' } },
+    };
+  }
+
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+  // Save the file
+  XLSX.writeFile(wb, filename);
+}
+
+/**
+ * Export data to CSV format
+ */
+export async function exportToCSV(options: CSVExportOptions): Promise<void> {
+  const {
+    filename = `export_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.csv`,
+    columns,
+    data,
+    delimiter = ',',
+  } = options;
+
+  // Prepare headers
+  const headers = columns.map((col) => col.header).join(delimiter);
+
+  // Prepare data rows
+  const rows = data.map((row) =>
+    columns
+      .map((col) => {
+        const value = row[col.key];
+        const formatted = col.formatter ? col.formatter(value) : String(value ?? '');
+        // Escape delimiter and quotes
+        return `"${formatted.replace(/"/g, '""')}"`;
+      })
+      .join(delimiter)
+  );
+
+  // Combine into CSV string
+  const csvContent = [headers, ...rows].join('\n');
+
+  // Create blob and trigger download
+  const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
+ * Format currency for Turkish Lira
+ */
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('tr-TR', {
+    style: 'currency',
+    currency: 'TRY',
+  }).format(value);
+}
+
+/**
+ * Format date for Turkish locale
+ */
+export function formatDate(date: string | Date): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return format(dateObj, 'dd/MM/yyyy');
+}
+
+/**
+ * Format datetime for Turkish locale
+ */
+export function formatDateTime(date: string | Date): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return format(dateObj, 'dd/MM/yyyy HH:mm');
+}
+
+/**
+ * Mask TC Kimlik No (show only last 4 digits)
+ */
+export function maskTCNo(tcNo: string): string {
+  if (!tcNo || tcNo.length !== 11) return tcNo;
+  return `*******${tcNo.slice(-4)}`;
+}
+
+/**
+ * Export type enum
+ */
+export enum ExportType {
+  PDF = 'pdf',
+  EXCEL = 'excel',
+  CSV = 'csv',
+}
+
+/**
+ * Main export function that handles all formats
+ */
+export async function exportData(
+  type: ExportType,
+  options: PDFExportOptions | ExcelExportOptions | CSVExportOptions
+): Promise<void> {
+  switch (type) {
+    case ExportType.PDF:
+      return exportToPDF(options as PDFExportOptions);
+    case ExportType.EXCEL:
+      return exportToExcel(options as ExcelExportOptions);
+    case ExportType.CSV:
+      return exportToCSV(options as CSVExportOptions);
+    default:
+      throw new Error(`Unsupported export type: ${type}`);
+  }
+}

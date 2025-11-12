@@ -6,6 +6,13 @@ import logger from '@/lib/logger';
 import { convexHttp } from '@/lib/convex/server';
 import { api } from '@/convex/_generated/api';
 import { verifyPassword } from '@/lib/auth/password';
+import {
+  isAccountLocked,
+  getRemainingLockoutTime,
+  recordLoginAttempt,
+  getFailedAttemptCount,
+  LOCKOUT_CONFIG,
+} from '@/lib/auth/account-lockout';
 
 /**
  * POST /api/auth/login
@@ -29,16 +36,48 @@ export const POST = authRateLimit(async (request: NextRequest) => {
       );
     }
 
+    // Check if account is locked due to failed attempts
+    if (isAccountLocked(email)) {
+      const remainingSeconds = getRemainingLockoutTime(email);
+      const minutes = Math.ceil(remainingSeconds / 60);
+
+      logger.warn('Login blocked - account locked', {
+        email: `${email?.substring(0, 3)}***`,
+        remainingSeconds,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Hesap geçici olarak kilitlendi. ${minutes} dakika sonra tekrar deneyin.`,
+          locked: true,
+          remainingSeconds,
+        },
+        { status: 429 }
+      );
+    }
+
     // Convex-based authentication
     // Look up user by email in Convex
     const user = await convexHttp.query(api.auth.getUserByEmail, { email: email.toLowerCase() });
 
     if (!user) {
+      // Record failed attempt
+      recordLoginAttempt(email, false);
+      const failedAttempts = getFailedAttemptCount(email);
+      const remainingAttempts = LOCKOUT_CONFIG.maxAttempts - failedAttempts;
+
       logger.warn('Login failed - user not found', {
         email: `${email?.substring(0, 3)}***`,
+        failedAttempts,
       });
+
       return NextResponse.json(
-        { success: false, error: 'Geçersiz email veya şifre' },
+        {
+          success: false,
+          error: 'Geçersiz email veya şifre',
+          remainingAttempts: Math.max(0, remainingAttempts),
+        },
         { status: 401 }
       );
     }
@@ -48,10 +87,7 @@ export const POST = authRateLimit(async (request: NextRequest) => {
       logger.warn('Login failed - inactive account', {
         email: `${email?.substring(0, 3)}***`,
       });
-      return NextResponse.json(
-        { success: false, error: 'Hesap aktif değil' },
-        { status: 403 }
-      );
+      return NextResponse.json({ success: false, error: 'Hesap aktif değil' }, { status: 403 });
     }
 
     // Verify password
@@ -67,14 +103,28 @@ export const POST = authRateLimit(async (request: NextRequest) => {
 
     const isPasswordValid = await verifyPassword(password, user.passwordHash);
     if (!isPasswordValid) {
+      // Record failed attempt
+      recordLoginAttempt(email, false);
+      const failedAttempts = getFailedAttemptCount(email);
+      const remainingAttempts = LOCKOUT_CONFIG.maxAttempts - failedAttempts;
+
       logger.warn('Login failed - invalid password', {
         email: `${email?.substring(0, 3)}***`,
+        failedAttempts,
       });
+
       return NextResponse.json(
-        { success: false, error: 'Geçersiz email veya şifre' },
+        {
+          success: false,
+          error: 'Geçersiz email veya şifre',
+          remainingAttempts: Math.max(0, remainingAttempts),
+        },
         { status: 401 }
       );
     }
+
+    // Record successful login (clears failed attempts)
+    recordLoginAttempt(email, true);
 
     const userData = {
       id: user._id,
@@ -94,11 +144,13 @@ export const POST = authRateLimit(async (request: NextRequest) => {
 
     // Set session cookies
     const cookieStore = await cookies();
-    
+
     // Create session
-    const expireTime = new Date(Date.now() + (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000));
+    const expireTime = new Date(
+      Date.now() + (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000)
+    );
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    
+
     // Session cookie (HttpOnly)
     cookieStore.set(
       'auth-session',
@@ -153,25 +205,27 @@ export const POST = authRateLimit(async (request: NextRequest) => {
       },
     });
   } catch (_error: unknown) {
-    const errorMessage = _error instanceof Error ? _error.message : 'Giriş yapılırken bir hata oluştu';
-    
+    const errorMessage =
+      _error instanceof Error ? _error.message : 'Giriş yapılırken bir hata oluştu';
+
     logger.error('Login error', _error, {
       endpoint: '/api/auth/login',
       method: 'POST',
       email: `${email?.substring(0, 3)}***`,
     });
-    
+
     // Check for invalid credentials
-    if (errorMessage.toLowerCase().includes('invalid') || errorMessage.toLowerCase().includes('credential') || errorMessage.toLowerCase().includes('not found')) {
+    if (
+      errorMessage.toLowerCase().includes('invalid') ||
+      errorMessage.toLowerCase().includes('credential') ||
+      errorMessage.toLowerCase().includes('not found')
+    ) {
       return NextResponse.json(
         { success: false, error: 'Geçersiz email veya şifre' },
         { status: 401 }
       );
     }
 
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 });

@@ -98,6 +98,8 @@ export function FilterPanel({
             {/* Section Header */}
             <button
               onClick={() => toggleSection(field.key)}
+              aria-label={`${field.label} filtresi ${expandedSections.has(field.key) ? 'gizle' : 'göster'}`}
+              aria-expanded={expandedSections.has(field.key)}
               className="flex items-center justify-between w-full mb-2 text-sm font-medium text-gray-700 hover:text-gray-900"
             >
               {field.label}
@@ -251,6 +253,7 @@ export function ActiveFilters({ filters, filterLabels, onRemove }: ActiveFilters
                 onClick={() => {
                   onRemove(key, v);
                 }}
+                aria-label={`${v} filtresini kaldır`}
                 className="hover:text-blue-900"
               >
                 <X className="h-3 w-3" />
@@ -270,6 +273,7 @@ export function ActiveFilters({ filters, filterLabels, onRemove }: ActiveFilters
               onClick={() => {
                 onRemove(key);
               }}
+              aria-label={`${label} filtresini kaldır`}
               className="hover:text-blue-900"
             >
               <X className="h-3 w-3" />
