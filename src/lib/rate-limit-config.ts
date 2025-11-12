@@ -1,3 +1,4 @@
+import logger from './logger';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   authRateLimit,
@@ -117,12 +118,12 @@ export function applyGlobalRateLimit(
   const matchedConfig = RATE_LIMIT_CONFIGS.find((config) => config.pattern.test(pathname));
 
   if (matchedConfig) {
-    console.log(`🔒 Applying rate limit to ${pathname}: ${matchedConfig.description}`);
+    logger.debug('Applying rate limit', { pathname, description: matchedConfig.description });
     return matchedConfig.rateLimitFunction(handler);
   }
 
   // Eğer hiçbir konfigürasyon eşleşmezse, varsayılan olarak read-only limit kullan
-  console.log(`🔒 Applying default rate limit to ${pathname}`);
+  logger.debug('Applying default rate limit', { pathname });
   return readOnlyRateLimit(handler);
 }
 

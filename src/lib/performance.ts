@@ -1,3 +1,4 @@
+import logger from './logger';
 import React from 'react';
 // Performance monitoring utilities
 export class PerformanceMonitor {
@@ -18,7 +19,7 @@ export class PerformanceMonitor {
   endTiming(label: string): number {
     const startTime = this.metrics.get(`${label}-start`);
     if (!startTime) {
-      console.warn(`No start time found for label: ${label}`);
+      logger.warn('No start time found for label', { label });
       return 0;
     }
 
@@ -26,7 +27,7 @@ export class PerformanceMonitor {
     this.metrics.set(`${label}-duration`, duration);
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`⏱️ ${label}: ${duration.toFixed(2)}ms`);
+      logger.debug('Performance measurement', { label, durationMs: Number(duration.toFixed(2)) });
     }
 
     return duration;
@@ -49,9 +50,9 @@ export function reportWebVitals(metric: unknown) {
       const m = metric as { name: string; value: number; id?: string; delta?: number };
       const formattedValue = Math.round(m.value * 100) / 100;
       const unit = m.name.toLowerCase() === 'cls' ? '' : 'ms';
-      console.log(`📊 Web Vital: ${m.name} = ${formattedValue}${unit}`, metric);
+      logger.debug('Web Vital', { name: m.name, value: formattedValue, unit, metric });
     } else {
-      console.log('📊 Web Vital:', JSON.stringify(metric, null, 2));
+      logger.debug('Web Vital', { metric });
     }
   }
 
@@ -106,15 +107,18 @@ export class Cache {
 }
 
 // Lazy loading utilities
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function lazyLoadComponent<T extends React.ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fallback?: React.ComponentType<any>
 ) {
   const Component = React.lazy(importFunc);
 
-  return React.forwardRef((props: any, ref) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, react/display-name
+  const LazyComponent = React.forwardRef((props: any, ref) => {
     const FallbackComponent = fallback || (() => React.createElement('div', null, 'Loading...'));
-    
+
     return React.createElement(
       React.Suspense,
       {
@@ -123,4 +127,6 @@ export function lazyLoadComponent<T extends React.ComponentType<any>>(
       React.createElement(Component, { ...props, ref })
     );
   });
+
+  return LazyComponent;
 }
