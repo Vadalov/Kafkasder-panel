@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dernek Yönetim Sistemi - Giriş</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background blur elements */
+        .bg-blur-1 {
+            position: absolute;
+            top: -160px;
+            right: -160px;
+            width: 384px;
+            height: 384px;
+            background: #dbeafe;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: fadeInScale 1s ease-out;
+        }
+
+        .bg-blur-2 {
+            position: absolute;
+            bottom: -160px;
+            left: -160px;
+            width: 384px;
+            height: 384px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            animation: fadeInScale 1s ease-out 0.2s backwards;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 448px;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        /* Branding */
+        .branding {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.5s ease-out 0.1s backwards;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: #2563eb;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+        }
+
+        .branding h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .branding p {
+            color: #475569;
+            font-size: 1rem;
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 2rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: #475569;
+            font-size: 0.875rem;
+        }
+
+        .card-content {
+            padding: 0 2rem 2rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+            animation: slideInLeft 0.3s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.3s; }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            height: 44px;
+            padding: 0 0.75rem 0 2.5rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #0f172a;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input.error {
+            border-color: #fca5a5;
+        }
+
+        input.error:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        #password {
+            padding-right: 2.5rem;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #475569;
+        }
+
+        /* Error message */
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        /* Password strength */
+        .password-strength {
+            margin-top: 0.5rem;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            flex: 1;
+            background: #e5e7eb;
+            border-radius: 2px;
+            transition: background-color 0.3s;
+        }
+
+        .strength-bar.active.weak { background: #ef4444; }
+        .strength-bar.active.medium { background: #eab308; }
+        .strength-bar.active.strong { background: #22c55e; }
+
+        .strength-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .strength-label.weak { color: #dc2626; }
+        .strength-label.medium { color: #ca8a04; }
+        .strength-label.strong { color: #16a34a; }
+
+        /* Checkbox */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease-out 0.35s backwards;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .checkbox-wrapper label {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #334155;
+            cursor: pointer;
+        }
+
+        /* Security notice */
+        .security-notice {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease-out 0.4s backwards;
+        }
+
+        .security-notice p {
+            font-size: 0.875rem;
+            color: #1e40af;
+            margin: 0;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            height: 44px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            animation: fadeInUp 0.3s ease-out 0.5s backwards;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #1d4ed8;
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Footer */
+        .card-footer {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out 0.6s backwards;
+        }
+
+        .card-footer p {
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        .card-footer span {
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .icon-lg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .alert-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #f87171;
+            animation: slideDown 0.2s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-blur-1"></div>
+    <div class="bg-blur-2"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Branding -->
+        <div class="branding">
+            <div class="logo">
+                <svg class="icon icon-lg" style="color: white;">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M7 7h10"/>
+                    <path d="M7 12h10"/>
+                    <path d="M7 17h10"/>
+                </svg>
+            </div>
+            <h1>Dernek Yönetim Sistemi</h1>
+            <p>Profesyonel yönetim platformu</p>
+        </div>
+
+        <!-- Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Hesabınıza Giriş Yapın</h2>
+                <p class="card-description">Güvenli giriş için bilgilerinizi girin</p>
+            </div>
+
+            <div class="card-content">
+                <form id="loginForm">
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <label for="email">Email Adresi</label>
+                        <div class="input-wrapper">
+                            <svg class="icon input-icon">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="ornek@sirket.com"
+                                autocomplete="email"
+                            >
+                        </div>
+                        <div id="emailError"></div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <div class="input-wrapper">
+                            <svg class="icon input-icon">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="••••••••"
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="toggle-password" id="togglePassword" aria-label="Şifreyi göster">
+                                <svg class="icon" id="eyeIcon">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg class="icon" id="eyeOffIcon" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="passwordError"></div>
+                        <div id="passwordStrength"></div>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Beni hatırla (7 gün)</label>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div class="security-notice">
+                        <svg class="icon" style="color: #2563eb;">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        <p>Bilgileriniz 256-bit SSL şifreleme ile korunmaktadır</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="btnText">Giriş Yap</span>
+                        <svg class="icon" id="arrowIcon">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                        <div class="spinner" id="spinner" style="display: none;"></div>
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="card-footer">
+                    <p>Destek için: <span>destek@dernek.com</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const eyeOffIcon = document.getElementById('eyeOffIcon');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const arrowIcon = document.getElementById('arrowIcon');
+        const spinner = document.getElementById('spinner');
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            if (type === 'text') {
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+                togglePassword.setAttribute('aria-label', 'Şifreyi gizle');
+            } else {
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+                togglePassword.setAttribute('aria-label', 'Şifreyi göster');
+            }
+        });
+
+        // Email validation
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const errorDiv = document.getElementById('emailError');
+
+            if (!email) {
+                showError(errorDiv, 'Email adresi gereklidir');
+                emailInput.classList.add('error');
+                return false;
+            }
+            if (!emailRegex.test(email)) {
+                showError(errorDiv, 'Geçerli bir email adresi girin');
+                emailInput.classList.add('error');
+                return false;
+            }
+
+            errorDiv.innerHTML = '';
+            emailInput.classList.remove('error');
+            return true;
+        }
+
+        // Password validation
+        function validatePassword(password) {
+            const errorDiv = document.getElementById('passwordError');
+
+            if (!password) {
+                showError(errorDiv, 'Şifre gereklidir');
+                passwordInput.classList.add('error');
+                return false;
+            }
+            if (password.length < 6) {
+                showError(errorDiv, 'Şifre en az 6 karakter olmalıdır');
+                passwordInput.classList.add('error');
+                return false;
+            }
+
+            errorDiv.innerHTML = '';
+            passwordInput.classList.remove('error');
+            return true;
+        }
+
+        // Show error message
+        function showError(element, message) {
+            element.innerHTML = `
+                <div class="error-message">
+                    <svg class="icon" style="width: 16px; height: 16px;">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    ${message}
+                </div>
+            `;
+        }
+
+        // Password strength indicator
+        function getPasswordStrength(password) {
+            let strength = 0;
+
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^A-Za-z\d]/.test(password)) strength++;
+
+            return {
+                strength,
+                level: strength <= 2 ? 'weak' : strength <= 3 ? 'medium' : 'strong'
+            };
+        }
+
+        // Show password strength
+        function showPasswordStrength(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+
+            if (!password || document.getElementById('passwordError').innerHTML) {
+                strengthDiv.innerHTML = '';
+                return;
+            }
+
+            const { strength, level } = getPasswordStrength(password);
+            const labels = { weak: 'Zayıf şifre', medium: 'Orta seviye şifre', strong: 'Güçlü şifre' };
+
+            let bars = '';
+            for (let i = 0; i < 5; i++) {
+                bars += `<div class="strength-bar ${i < strength ? 'active ' + level : ''}"></div>`;
+            }
+
+            strengthDiv.innerHTML = `
+                <div class="password-strength">
+                    <div class="strength-bars">${bars}</div>
+                    <p class="strength-label ${level}">${labels[level]}</p>
+                </div>
+            `;
+        }
+
+        // Real-time validation
+        emailInput.addEventListener('input', (e) => {
+            if (document.getElementById('emailError').innerHTML) {
+                validateEmail(e.target.value);
+            }
+        });
+
+        passwordInput.addEventListener('input', (e) => {
+            if (document.getElementById('passwordError').innerHTML) {
+                validatePassword(e.target.value);
+            }
+            showPasswordStrength(e.target.value);
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            const isEmailValid = validateEmail(email);
+            const isPasswordValid = validatePassword(password);
+
+            if (!isEmailValid || !isPasswordValid) {
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Giriş yapılıyor...';
+            arrowIcon.style.display = 'none';
+            spinner.style.display = 'block';
+
+            // Simulate API call
+            setTimeout(() => {
+                alert(`Demo: Giriş başarılı!\nEmail: ${email}\nRemember Me: ${document.getElementById('remember').checked}`);
+
+                // Reset loading state
+                submitBtn.disabled = false;
+                btnText.textContent = 'Giriş Yap';
+                arrowIcon.style.display = 'block';
+                spinner.style.display = 'none';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
