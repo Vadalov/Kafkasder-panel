@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateCsrfToken } from '@/lib/csrf';
+import { generateCsrfToken, validateCsrfToken } from '@/lib/csrf';
 import { cookies } from 'next/headers';
 import { authRateLimit } from '@/lib/rate-limit';
 import logger from '@/lib/logger';
@@ -24,6 +24,17 @@ export const POST = authRateLimit(async (request: NextRequest) => {
   let email: string | undefined;
 
   try {
+    const headerToken = request.headers.get('x-csrf-token') || '';
+    const cookieStore = await cookies();
+    const cookieToken = cookieStore.get('csrf-token')?.value || '';
+
+    if (!validateCsrfToken(headerToken, cookieToken)) {
+      return NextResponse.json(
+        { success: false, error: 'Güvenlik doğrulaması başarısız' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     email = body.email;
     const { password, rememberMe = false } = body;
@@ -143,8 +154,8 @@ export const POST = authRateLimit(async (request: NextRequest) => {
     const csrfToken = generateCsrfToken();
 
     // Set session cookies
-    const cookieStore = await cookies();
-
+    
+    
     // Create session
     const expireTime = new Date(
       Date.now() + (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000)

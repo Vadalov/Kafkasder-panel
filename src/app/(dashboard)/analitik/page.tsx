@@ -69,7 +69,7 @@ const mockTopUsers = [
 
 export default function AnalyticsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month'>('week');
+  const [timeRange] = useState<'day' | 'week' | 'month'>('week');
 
   const stats = useMemo(
     () => ({

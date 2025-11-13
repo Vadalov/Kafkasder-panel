@@ -36,7 +36,7 @@ interface VirtualizedDataTableProps<T> {
   containerHeight?: number;
 }
 
-function VirtualizedDataTable<T extends Record<string, unknown>>({
+function VirtualizedDataTable<T>({
   data,
   columns,
   isLoading = false,
@@ -128,7 +128,7 @@ function VirtualizedDataTable<T extends Record<string, unknown>>({
               role="cell"
               aria-colindex={columns.findIndex((col) => col.key === column.key) + 1}
             >
-              {column.render ? column.render(item) : (item[column.key] as string) || '-'}
+              {column.render ? column.render(item) : String((item as any)[column.key] ?? '-')}
             </div>
           );
         })}

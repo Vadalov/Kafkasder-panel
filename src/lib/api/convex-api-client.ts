@@ -134,7 +134,7 @@ export const convexApiClient = {
       const endpoint = `/api/beneficiaries?${searchParams.toString()}`;
       const cacheKey = `beneficiaries:${searchParams.toString()}`;
 
-      return apiRequest<BeneficiaryDocument[]>(endpoint, undefined, cacheKey, 'beneficiaries');
+      return apiRequest<BeneficiaryDocument[]>(endpoint, undefined, cacheKey);
     },
     getBeneficiary: async (id: string): Promise<ConvexResponse<BeneficiaryDocument>> => {
       return apiRequest<BeneficiaryDocument>(`/api/beneficiaries/${id}`);
@@ -178,7 +178,7 @@ export const convexApiClient = {
       const endpoint = `/api/donations?${searchParams.toString()}`;
       const cacheKey = `donations:${searchParams.toString()}`;
 
-      return apiRequest<DonationDocument[]>(endpoint, undefined, cacheKey, 'donations');
+      return apiRequest<DonationDocument[]>(endpoint, undefined, cacheKey);
     },
     getDonation: async (id: string): Promise<ConvexResponse<DonationDocument>> => {
       return apiRequest<DonationDocument>(`/api/donations/${id}`);
@@ -269,7 +269,7 @@ export const convexApiClient = {
       return apiRequest<MeetingDocument[]>(`/api/meetings?${searchParams.toString()}`);
     },
     getMeetingsByTab: async (
-      userId: string,
+      _userId: string,
       tab: string
     ): Promise<ConvexResponse<MeetingDocument[]>> => {
       // Helper method for backward compatibility
@@ -654,7 +654,7 @@ export const convexApiClient = {
       const endpoint = `/api/aid-applications?${searchParams.toString()}`;
       const cacheKey = `aid-applications:${searchParams.toString()}`;
 
-      return apiRequest<AidApplicationDocument[]>(endpoint, undefined, cacheKey, 'default');
+      return apiRequest<AidApplicationDocument[]>(endpoint, undefined, cacheKey);
     },
     getAidApplication: async (
       id: string

@@ -2,7 +2,6 @@
 
 import React, { useState, lazy, Suspense, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { VirtualizedDataTable, type DataTableColumn } from '@/components/ui/virtualized-data-table';
 import { PageLayout } from '@/components/layouts/PageLayout';
@@ -38,7 +37,6 @@ const BeneficiaryQuickAddModal = lazy(() =>
 );
 
 export default function BeneficiariesPage() {
-  const router = useRouter();
 
   // Performance monitoring
   const { getFPS, isGoodPerformance } = useFPSMonitor();
@@ -267,7 +265,7 @@ export default function BeneficiariesPage() {
           setSearch(value);
         }}
         searchPlaceholder="İsim/TC/Telefon ara..."
-        onRowClick={(item) => router.push(`/yardim/ihtiyac-sahipleri/${item._id}`)}
+        
         refetch={() => {
           refetch();
           fallbackQuery.refetch();

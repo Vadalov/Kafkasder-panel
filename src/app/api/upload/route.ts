@@ -106,7 +106,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete file from Convex
     await convex.action(api.storage.deleteFile, {
-      storageId: storageId as unknown as unknown,
+      storageId: storageId as Id<'_storage'>,
     });
 
     return NextResponse.json({

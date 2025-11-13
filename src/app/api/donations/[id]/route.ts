@@ -39,7 +39,7 @@ function validateDonationUpdate(data: Record<string, unknown>): {
 /**
  * GET /api/donations/[id]
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await extractParams(params);
 
   // Handle special "stats" route - redirect to stats endpoint if it exists
@@ -85,8 +85,8 @@ async function updateDonationHandler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await extractParams(params);
   try {
-    const { id } = await extractParams(params);
     await verifyCsrfToken(request);
     await requireModuleAccess('donations');
 

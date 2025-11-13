@@ -70,11 +70,11 @@ export function useStandardForm<TFormData extends FieldValues = any, TResponse =
     errorMessage,
     showSuccessToast,
     showErrorToast,
-    onSuccess: (data: any) => {
+    onSuccess: () => {
       if (resetOnSuccess) {
         form.reset();
       }
-      onSuccess?.(data);
+      onSuccess?.(undefined as any);
     },
   });
 

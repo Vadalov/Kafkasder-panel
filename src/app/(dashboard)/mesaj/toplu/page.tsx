@@ -104,7 +104,7 @@ export default function BulkMessagingPage() {
   // });
 
   const historyResponse = { data: [] };
-  const _isLoadingHistory = false;
+  
 
   const historyMessages = historyResponse?.data || [];
 

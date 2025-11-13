@@ -77,8 +77,7 @@ export default function FinancialDashboardPage() {
   });
 
   // Fetch all records for table view
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const financeRecords = useQuery(api.finance_records.list, { limit: 100 });
+  
 
   // Calculate cumulative data
   const cumulativeData = useMemo(() => {
@@ -364,7 +363,7 @@ export default function FinancialDashboardPage() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {(incomeByCategory || []).map((entry, index) => (
+                    {(incomeByCategory || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -398,7 +397,7 @@ export default function FinancialDashboardPage() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {(expensesByCategory || []).map((entry, index) => (
+                    {(expensesByCategory || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useCallback } from 'react';
-import { Command, X } from 'lucide-react';
+import { Command } from 'lucide-react';
 import {
   Dialog,
   DialogContent,

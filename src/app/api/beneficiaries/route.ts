@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { convexBeneficiaries, normalizeQueryParams } from '@/lib/convex/api';
 import logger from '@/lib/logger';
-import type { QueryParams } from '@/types/database';
+ 
 import {
   verifyCsrfToken,
   buildErrorResponse,
@@ -9,16 +9,8 @@ import {
 } from '@/lib/api/auth-utils';
 
 // TypeScript interfaces
-interface BeneficiaryFilters {
-  status?: string;
-  priority?: string;
-  category?: string;
-  city?: string;
-}
+ 
 
-interface _ParsedQueryParams extends Omit<QueryParams, 'filters'> {
-  filters?: BeneficiaryFilters;
-}
 
 interface BeneficiaryData {
   name?: string;

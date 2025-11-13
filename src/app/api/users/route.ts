@@ -153,6 +153,7 @@ export async function GET(request: NextRequest) {
 }
 
 async function createUserHandler(request: NextRequest) {
+  let _bodyForLog: Record<string, unknown> | null = null;
   try {
     await verifyCsrfToken(request);
     const { user } = await requireAuthenticatedUser();
@@ -164,6 +165,7 @@ async function createUserHandler(request: NextRequest) {
     }
 
     const { data: body, error: parseError } = await parseBody(request);
+    _bodyForLog = body as Record<string, unknown>;
     if (parseError) {
       return NextResponse.json(
         { success: false, error: parseError },
@@ -213,7 +215,7 @@ async function createUserHandler(request: NextRequest) {
     return await handleApiError(error, logger, {
       endpoint: '/api/users',
       method: 'POST',
-      email: (body as Record<string, unknown>)?.email,
+      email: _bodyForLog?.email as string | undefined,
     }, 'Kullanıcı oluşturulamadı');
   }
 }

@@ -105,7 +105,6 @@ async function generateBeneficiariesReport(ctx: QueryCtx, startDate: string, end
   // Demographics
   const byStatus: Record<string, number> = {};
   const byCity: Record<string, number> = {};
-  const _byAidType: Record<string, number> = {};
 
   filteredBeneficiaries.forEach((b) => {
     byStatus[b.status] = (byStatus[b.status] || 0) + 1;

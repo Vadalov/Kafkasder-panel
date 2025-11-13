@@ -313,7 +313,19 @@ export const scholarshipPaymentsApi = {
   }) => {
     try {
       if (!convex) throw new Error('Convex client not available');
-      const response = await convex.query(api.scholarships.listPayments, params || {});
+      const safeParams = {
+        limit: params?.limit,
+        skip: params?.skip,
+        application_id: params?.application_id,
+        status:
+          params?.status === 'pending' ||
+          params?.status === 'cancelled' ||
+          params?.status === 'failed' ||
+          params?.status === 'paid'
+            ? (params?.status as 'pending' | 'cancelled' | 'failed' | 'paid')
+            : undefined,
+      };
+      const response = await convex.query(api.scholarships.listPayments, safeParams);
       return {
         success: true,
         data: response.documents,

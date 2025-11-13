@@ -156,11 +156,11 @@ export default function MeetingsPage() {
     },
   });
 
-  const _meetings = _meetingsResponse?.data || [];
+  
   const calendarMeetings = calendarMeetingsResponse?.data || [];
   const tabMeetings = tabMeetingsResponse?.data || [];
   const total = _meetingsResponse?.total || 0;
-  const _totalPages = Math.ceil(total / limit);
+  
 
   // Delete mutation
   const deleteMutation = useMutation({

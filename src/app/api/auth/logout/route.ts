@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import logger from '@/lib/logger';
+import { validateCsrfToken } from '@/lib/csrf';
 
 /**
  * POST /api/auth/logout
  * Handle user logout and session cleanup
  */
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
+    const headerToken = request.headers.get('x-csrf-token') || '';
+    const cookieToken = cookieStore.get('csrf-token')?.value || '';
+
+    if (!validateCsrfToken(headerToken, cookieToken)) {
+      return NextResponse.json(
+        { success: false, error: 'Güvenlik doğrulaması başarısız' },
+        { status: 403 }
+      );
+    }
 
     // Clear all auth-related cookies
     cookieStore.set('auth-session', '', {

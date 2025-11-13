@@ -26,7 +26,7 @@ const normalizeOptionalPermissions = (permissions: unknown): PermissionValue[] |
 /**
  * GET /api/users/[id]
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await extractParams(params);
   try {
     const { user: currentUser } = await requireAuthenticatedUser();

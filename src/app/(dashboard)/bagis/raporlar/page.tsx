@@ -71,11 +71,6 @@ interface ReportData {
   topDonors: { donor: string; amount: number; count: number }[];
 }
 
-const _CURRENCY_LABELS = {
-  TRY: 'TL',
-  USD: 'USD',
-  EUR: 'EUR',
-};
 
 export default function DonationReportsPage() {
   const [dateRange, setDateRange] = useState('all');
@@ -130,7 +125,7 @@ export default function DonationReportsPage() {
     filteredDonations.forEach(d => {
       const date = new Date(d._creationTime);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const _monthLabel = date.toLocaleDateString('tr-TR', { year: 'numeric', month: 'short' });
+      
 
       if (!monthlyMap.has(monthKey)) {
         monthlyMap.set(monthKey, { amount: 0, count: 0 });

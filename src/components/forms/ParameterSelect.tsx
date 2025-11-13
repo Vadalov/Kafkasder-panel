@@ -10,32 +10,41 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import type { ParameterCategory, ParameterDocument } from '@/types/database';
+import type { ParameterDocument } from '@/types/database';
 
 interface ParameterSelectProps {
-  category: ParameterCategory;
+  category?: string;
+  parameter?: string;
   value?: string;
-  onChange: (value: string) => void;
-  label: string;
+  onChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
+  label?: string;
   required?: boolean;
   placeholder?: string;
   error?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 export function ParameterSelect({
   category,
+  parameter,
   value,
   onChange,
+  onValueChange,
   label,
   required = false,
   placeholder,
   error,
   disabled = false,
+  className,
 }: ParameterSelectProps) {
+  const resolvedCategory = category ?? parameter ?? '';
+  const handleChange = onValueChange ?? onChange ?? (() => {});
+
   const { data, isLoading } = useQuery({
-    queryKey: ['parameters', category],
-    queryFn: () => parametersApi.getParametersByCategory(category),
+    queryKey: ['parameters', resolvedCategory],
+    queryFn: () => parametersApi.getParametersByCategory(resolvedCategory),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
@@ -43,12 +52,14 @@ export function ParameterSelect({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={category}>
-        {label} {required && <span className="text-red-600">*</span>}
-      </Label>
-      <Select value={value} onValueChange={onChange} disabled={disabled || isLoading}>
-        <SelectTrigger id={category}>
-          <SelectValue placeholder={placeholder || `${label} seçin`} />
+      {label && (
+        <Label htmlFor={resolvedCategory}>
+          {label} {required && <span className="text-red-600">*</span>}
+        </Label>
+      )}
+      <Select value={value} onValueChange={handleChange} disabled={disabled || isLoading}>
+        <SelectTrigger id={resolvedCategory} className={className}>
+          <SelectValue placeholder={placeholder || (label ? `${label} seçin` : 'Seçin')} />
         </SelectTrigger>
         <SelectContent>
           {isLoading ? (

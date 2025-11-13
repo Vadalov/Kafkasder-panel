@@ -16,11 +16,16 @@ interface AutoTableOptions {
     textColor?: number[] | number;
     fillColor?: number[];
     cellPadding?: number;
+    fontStyle?: string;
   };
   headStyles?: {
     fillColor?: number[];
     textColor?: number[] | number;
     fontSize?: number;
+    fontStyle?: string;
+  };
+  alternateRowStyles?: {
+    fillColor?: number[];
   };
   theme?: 'striped' | 'grid' | 'plain';
 }
@@ -221,11 +226,14 @@ export const generateDonationPDF = (reportData: any): void => {
   };
 
   // Calculate average for each donor
-  exportData.data = exportData.data.map(donor => ({
+  exportData.data = exportData.data.map((donor: any) => ({
     ...donor,
-    average: donor.count === 0 
-      ? '-'
-      : (donor.amount / donor.count).toLocaleString('tr-TR', { maximumFractionDigits: 0 })
+    average:
+      donor?.count === 0
+        ? '-'
+        : ((Number(donor?.amount) || 0) / (Number(donor?.count) || 1)).toLocaleString('tr-TR', {
+            maximumFractionDigits: 0,
+          }),
   }));
 
   generatePDFReport(exportData);
@@ -250,11 +258,13 @@ export const generateFinancialReportPDF = (reportData: any): void => {
   };
 
   // Transform data for better display
-  exportData.data = exportData.data.map((item: CategoryBreakdownItem) => ({
+  const breakdownSource = (reportData.categoryBreakdown || []) as CategoryBreakdownItem[];
+  const breakdownData = breakdownSource.map((item) => ({
     ...item,
     type: item.type === 'income' ? PDF_STRINGS.INCOME : PDF_STRINGS.EXPENSE,
-    amount: item.amount.toLocaleString('tr-TR')
+    amount: item.amount.toLocaleString('tr-TR'),
   }));
+  exportData.data = breakdownData as unknown as Record<string, unknown>[];
 
   generatePDFReport(exportData);
 };

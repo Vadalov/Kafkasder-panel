@@ -4,7 +4,7 @@ import { api } from '@/convex/_generated/api';
 
 // GET - Get a single setting
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ category: string; key: string }> }
 ) {
   try {

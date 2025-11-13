@@ -25,7 +25,7 @@ function validateMeetingUpdate(data: Record<string, unknown>): {
 /**
  * GET /api/meetings/[id]
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await extractParams(params);
   try {
     await requireModuleAccess('workflow');

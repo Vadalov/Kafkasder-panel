@@ -104,7 +104,7 @@ export function PersonalInfoStep({ isUpdateMode: _isUpdateMode = false }: Person
             <ParameterSelect
               parameter="CINSIYET"
               value={watch('gender')}
-              onValueChange={(value) => setValue('gender', value)}
+              onValueChange={(value) => setValue('gender', value as any)}
               placeholder="Cinsiyet seçin"
               className={errors.gender ? 'border-red-500' : ''}
             />
@@ -118,7 +118,7 @@ export function PersonalInfoStep({ isUpdateMode: _isUpdateMode = false }: Person
             <ParameterSelect
               parameter="MEDENI_DURUM"
               value={watch('maritalStatus')}
-              onValueChange={(value) => setValue('maritalStatus', value)}
+              onValueChange={(value) => setValue('maritalStatus', value as any)}
               placeholder="Medeni durum seçin"
               className={errors.maritalStatus ? 'border-red-500' : ''}
             />
@@ -149,7 +149,7 @@ export function PersonalInfoStep({ isUpdateMode: _isUpdateMode = false }: Person
             <ParameterSelect
               parameter="DIN"
               value={watch('religion')}
-              onValueChange={(value) => setValue('religion', value)}
+              onValueChange={(value) => setValue('religion', value as any)}
               placeholder="Din seçin"
               className={errors.religion ? 'border-red-500' : ''}
             />

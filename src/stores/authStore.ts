@@ -1,6 +1,7 @@
 'use client';
 
 import logger from '@/lib/logger';
+import { getCsrfTokenFromCookie } from '@/lib/csrf';
 
 /**
  * Authentication Store (Zustand)
@@ -128,6 +129,20 @@ export const useAuthStore = create<AuthStore>()(
                     state.isInitialized = true;
                     state.isLoading = false;
                   });
+                  (async () => {
+                    try {
+                      const resp = await fetch('/api/auth/session', { method: 'GET', cache: 'no-store' });
+                      if (!resp.ok) {
+                        localStorage.removeItem('auth-session');
+                        set((state) => {
+                          state.isAuthenticated = false;
+                          state.user = null;
+                        });
+                      }
+                    } catch {
+                      // Network errors: keep current state
+                    }
+                  })();
                   return;
                 }
               } catch {
@@ -249,8 +264,10 @@ export const useAuthStore = create<AuthStore>()(
           logout: async (callback?: () => void) => {
             try {
               // Call server-side logout API (clears HttpOnly cookie)
+              const token = getCsrfTokenFromCookie();
               await fetch('/api/auth/logout', {
                 method: 'POST',
+                headers: token ? { 'x-csrf-token': token } : undefined,
               });
             } catch (error) {
               logger.error('Logout error', { error });

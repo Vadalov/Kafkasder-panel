@@ -72,7 +72,7 @@ function validatePartnerData(data: PartnerData): ValidationResult {
  * Get single partner by ID
  */
 async function getPartnerHandler(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -179,7 +179,7 @@ async function updatePartnerHandler(
  * Delete partner by ID
  */
 async function deletePartnerHandler(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

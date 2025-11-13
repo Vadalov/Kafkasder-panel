@@ -38,20 +38,7 @@ export function KumbaraPrintQR({ kumbara, qrDataUrl }: KumbaraPrintQRProps) {
     toast.success('Yazdırma işlemi başlatıldı');
   };
 
-  const _handleDownload = () => {
-    if (!qrDataUrl) {
-      toast.error('QR kod bulunamadı');
-      return;
-    }
-
-    const link = document.createElement('a');
-    link.href = qrDataUrl;
-    link.download = `kumbara-qr-${kumbara.receipt_number}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success('QR kod indirildi');
-  };
+  
 
   return (
     <>

@@ -107,7 +107,7 @@ export function usePaginatedQuery(
     },
   });
 
-  const _currentPage = 1; // Can be managed externally
+
   const total = data?.pages[0]?.total ?? 0;
   const totalPages = Math.ceil(total / limit);
   const items = data?.pages[0]?.items ?? [];

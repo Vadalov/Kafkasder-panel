@@ -24,7 +24,7 @@ function validateMessageUpdate(data: Record<string, unknown>): {
 /**
  * GET /api/messages/[id]
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await extractParams(params);
   try {
     const message = await convexMessages.get(id as Id<'messages'>);
@@ -103,7 +103,7 @@ async function updateMessageHandler(
  * DELETE /api/messages/[id]
  */
 async function deleteMessageHandler(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await extractParams(params);
@@ -135,7 +135,7 @@ async function deleteMessageHandler(
  * Send message via SMS or Email based on message type
  */
 async function sendMessageHandler(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await extractParams(params);

@@ -101,7 +101,7 @@ interface AccessibleInputProps
 export const AccessibleInput = forwardRef<
   HTMLInputElement,
   AccessibleInputProps
-](({ label, error, hint, className, id, required, disabled, ...props }, ref) => {
+>(({ label, error, hint, className, id, required, disabled, ...props }, ref) => {
   const generatedId = useId();
   const inputId = id || `input-${generatedId}`;
 

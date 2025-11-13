@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -55,7 +55,7 @@ export function BeneficiaryFormWizard({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const methods = useForm<BeneficiaryFormData>({
-    resolver: zodResolver(beneficiarySchema),
+    resolver: zodResolver(beneficiarySchema) as any,
     defaultValues: {
       mernisCheck: false,
       familyMemberCount: 1,
@@ -172,7 +172,7 @@ export function BeneficiaryFormWizard({
   };
 
   // Handle form submission
-  const onSubmit = async (data: BeneficiaryFormData) => {
+  const onSubmit: SubmitHandler<BeneficiaryFormData> = async (data) => {
     setIsSubmitting(true);
     try {
       if (isUpdateMode && beneficiaryId) {

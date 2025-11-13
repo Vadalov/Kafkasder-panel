@@ -42,7 +42,7 @@ function validateKumbaraUpdate(data: Partial<DonationDocument>): {
  * GET /api/kumbara/[id]
  * Get single kumbara donation
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
@@ -157,7 +157,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
  * Delete kumbara donation
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

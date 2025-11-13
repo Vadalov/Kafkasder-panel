@@ -283,7 +283,7 @@ export function formatErrorMessage(error: unknown): string {
 
     // Handle HTTP status codes
     if (err.status || err.statusCode) {
-      const status = err.status || err.statusCode;
+      const status = (err.status ?? err.statusCode) as number | string;
       const translated = translateError(status);
       if (translated !== ERROR_MESSAGES['general_unknown']) {
         return translated;

@@ -1,7 +1,7 @@
 // High-Performance Loading Skeleton Components
 'use client';
 
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 
 interface SkeletonProps {

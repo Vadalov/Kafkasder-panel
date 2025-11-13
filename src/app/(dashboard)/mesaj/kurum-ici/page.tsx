@@ -158,13 +158,7 @@ export default function InternalMessagingPage() {
     }
   };
 
-  const _handleSelectAll = () => {
-    if (selectedMessages.length === messages.length) {
-      setSelectedMessages([]);
-    } else {
-      setSelectedMessages(messages.map((m) => m._id));
-    }
-  };
+  
 
   const handleMessageSelect = (messageId: string) => {
     if (selectedMessages.includes(messageId)) {
@@ -179,10 +173,7 @@ export default function InternalMessagingPage() {
     return user?.name || 'Bilinmeyen Kullanıcı';
   };
 
-  const _getUserEmail = (userId: string) => {
-    const user = users.find((u: UserDocument) => u._id === userId);
-    return user?.email || '';
-  };
+  
 
   const clearFilters = () => {
     setSearch('');

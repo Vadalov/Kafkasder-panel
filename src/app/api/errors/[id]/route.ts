@@ -20,7 +20,7 @@ const logger = createLogger('api:errors:detail');
  * GET /api/errors/[id]
  * Get error details by ID
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 

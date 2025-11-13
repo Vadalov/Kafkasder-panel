@@ -32,6 +32,8 @@ export const exportCollectionData = query({
     format: v.optional(v.union(v.literal('json'), v.literal('csv'))),
   },
   handler: async (ctx, args) => {
+    void ctx;
+    void ctx;
     const { collectionName, filters, format = 'json' } = args;
 
     // Fetch data based on collection
@@ -108,6 +110,7 @@ export const validateImportData = query({
     data: v.array(v.record(v.string(), v.any())),
   },
   handler: async (ctx, args) => {
+    void ctx;
     const { collectionName, data } = args;
     const errors: Array<{ row: number; field: string; message: string }> = [];
     const warnings: Array<{ row: number; field: string; message: string }> = [];

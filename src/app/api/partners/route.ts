@@ -9,12 +9,6 @@ interface PartnerFilters {
   partnership_type?: string;
 }
 
-interface _ParsedQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  filters?: PartnerFilters;
-}
 
 interface PartnerData {
   name?: string;

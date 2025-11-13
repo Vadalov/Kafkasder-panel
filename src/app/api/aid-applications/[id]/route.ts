@@ -24,7 +24,7 @@ function validateApplicationUpdate(data: Record<string, unknown>): {
 /**
  * GET /api/aid-applications/[id]
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await extractParams(params);
   try {
     const application = await convexAidApplications.get(id as Id<'aid_applications'>);
@@ -123,7 +123,7 @@ async function _updateApplicationHandler(
  * DELETE /api/aid-applications/[id]
  */
 async function _deleteApplicationHandler(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await extractParams(params);
@@ -149,3 +149,6 @@ async function _deleteApplicationHandler(
     return NextResponse.json({ success: false, error: 'Silme işlemi başarısız' }, { status: 500 });
   }
 }
+
+export const PATCH = _updateApplicationHandler;
+export const DELETE = _deleteApplicationHandler;
