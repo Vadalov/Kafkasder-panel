@@ -34,13 +34,13 @@ export function PageLayout({
   const router = useRouter();
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-6 w-full overflow-x-hidden', className)}>
       {/* Page Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0"
       >
         <div className="flex items-start gap-4">
           {showBackButton && (
@@ -85,6 +85,7 @@ export function PageLayout({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
+        className="w-full overflow-x-hidden min-w-0"
       >
         {children}
       </motion.div>

@@ -80,7 +80,7 @@ export function ModernSidebar({
 
       <aside
         className={cn(
-          'fixed left-0 top-16 h-[calc(100vh-4rem)] bg-slate-800 border-r border-slate-700/50 z-40 transition-all duration-300 ease-in-out flex flex-col',
+          'fixed left-0 top-16 h-[calc(100vh-4rem)] bg-slate-800 border-r border-slate-700/50 z-40 transition-all duration-300 ease-in-out flex flex-col overflow-hidden',
           isCollapsed ? 'w-16' : 'w-64',
           isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           className

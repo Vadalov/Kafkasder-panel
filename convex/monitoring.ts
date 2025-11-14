@@ -395,3 +395,101 @@ export const acknowledgeAlert = mutation({
     return { success: true };
   },
 });
+
+// Enhanced Dashboard KPIs
+export const getEnhancedKPIs = query({
+  args: {},
+  handler: async (ctx) => {
+    const [allTasks, allMeetings, pendingApplications, activeWorkflows] = await Promise.all([
+      ctx.db.query('tasks').collect(),
+      ctx.db.query('meetings').collect(),
+      ctx.db
+        .query('aid_applications')
+        .filter((q) => q.eq(q.field('status'), 'pending'))
+        .collect(),
+      ctx.db
+        .query('tasks')
+        .filter((q) => q.eq(q.field('status'), 'in_progress'))
+        .collect(),
+    ]);
+
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Pending operations
+    const pendingTasks = allTasks.filter(
+      (t) => t.status === 'pending' || t.status === 'in_progress'
+    );
+    const recentPendingTasks = pendingTasks.filter(
+      (t) => t._creationTime >= thirtyDaysAgo.getTime()
+    );
+
+    // Tracked work items
+    const trackedItems = allTasks.filter((t) => t.assigned_to && t.status !== 'completed');
+    const recentTrackedItems = trackedItems.filter(
+      (t) => t._creationTime >= thirtyDaysAgo.getTime()
+    );
+
+    // Calendar events (meetings)
+    const upcomingMeetings = allMeetings.filter((m) => {
+      if (!m.meeting_date) return false;
+      const meetingDate = new Date(m.meeting_date);
+      return meetingDate >= now;
+    });
+    const recentMeetings = allMeetings.filter((m) => m._creationTime >= thirtyDaysAgo.getTime());
+
+    // Planned meetings (meetings in next 7 days)
+    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const plannedMeetings = allMeetings.filter((m) => {
+      if (!m.meeting_date) return false;
+      const meetingDate = new Date(m.meeting_date);
+      return meetingDate >= now && meetingDate <= sevenDaysFromNow;
+    });
+
+    // Applications with pending approval
+    const pendingApprovals = pendingApplications.length;
+
+    return {
+      pendingOperations: {
+        total: pendingTasks.length + pendingApprovals,
+        tasks: pendingTasks.length,
+        applications: pendingApprovals,
+        trend: recentPendingTasks.length,
+      },
+      trackedWorkItems: {
+        total: trackedItems.length,
+        active: activeWorkflows.length,
+        trend: recentTrackedItems.length,
+      },
+      calendarEvents: {
+        total: upcomingMeetings.length,
+        upcoming: upcomingMeetings.length,
+        trend: recentMeetings.length,
+      },
+      plannedMeetings: {
+        total: plannedMeetings.length,
+        thisWeek: plannedMeetings.length,
+      },
+      timestamp: now.toISOString(),
+    };
+  },
+});
+
+// Get currency exchange rates (mock data for now - should be replaced with real API)
+export const getCurrencyRates = query({
+  args: {},
+  handler: async () => {
+    // TODO: Integrate with real exchange rate API (TCMB or exchangerate-api.io)
+    // This is mock data for demonstration
+    return {
+      rates: [
+        { code: 'USD', name: 'ABD Doları', buy: 34.1245, sell: 34.2856, change: 0.52 },
+        { code: 'EUR', name: 'Euro', buy: 37.0123, sell: 37.1987, change: 0.38 },
+        { code: 'GBP', name: 'İngiliz Sterlini', buy: 43.5678, sell: 43.789, change: -0.15 },
+        { code: 'XAU', name: 'Altın (Gram)', buy: 2845.5, sell: 2845.5, change: 1.25 },
+      ],
+      lastUpdate: new Date().toISOString(),
+      source: 'demo', // Should be 'TCMB' or other real source
+    };
+  },
+});

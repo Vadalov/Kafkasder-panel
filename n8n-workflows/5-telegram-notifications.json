@@ -1,0 +1,252 @@
+{
+  "name": "Telegram Bildirim Sistemi",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "telegram-notify",
+        "options": {}
+      },
+      "id": "webhook-telegram-1",
+      "name": "Webhook - Telegram Bildirimi",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "webhookId": "telegram-notify-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Bildirim tipini ve içeriğini işle\nconst notification = $input.first().json;\n\n// Bildirim tiplerine göre emoji ve format\nconst notificationTypes = {\n  'donation': { emoji: '💰', color: '🟢', priority: 'NORMAL' },\n  'meeting': { emoji: '📅', color: '🔵', priority: 'NORMAL' },\n  'error': { emoji: '🚨', color: '🔴', priority: 'URGENT' },\n  'task': { emoji: '✅', color: '🟡', priority: 'NORMAL' },\n  'beneficiary': { emoji: '👥', color: '🟢', priority: 'NORMAL' },\n  'scholarship': { emoji: '🎓', color: '🔵', priority: 'NORMAL' },\n  'general': { emoji: 'ℹ️', color: '⚪', priority: 'LOW' }\n};\n\nconst type = notificationTypes[notification.type] || notificationTypes['general'];\n\n// Telegram mesaj formatı (Markdown)\nlet message = `${type.emoji} *${notification.title}*\\n\\n`;\n\nif (notification.description) {\n  message += `${notification.description}\\n\\n`;\n}\n\n// Detaylar\nif (notification.details) {\n  message += `📋 *Detaylar:*\\n`;\n  for (const [key, value] of Object.entries(notification.details)) {\n    message += `• ${key}: ${value}\\n`;\n  }\n  message += `\\n`;\n}\n\n// Link varsa ekle\nif (notification.url) {\n  message += `🔗 [Detayları Görüntüle](${notification.url})\\n\\n`;\n}\n\n// Footer\nmessage += `⏰ ${new Date().toLocaleString('tr-TR')}\\n`;\nmessage += `📱 Kafkasder Panel`;\n\nreturn [{\n  json: {\n    ...notification,\n    formatted_message: message,\n    emoji: type.emoji,\n    priority: type.priority,\n    parse_mode: 'Markdown'\n  }\n}];"
+      },
+      "id": "code-format-telegram-1",
+      "name": "Mesajı Formatla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.recipient_type}}",
+              "operation": "equals",
+              "value2": "group"
+            }
+          ]
+        }
+      },
+      "id": "if-recipient-type-1",
+      "name": "Grup mu Bireysel mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$env.TELEGRAM_GROUP_CHAT_ID}}",
+        "text": "={{$json.formatted_message}}",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "telegram-group-1",
+      "name": "Telegram Gruba Gönder",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [850, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "5",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json.recipient_id || $env.TELEGRAM_ADMIN_CHAT_ID}}",
+        "text": "={{$json.formatted_message}}",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "telegram-personal-1",
+      "name": "Telegram Kişiye Gönder",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [850, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "5",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.has_attachment}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-attachment-1",
+      "name": "Dosya Var mı?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json.recipient_id || $env.TELEGRAM_ADMIN_CHAT_ID}}",
+        "binaryData": true,
+        "binaryPropertyName": "attachment",
+        "additionalFields": {
+          "caption": "={{$json.attachment_caption}}",
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "telegram-document-1",
+      "name": "Dosya Gönder",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [1250, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "5",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$env.CONVEX_API_URL}}/communication_logs/create",
+        "method": "POST",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convexApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"telegram\",\n  \"to\": \"{{$json.recipient_id || 'group'}}\",\n  \"message\": \"{{$json.formatted_message}}\",\n  \"status\": \"sent\",\n  \"sentAt\": \"{{$now.toISO()}}\",\n  \"metadata\": {\n    \"notification_type\": \"{{$json.type}}\",\n    \"priority\": \"{{$json.priority}}\",\n    \"has_attachment\": {{$json.has_attachment || false}}\n  }\n}",
+        "options": {}
+      },
+      "id": "http-log-1",
+      "name": "İletişim Logu Kaydet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1250, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Convex API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook - Telegram Bildirimi": {
+      "main": [
+        [
+          {
+            "node": "Mesajı Formatla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mesajı Formatla": {
+      "main": [
+        [
+          {
+            "node": "Grup mu Bireysel mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grup mu Bireysel mi?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Gruba Gönder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Kişiye Gönder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Gruba Gönder": {
+      "main": [
+        [
+          {
+            "node": "İletişim Logu Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Kişiye Gönder": {
+      "main": [
+        [
+          {
+            "node": "Dosya Var mı?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "İletişim Logu Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dosya Var mı?": {
+      "main": [
+        [
+          {
+            "node": "Dosya Gönder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "id": "telegram-notifications",
+  "meta": {
+    "instanceId": "vmi2876541.contaboserver.net"
+  },
+  "tags": [
+    {
+      "name": "telegram",
+      "id": "13"
+    },
+    {
+      "name": "bildirim",
+      "id": "14"
+    },
+    {
+      "name": "messaging",
+      "id": "15"
+    }
+  ]
+}

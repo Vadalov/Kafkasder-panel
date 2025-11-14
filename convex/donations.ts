@@ -82,7 +82,15 @@ export const create = mutation({
     amount: v.number(),
     currency: v.union(v.literal('TRY'), v.literal('USD'), v.literal('EUR')),
     donation_type: v.string(),
-    payment_method: v.string(),
+    payment_method: v.union(
+      v.literal('cash'),
+      v.literal('check'),
+      v.literal('credit_card'),
+      v.literal('online'),
+      v.literal('bank_transfer'),
+      v.literal('sms'),
+      v.literal('in_kind')
+    ),
     donation_purpose: v.string(),
     notes: v.optional(v.string()),
     receipt_number: v.string(),

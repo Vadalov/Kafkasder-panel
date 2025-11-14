@@ -1,7 +1,7 @@
 // Performance-enhanced DataTable with Virtual Scrolling
 'use client';
 
-import React, { useState, useMemo, useRef, memo, useCallback } from 'react';
+import React, { useState, useMemo, useRef, memo, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -55,10 +55,27 @@ function VirtualizedDataTable<T>({
 }: VirtualizedDataTableProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
+  const [calculatedHeight, setCalculatedHeight] = useState(containerHeight);
+
+  // Calculate responsive height based on viewport
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const calculateHeight = () => {
+      const viewportHeight = window.innerHeight;
+      const availableHeight = viewportHeight - 300; // Reserve space for header, padding, etc.
+      const responsiveHeight = Math.max(400, Math.min(containerHeight, availableHeight));
+      setCalculatedHeight(responsiveHeight);
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
+  }, [containerHeight]);
 
   // Memoized virtual scrolling calculations
   const virtualItems = useMemo(() => {
-    const visibleItemCount = Math.ceil(containerHeight / rowHeight);
+    const visibleItemCount = Math.ceil(calculatedHeight / rowHeight);
     const startIndex = Math.max(0, Math.floor(scrollTop / rowHeight) - 5);
     const endIndex = Math.min(data.length - 1, startIndex + visibleItemCount + 10);
 
@@ -67,7 +84,7 @@ function VirtualizedDataTable<T>({
       endIndex,
       visibleItems: data.slice(startIndex, endIndex + 1),
     };
-  }, [data, scrollTop, rowHeight, containerHeight]);
+  }, [data, scrollTop, rowHeight, calculatedHeight]);
 
   // Memoized scroll handler
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -94,7 +111,7 @@ function VirtualizedDataTable<T>({
           boxSizing: 'border-box',
         }}
         className={cn(
-          'px-4 border-b border-slate-100 hover:bg-slate-50/80 transition-colors duration-150 flex-nowrap',
+          'px-4 py-3 border-b border-slate-100 hover:bg-slate-50/80 transition-colors duration-150 flex-nowrap text-sm',
           onRowClick && 'cursor-pointer'
         )}
         onClick={() => onRowClick?.(item)}
@@ -118,13 +135,13 @@ function VirtualizedDataTable<T>({
             column.className && column.className.includes('overflow-')
           );
 
-          const baseCell = hasFixed ? 'px-2' : 'flex-1 px-2';
+          const baseCell = hasFixed ? 'px-3 py-1' : 'flex-1 px-3 py-1';
           const defaultOverflow = columnHasOverflowUtility ? '' : 'overflow-hidden';
 
           return (
             <div
               key={column.key}
-              className={cn(baseCell, defaultOverflow, column.className)}
+              className={cn(baseCell, defaultOverflow, 'text-sm', column.className)}
               role="cell"
               aria-colindex={columns.findIndex((col) => col.key === column.key) + 1}
             >
@@ -231,71 +248,78 @@ function VirtualizedDataTable<T>({
         </div>
       )}
 
-      {/* Virtualized Table */}
-      <div
-        ref={containerRef}
-        className="border border-slate-200 rounded-lg overflow-auto bg-white"
-        style={{ height: containerHeight }}
-        onScroll={handleScroll}
-        role="table"
-        aria-rowcount={data.length + 1}
-        aria-colcount={columns.length}
-        data-testid="virtualizedTable"
-      >
-        {/* Header */}
+      {/* Virtualized Table - Full width, no horizontal scroll */}
+      <div className="w-full">
         <div
-          className="flex items-center flex-nowrap px-4 border-b border-slate-200 bg-slate-50/80 font-medium text-sm text-slate-600 sticky top-0 z-10"
+          ref={containerRef}
+          className="border border-slate-200 rounded-lg overflow-y-auto overflow-x-visible bg-white w-full shadow-sm"
           style={{
-            height: rowHeight,
-            willChange: 'transform',
-            boxSizing: 'border-box',
-            display: 'flex',
-            alignItems: 'center',
+            height: calculatedHeight,
+            minHeight: 400,
           }}
-          role="row"
+          onScroll={handleScroll}
+          role="table"
+          aria-rowcount={data.length + 1}
+          aria-colcount={columns.length}
+          data-testid="virtualizedTable"
         >
-          {columns.map((column, columnIndex) => {
-            const hasFixed = Boolean(
-              column.className &&
-                (column.className.includes('flex-none') ||
-                  column.className.includes('w-[') ||
-                  column.className.includes('basis-') ||
-                  column.className.includes('grow-0') ||
-                  column.className.includes('shrink-0'))
-            );
-            return (
-              <div
-                key={column.key}
-                className={cn(
-                  hasFixed ? 'px-2 overflow-hidden' : 'flex-1 px-2 overflow-hidden',
-                  column.className
-                )}
-                role="columnheader"
-                aria-colindex={columnIndex + 1}
-              >
-                {column.label}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Virtual Scrolling Container */}
-        <div style={{ height: data.length * rowHeight, position: 'relative' }}>
-          {/* Visible rows */}
+          {/* Header */}
           <div
+            className="flex items-center flex-nowrap px-4 py-3 border-b border-slate-200 bg-slate-50/80 font-semibold text-sm text-slate-700 sticky top-0 z-10"
             style={{
-              transform: `translateY(${virtualItems.startIndex * rowHeight}px)`,
+              height: rowHeight,
+              minHeight: rowHeight,
               willChange: 'transform',
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
             }}
+            role="row"
           >
-            {virtualItems.visibleItems.map((item, index) => (
-              <RowRenderer
-                key={virtualItems.startIndex + index}
-                item={item}
-                index={virtualItems.startIndex + index}
-                style={{ height: rowHeight }}
-              />
-            ))}
+            {columns.map((column, columnIndex) => {
+              const hasFixed = Boolean(
+                column.className &&
+                  (column.className.includes('flex-none') ||
+                    column.className.includes('w-[') ||
+                    column.className.includes('basis-') ||
+                    column.className.includes('grow-0') ||
+                    column.className.includes('shrink-0'))
+              );
+              return (
+                <div
+                  key={column.key}
+                  className={cn(
+                    hasFixed ? 'px-3 py-1 overflow-hidden' : 'flex-1 px-3 py-1 overflow-hidden',
+                    'text-sm',
+                    column.className
+                  )}
+                  role="columnheader"
+                  aria-colindex={columnIndex + 1}
+                >
+                  {column.label}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Virtual Scrolling Container */}
+          <div style={{ height: data.length * rowHeight, position: 'relative' }}>
+            {/* Visible rows */}
+            <div
+              style={{
+                transform: `translateY(${virtualItems.startIndex * rowHeight}px)`,
+                willChange: 'transform',
+              }}
+            >
+              {virtualItems.visibleItems.map((item, index) => (
+                <RowRenderer
+                  key={virtualItems.startIndex + index}
+                  item={item}
+                  index={virtualItems.startIndex + index}
+                  style={{ height: rowHeight }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

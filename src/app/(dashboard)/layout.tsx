@@ -34,6 +34,7 @@ import { prefetchData } from '@/lib/cache-config';
 import { CACHE_KEYS } from '@/lib/cache-config';
 import { convexApiClient } from '@/lib/api/convex-api-client';
 import { PerformanceMonitor } from '@/lib/performance-monitor';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const queryClient = useQueryClient();
   const { isAuthenticated, isInitialized, user, logout, initializeAuth } = useAuthStore();
   const { isOpen: isSearchOpen, onClose: closeSearch } = useAdvancedSearch();
+  const deviceInfo = useDeviceDetection();
 
   // Keyboard shortcuts
   const keyboardShortcuts = [
@@ -458,7 +460,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           />
         </SuspenseBoundary>
 
-        {/* Spacer for fixed sidebar */}
+        {/* Spacer for fixed sidebar - Hidden on mobile */}
         <div
           className={cn(
             'hidden lg:block transition-all duration-300',
@@ -467,8 +469,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
 
         {/* Main Content - OPTIMIZED PAGE TRANSITIONS */}
-        <main id="main-content" className="flex-1 w-full min-h-[calc(100vh-4rem)]" tabIndex={-1}>
-          <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+        <main
+          id="main-content"
+          className="flex-1 w-full min-w-0 min-h-[calc(100vh-4rem)] overflow-x-hidden"
+          tabIndex={-1}
+          data-device-type={deviceInfo.deviceType}
+          data-screen-size={deviceInfo.screenSize}
+        >
+          <div
+            className={cn(
+              'max-w-[95%] lg:max-w-[98%] xl:max-w-[1600px] mx-auto w-full',
+              deviceInfo.isMobile ? 'p-3' : deviceInfo.isTablet ? 'p-4 md:p-6' : 'p-4 lg:p-6'
+            )}
+          >
             <BreadcrumbNav />
             <AnimatePresence mode="wait" initial={false}>
               <motion.div

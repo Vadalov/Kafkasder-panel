@@ -119,3 +119,92 @@ export const remove = mutation({
     return { success: true };
   },
 });
+
+// Get categorized meetings for a user
+export const getCategorizedMeetings = query({
+  args: {
+    userId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const allMeetings = await ctx.db.query('meetings').withIndex('by_meeting_date').collect();
+
+    const now = new Date();
+    const userMeetings = allMeetings.filter(
+      (m) => m.participants?.includes(args.userId) || m.organizer === args.userId
+    );
+
+    // Categorize meetings
+    const categorized = {
+      invitations: [] as typeof allMeetings,
+      participating: [] as typeof allMeetings,
+      informed: [] as typeof allMeetings,
+      open: [] as typeof allMeetings,
+    };
+
+    for (const meeting of userMeetings) {
+      const meetingDate = new Date(meeting.meeting_date);
+      const isPast = meetingDate < now;
+
+      // Skip past meetings
+      if (isPast) continue;
+
+      // Categorization logic
+      if (meeting.status === 'scheduled') {
+        // Scheduled meeting - could be invitation or participation
+        categorized.participating.push(meeting);
+      } else if (meeting.meeting_type === 'general') {
+        // General info meeting
+        categorized.informed.push(meeting);
+      }
+    }
+
+    // Open meetings (public, anyone can join)
+    const openMeetings = allMeetings.filter(
+      (m) =>
+        m.meeting_type === 'general' && m.status === 'scheduled' && new Date(m.meeting_date) >= now
+    );
+    categorized.open = openMeetings;
+
+    return categorized;
+  },
+});
+
+// Accept meeting invitation
+export const acceptInvitation = mutation({
+  args: {
+    meetingId: v.id('meetings'),
+    userId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting) {
+      throw new Error('Meeting not found');
+    }
+
+    // Meeting acceptance - status remains scheduled
+    // Note: response_status field does not exist in schema
+
+    return { success: true };
+  },
+});
+
+// Decline meeting invitation
+export const declineInvitation = mutation({
+  args: {
+    meetingId: v.id('meetings'),
+    userId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const meeting = await ctx.db.get(args.meetingId);
+    if (!meeting) {
+      throw new Error('Meeting not found');
+    }
+
+    // Meeting decline - cancel the meeting
+    await ctx.db.patch(args.meetingId, {
+      status: 'cancelled',
+    });
+
+    return { success: true };
+  },
+});

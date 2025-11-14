@@ -132,7 +132,7 @@ export default function DonationsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -161,7 +161,7 @@ export default function DonationsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Bağış</CardTitle>
@@ -196,8 +196,8 @@ export default function DonationsPage() {
       </div>
 
       {/* Search */}
-      <Card>
-        <CardHeader>
+      <Card className="w-full">
+        <CardHeader className="pb-4">
           <CardTitle>Arama</CardTitle>
         </CardHeader>
         <CardContent>
@@ -214,20 +214,20 @@ export default function DonationsPage() {
       </Card>
 
       {/* List */}
-      <Card>
-        <CardHeader>
+      <Card className="w-full">
+        <CardHeader className="pb-4">
           <CardTitle>Bağış Listesi</CardTitle>
           <CardDescription>Toplam {data?.total || donations.length} bağış kaydı</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <VirtualizedDataTable
             data={donations}
             columns={columns}
             isLoading={isLoading}
             emptyMessage="Bağış kaydı bulunamadı"
             emptyDescription="Henüz bağış eklenmemiş"
-            rowHeight={80}
-            containerHeight={600}
+            rowHeight={70}
+            containerHeight={700}
           />
         </CardContent>
       </Card>

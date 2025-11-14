@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { convexApiClient as api } from '@/lib/api/convex-api-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -98,6 +98,10 @@ export default function InternalMessagingPage() {
   const totalPages = Math.ceil(total / limit);
   const users = usersResponse?.data || [];
 
+  // Memoize messages IDs to prevent infinite loop
+  const messagesIds = useMemo(() => messages.map((m) => m._id).join(','), [messages]);
+  const prevMessagesIdsRef = useRef<string>('');
+
   // Calculate stats
   const inboxCount = activeTab === 'inbox' ? total : 0;
   const sentCount = activeTab === 'sent' ? total : 0;
@@ -184,8 +188,12 @@ export default function InternalMessagingPage() {
 
   // Yeni veri geldiğinde seçimleri temizle (sayfa, arama değişimi vb.)
   useEffect(() => {
-    setSelectedMessages([]);
-  }, [messages]);
+    // Only clear selections if messages actually changed (different IDs)
+    if (prevMessagesIdsRef.current !== messagesIds) {
+      prevMessagesIdsRef.current = messagesIds;
+      setSelectedMessages([]);
+    }
+  }, [messagesIds]);
 
   if (error) {
     return (

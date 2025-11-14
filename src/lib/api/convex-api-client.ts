@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Convex API Client
  *
@@ -60,8 +62,9 @@ export {
 
 /**
  * Generic API client for making requests to Convex API routes
+ * Internal use only - not exported to avoid HMR conflicts
  */
-export async function apiRequest<T>(
+async function apiRequest<T>(
   endpoint: string,
   options?: RequestInit & { cache?: boolean },
   cacheKey?: string

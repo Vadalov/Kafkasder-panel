@@ -105,9 +105,7 @@ build/
 *.log
 
 # Environment files
-.env
-.env.*
-!.env.example
+
 
 # IDE files
 .vscode/
@@ -129,6 +127,7 @@ Thumbs.db
 .env.local
 .env.production.example
 node_modules
+KEYS-AND-CREDENTIALS.md
 
 
 

@@ -31,6 +31,60 @@ export default defineSchema({
     passwordHash: v.optional(v.string()),
     /** @type {boolean | undefined} - Indicates whether two-factor authentication is enabled. */
     two_factor_enabled: v.optional(v.boolean()),
+
+    // Advanced Profile Management Fields (KafkasDer Enhancement)
+    /** @type {string} - User's date of birth. */
+    birth_date: v.optional(v.string()),
+    /** @type {string} - User's blood type (A+, A-, B+, B-, AB+, AB-, O+, O-). */
+    blood_type: v.optional(v.string()),
+    /** @type {string} - User's nationality. */
+    nationality: v.optional(v.string()),
+    /** @type {string} - User's primary address. */
+    address: v.optional(v.string()),
+    /** @type {string} - City of residence. */
+    city: v.optional(v.string()),
+    /** @type {string} - District of residence. */
+    district: v.optional(v.string()),
+    /** @type {string} - Postal code. */
+    postal_code: v.optional(v.string()),
+
+    // Passport Information
+    /** @type {string} - Passport number. */
+    passport_number: v.optional(v.string()),
+    /** @type {string} - Passport issue date (ISO 8601). */
+    passport_issue_date: v.optional(v.string()),
+    /** @type {string} - Passport expiry date (ISO 8601). */
+    passport_expiry_date: v.optional(v.string()),
+    /** @type {string} - Passport issuing country. */
+    passport_issuing_country: v.optional(v.string()),
+
+    // Emergency Contacts (stored as JSON array)
+    /** @type {Array<{name: string, relationship: string, phone: string, email?: string, isPrimary?: boolean}>} - Emergency contact persons. */
+    emergency_contacts: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          relationship: v.string(),
+          phone: v.string(),
+          email: v.optional(v.string()),
+          isPrimary: v.optional(v.boolean()),
+        })
+      )
+    ),
+
+    // Communication Preferences
+    /** @type {Array<'email'|'sms'|'phone'|'whatsapp'>} - Preferred communication channels. */
+    communication_channels: v.optional(v.array(v.string())),
+    /** @type {string} - Preferred language (tr, en, ar, etc.). */
+    preferred_language: v.optional(v.string()),
+    /** @type {boolean} - Opt-in for newsletters. */
+    newsletter_subscription: v.optional(v.boolean()),
+    /** @type {boolean} - Opt-in for SMS notifications. */
+    sms_notifications: v.optional(v.boolean()),
+    /** @type {boolean} - Opt-in for email notifications. */
+    email_notifications: v.optional(v.boolean()),
+    /** @type {string} - Best time to contact (morning, afternoon, evening). */
+    best_contact_time: v.optional(v.string()),
   })
     .index('by_email', ['email'])
     .index('by_role', ['role'])
@@ -43,6 +97,7 @@ export default defineSchema({
   /**
    * @collection beneficiaries
    * @description Stores detailed information about aid recipients (beneficiaries).
+   * Enhanced with KafkasDer categorization system.
    */
   beneficiaries: defineTable({
     /** @type {string} - Full name of the beneficiary. */
@@ -59,6 +114,37 @@ export default defineSchema({
     gender: v.optional(v.string()),
     /** @type {string} - Nationality of the beneficiary. */
     nationality: v.optional(v.string()),
+
+    /** @type {'need_based_family'|'refugee_family'|'orphan_family'} - Category classification. */
+    category: v.optional(
+      v.union(
+        v.literal('need_based_family'), // İhtiyaç Sahibi Aile - Families requiring assistance
+        v.literal('refugee_family'), // Mülteci Aile - Refugee or displaced families
+        v.literal('orphan_family') // Yetim Ailesi - Families with orphaned children
+      )
+    ),
+    /** @type {'primary_person'|'dependent'} - Type of beneficiary (primary or dependent). */
+    beneficiary_type: v.optional(
+      v.union(
+        v.literal('primary_person'), // İhtiyaç Sahibi Kişi - Primary beneficiary/head of household
+        v.literal('dependent') // Bakmakla Yükümlü Olunan Kişi - Dependent family member
+      )
+    ),
+    /** @type {string} - Reference to primary beneficiary if this is a dependent. */
+    primary_beneficiary_id: v.optional(v.id('beneficiaries')),
+    /** @type {string} - Relationship to primary beneficiary (spouse, child, parent, sibling). */
+    relationship: v.optional(v.string()),
+    /** @type {number} - Number of aid applications submitted. */
+    application_count: v.optional(v.number()),
+    /** @type {number} - Number of aids received. */
+    aid_count: v.optional(v.number()),
+    /** @type {number} - Number of orphans in family. */
+    orphan_count: v.optional(v.number()),
+    /** @type {number} - Number of dependent persons. */
+    dependent_count: v.optional(v.number()),
+    /** @type {string} - Most recent aid assignment status. */
+    last_assignment: v.optional(v.string()),
+
     /** @type {string} - Religious affiliation, if provided. */
     religion: v.optional(v.string()),
     /** @type {string} - Marital status of the beneficiary. */
@@ -164,6 +250,7 @@ export default defineSchema({
   /**
    * @collection donations
    * @description Records all incoming donations, including standard and Kumbara (money box) donations.
+   * Enhanced with 7 payment method types from KafkasDer system.
    */
   donations: defineTable({
     /** @type {string} - The name of the donor. */
@@ -178,8 +265,18 @@ export default defineSchema({
     currency: v.union(v.literal('TRY'), v.literal('USD'), v.literal('EUR')),
     /** @type {string} - The type of donation (e.g., 'zakat', 'fitra', 'general'). */
     donation_type: v.string(),
-    /** @type {string} - The method of payment (e.g., 'credit_card', 'bank_transfer'). */
-    payment_method: v.string(),
+    /** @type {'cash'|'check'|'credit_card'|'online'|'bank_transfer'|'sms'|'in_kind'} - The payment method type. */
+    payment_method: v.union(
+      v.literal('cash'), // Nakit Bağış - Direct cash handling
+      v.literal('check'), // Çek Senet Bağış - Check/Promissory Note
+      v.literal('credit_card'), // Kredi Kartı Bağış - Physical POS terminal
+      v.literal('online'), // Online Bağış - Virtual POS gateway
+      v.literal('bank_transfer'), // Banka Bağış - Bank account deposits
+      v.literal('sms'), // SMS Bağış - Mobile carrier integration
+      v.literal('in_kind') // Ayni Bağış - Non-monetary (goods/supplies)
+    ),
+    /** @type {object} - Payment method-specific details stored as JSON. */
+    payment_details: v.optional(v.any()),
     /** @type {string} - The specific purpose or campaign for the donation. */
     donation_purpose: v.string(),
     /** @type {string} - Additional notes about the donation. */
@@ -188,8 +285,22 @@ export default defineSchema({
     receipt_number: v.string(),
     /** @type {string} - The ID of the stored receipt file. */
     receipt_file_id: v.optional(v.string()),
-    /** @type {'pending'|'completed'|'cancelled'} - The status of the donation transaction. */
-    status: v.union(v.literal('pending'), v.literal('completed'), v.literal('cancelled')),
+    /** @type {'pending'|'approved'|'completed'|'cancelled'|'rejected'} - The status of the donation transaction. */
+    status: v.union(
+      v.literal('pending'),
+      v.literal('approved'),
+      v.literal('completed'),
+      v.literal('cancelled'),
+      v.literal('rejected')
+    ),
+    /** @type {string} - Date when funds cleared/settled. */
+    settlement_date: v.optional(v.string()),
+    /** @type {number} - Net amount after fees/charges. */
+    settlement_amount: v.optional(v.number()),
+    /** @type {string} - External reference (bank ref, SMS ID, check number, etc.). */
+    transaction_reference: v.optional(v.string()),
+    /** @type {boolean} - Whether donation is eligible for tax deduction certificate. */
+    tax_deductible: v.optional(v.boolean()),
     /** @type {boolean} - Flag indicating if this donation is from a Kumbara (money box). */
     is_kumbara: v.optional(v.boolean()), // Whether this donation came from a kumbara
     /** @type {string} - The location where the Kumbara was placed or collected from. */
