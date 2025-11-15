@@ -49,7 +49,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.44",
     "@ai-sdk/openai": "^2.0.65",
-    "@convex-dev/persistent-text-streaming": "^0.3.0",
+    "@convex-dev/persistent-text-streaming": "0.3.0",
     "@googlemaps/js-api-loader": "^2.0.2",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -81,7 +81,7 @@
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "convex": "latest",
+    "convex": "1.29.1",
     "critters": "^0.0.25",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.24",
