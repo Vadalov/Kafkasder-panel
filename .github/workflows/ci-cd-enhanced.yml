@@ -27,6 +27,7 @@ jobs:
         run: npm ci
 
       - name: Generate Convex API
+        if: ${{ secrets.CONVEX_DEPLOYMENT != '' }}
         run: npx convex codegen --typecheck disable
         env:
           CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
@@ -58,6 +59,7 @@ jobs:
         run: npm ci
 
       - name: Generate Convex API
+        if: ${{ secrets.CONVEX_DEPLOYMENT != '' }}
         run: npx convex codegen --typecheck disable
         env:
           CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
@@ -104,6 +106,7 @@ jobs:
         run: npm ci
 
       - name: Generate Convex API
+        if: ${{ secrets.CONVEX_DEPLOYMENT != '' }}
         run: npx convex codegen --typecheck disable
         env:
           CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
