@@ -37,12 +37,13 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
-      '@/convex': resolve(__dirname, './convex'),
+      // More specific aliases must come first to avoid being overridden by general ones
       '@/convex/_generated/api': resolve(__dirname, './src/__tests__/mocks/convex-api.ts'),
       '@/convex/_generated/dataModel': resolve(__dirname, './src/__tests__/mocks/convex-api.ts'),
       '@/convex/_generated/server': resolve(__dirname, './src/__tests__/mocks/convex-api.ts'),
       '../../convex/_generated/api': resolve(__dirname, './src/__tests__/mocks/convex-api.ts'),
+      '@/convex': resolve(__dirname, './convex'),
+      '@': resolve(__dirname, './src'),
     },
   },
 });
