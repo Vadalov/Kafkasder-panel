@@ -205,7 +205,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 
   /* Remove aggressive ring-2 application - causes conflicts */
@@ -236,7 +236,8 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-body);
     letter-spacing: var(--letter-spacing-normal);
   }
@@ -381,6 +382,8 @@
 
   .text-info-dark {
     color: var(--color-info-dark);
+  }
+
   /* Success Color Utilities */
   .text-success {
     color: var(--success);
@@ -417,7 +420,7 @@
   .border-success-dark {
     border-color: var(--success-dark);
   }
-    color: var(--color-brand-primary-dark);
+
   /* Warning Color Utilities */
   .text-warning {
     color: var(--warning);
@@ -491,7 +494,7 @@
   .border-error-dark {
     border-color: var(--error-dark);
   }
-    box-shadow:
+
   /* Info Color Utilities */
   .text-info {
     color: var(--info);
@@ -589,21 +592,20 @@
   .border-brand-accent {
     border-color: var(--brand-accent);
   }
-    );
-  }
 
   .bg-gradient-mesh {
     background:
       radial-gradient(at 0% 0%, var(--color-brand-primary-light) 0px, transparent 50%),
       radial-gradient(at 100% 0%, var(--color-brand-secondary) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, var(--color-brand-accent) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, var(--color-brand-accent) 0px, transparent 50%);
+  }
+
   .shadow-glow-primary {
     box-shadow: 0 0 20px rgb(var(--brand-primary) / 0.3);
   }
 
   .shadow-glow-success {
     box-shadow: 0 0 20px rgb(var(--success) / 0.3);
-  }
   }
 
   .contain-paint {
@@ -687,6 +689,9 @@
     }
     50% {
       transform: translateY(-10px);
+    }
+  }
+
   /* Gradient Background Utilities */
   .bg-gradient-subtle {
     background: linear-gradient(
