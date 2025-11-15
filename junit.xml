@@ -1,115 +1,693 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="16" failures="16" errors="0" time="0">
-    <testsuite name="src/__tests__/api/auth.test.ts" timestamp="2025-11-14T00:01:04.407Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/api/auth.test.ts" name="src/__tests__/api/auth.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/api/auth.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/api/auth.test.ts
+<testsuites name="vitest tests" tests="239" failures="9" errors="0" time="1.549102641">
+    <testsuite name="src/__tests__/api/auth.test.ts" timestamp="2025-11-15T21:31:36.001Z" hostname="runnervmg1sw1" tests="6" failures="5" errors="0" skipped="0" time="0.09342044">
+        <testcase classname="src/__tests__/api/auth.test.ts" name="Auth API Routes &gt; POST /api/auth/login &gt; should reject request without email" time="0.02218409">
+            <failure message="Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?" type="Error">
+Error: Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/app/api/auth/login/route.ts:7:20
+  6  |  import logger from &quot;@/lib/logger&quot;;
+  7  |  import { convexHttp } from &quot;@/lib/convex/server&quot;;
+  8  |  import { api } from &quot;@/convex/_generated/api&quot;;
+     |                       ^
+  9  |  import { verifyPassword } from &quot;@/lib/auth/password&quot;;
+  10 |  import {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:31106:43
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:31103:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/config.js:29590:18
+ ❯ node_modules/vite/dist/node/chunks/config.js:29648:32
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:29616:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:30905:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/config.js:26043:26
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/api/auth.test.ts" name="Auth API Routes &gt; POST /api/auth/login &gt; should reject request without password" time="0.013531864">
+            <failure message="Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?" type="Error">
+Error: Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/app/api/auth/login/route.ts:7:20
+  6  |  import logger from &quot;@/lib/logger&quot;;
+  7  |  import { convexHttp } from &quot;@/lib/convex/server&quot;;
+  8  |  import { api } from &quot;@/convex/_generated/api&quot;;
+     |                       ^
+  9  |  import { verifyPassword } from &quot;@/lib/auth/password&quot;;
+  10 |  import {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:31106:43
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:31103:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/config.js:29590:18
+ ❯ node_modules/vite/dist/node/chunks/config.js:29648:32
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:29616:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:30905:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/config.js:26043:26
+ ❯ fetchModule node_modules/vite/dist/node/chunks/config.js:34218:15
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/api/auth.test.ts" name="Auth API Routes &gt; POST /api/auth/login &gt; should reject invalid email format" time="0.011098402">
+            <failure message="Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?" type="Error">
+Error: Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/app/api/auth/login/route.ts:7:20
+  6  |  import logger from &quot;@/lib/logger&quot;;
+  7  |  import { convexHttp } from &quot;@/lib/convex/server&quot;;
+  8  |  import { api } from &quot;@/convex/_generated/api&quot;;
+     |                       ^
+  9  |  import { verifyPassword } from &quot;@/lib/auth/password&quot;;
+  10 |  import {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:31106:43
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:31103:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/config.js:29590:18
+ ❯ node_modules/vite/dist/node/chunks/config.js:29648:32
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:29616:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:30905:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/config.js:26043:26
+ ❯ fetchModule node_modules/vite/dist/node/chunks/config.js:34218:15
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/api/auth.test.ts" name="Auth API Routes &gt; POST /api/auth/login &gt; should reject non-existent user" time="0.011267186">
+            <failure message="Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?" type="Error">
+Error: Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/app/api/auth/login/route.ts:7:20
+  6  |  import logger from &quot;@/lib/logger&quot;;
+  7  |  import { convexHttp } from &quot;@/lib/convex/server&quot;;
+  8  |  import { api } from &quot;@/convex/_generated/api&quot;;
+     |                       ^
+  9  |  import { verifyPassword } from &quot;@/lib/auth/password&quot;;
+  10 |  import {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:31106:43
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:31103:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/config.js:29590:18
+ ❯ node_modules/vite/dist/node/chunks/config.js:29648:32
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:29616:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:30905:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/config.js:26043:26
+ ❯ fetchModule node_modules/vite/dist/node/chunks/config.js:34218:15
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/api/auth.test.ts" name="Auth API Routes &gt; POST /api/auth/login &gt; should reject inactive user" time="0.011068166">
+            <failure message="Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?" type="Error">
+Error: Failed to resolve import &quot;@/convex/_generated/api&quot; from &quot;src/app/api/auth/login/route.ts&quot;. Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/app/api/auth/login/route.ts:7:20
+  6  |  import logger from &quot;@/lib/logger&quot;;
+  7  |  import { convexHttp } from &quot;@/lib/convex/server&quot;;
+  8  |  import { api } from &quot;@/convex/_generated/api&quot;;
+     |                       ^
+  9  |  import { verifyPassword } from &quot;@/lib/auth/password&quot;;
+  10 |  import {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:31106:43
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:31103:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/config.js:29590:18
+ ❯ node_modules/vite/dist/node/chunks/config.js:29648:32
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:29616:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:30905:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/config.js:26043:26
+ ❯ fetchModule node_modules/vite/dist/node/chunks/config.js:34218:15
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/api/auth.test.ts" name="Auth API Routes &gt; POST /api/auth/logout &gt; should handle logout request" time="0.022244534">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/hooks/useInfiniteScroll.test.ts" timestamp="2025-11-15T21:31:36.009Z" hostname="runnervmg1sw1" tests="11" failures="0" errors="0" skipped="0" time="0.057832303">
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="useInfiniteScroll Hook &gt; should initialize with correct options" time="0.024300705">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="useInfiniteScroll Hook &gt; should handle custom limit and initial page param" time="0.002858967">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="useInfiniteScroll Hook &gt; should return flat data from pages" time="0.003384905">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="useInfiniteScroll Hook &gt; should handle empty data" time="0.002885337">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="useInfiniteScroll Hook &gt; should provide ref for intersection observer" time="0.00327933">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="useInfiniteScroll Hook &gt; should pass through all state properties" time="0.002700613">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="usePaginatedQuery Hook &gt; should initialize with correct query configuration" time="0.002867964">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="usePaginatedQuery Hook &gt; should return flattened items and pagination data" time="0.002178602">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="usePaginatedQuery Hook &gt; should handle loading state" time="0.002288226">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="usePaginatedQuery Hook &gt; should handle error state" time="0.003349643">
+        </testcase>
+        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="usePaginatedQuery Hook &gt; should provide refetch function" time="0.005150429">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/integration/beneficiary-sanitization.test.ts" timestamp="2025-11-15T21:31:36.012Z" hostname="runnervmg1sw1" tests="15" failures="0" errors="0" skipped="0" time="0.020608861">
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; TC Kimlik No Sanitization + Validation &gt; should sanitize and validate correct TC Kimlik No" time="0.008579828">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; TC Kimlik No Sanitization + Validation &gt; should reject invalid TC after sanitization" time="0.000337318">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; TC Kimlik No Sanitization + Validation &gt; should sanitize TC with formatting" time="0.000372803">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Phone Sanitization + Validation &gt; should sanitize Turkish phone to international format" time="0.000828561">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Phone Sanitization + Validation &gt; should reject landline numbers" time="0.000233003">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Phone Sanitization + Validation &gt; should handle phone with country code" time="0.000168002">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Email Sanitization + Validation &gt; should sanitize and validate email" time="0.000886339">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Email Sanitization + Validation &gt; should reject invalid email format" time="0.000213908">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Number Sanitization + Validation &gt; should sanitize and validate income" time="0.000920723">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Number Sanitization + Validation &gt; should reject negative income after sanitization" time="0.001030437">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Object Sanitization &gt; should sanitize all text fields in beneficiary object" time="0.000844821">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Object Sanitization &gt; should preserve valid data during sanitization" time="0.00027964">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Full Form Data Sanitization + Validation &gt; should sanitize and validate complete beneficiary data" time="0.001209029">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Full Form Data Sanitization + Validation &gt; should reject invalid data even after sanitization" time="0.001440209">
+        </testcase>
+        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="Beneficiary Sanitization Integration &gt; Emergency Contacts Sanitization &gt; should sanitize emergency contact phones" time="0.001156541">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/api-client.test.ts" timestamp="2025-11-15T21:31:36.015Z" hostname="runnervmg1sw1" tests="15" failures="0" errors="0" skipped="0" time="0.020943463">
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Beneficiaries API &gt; should get beneficiaries with pagination" time="0.003705782">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Beneficiaries API &gt; should get single beneficiary" time="0.002508786">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Beneficiaries API &gt; should create beneficiary" time="0.002482257">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Beneficiaries API &gt; should update beneficiary" time="0.000975094">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Beneficiaries API &gt; should delete beneficiary" time="0.001036859">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Partners API &gt; should get partners with filters" time="0.00195702">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Partners API &gt; should get single partner" time="0.000681628">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Partners API &gt; should create partner" time="0.00086563">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Cache Utils &gt; should invalidate cache for specific data type" time="0.000609273">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Cache Utils &gt; should invalidate multiple caches" time="0.000581511">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Cache Utils &gt; should get cache stats" time="0.000499409">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Cache Utils &gt; should get cache size" time="0.000446991">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Cache Utils &gt; should clear all caches" time="0.000741099">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Error Handling &gt; should handle API errors" time="0.000742881">
+        </testcase>
+        <testcase classname="src/__tests__/lib/api-client.test.ts" name="Convex API Client &gt; Error Handling &gt; should handle network errors" time="0.000727142">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/beneficiary-validation.test.ts" timestamp="2025-11-15T21:31:36.017Z" hostname="runnervmg1sw1" tests="21" failures="0" errors="0" skipped="0" time="0.021504355">
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; quickAddBeneficiarySchema &gt; should validate minimal required fields" time="0.002690634">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; quickAddBeneficiarySchema &gt; should reject invalid TC Kimlik No" time="0.001203899">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; quickAddBeneficiarySchema &gt; should reject short names" time="0.000529304">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; quickAddBeneficiarySchema &gt; should reject invalid file number format" time="0.000329142">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Required Fields &gt; should validate all required fields" time="0.003803434">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Required Fields &gt; should reject missing required fields" time="0.000889143">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Conditional Validation &gt; should require Mernis check when TC Kimlik No is provided" time="0.000713357">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Conditional Validation &gt; should reject marriage for under 18" time="0.00062392">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Email Validation &gt; should accept valid email" time="0.000505861">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Email Validation &gt; should reject invalid email" time="0.00066121">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Email Validation &gt; should accept empty string for optional email" time="0.000313934">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Number Validation &gt; should accept valid income/expense" time="0.000449856">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Number Validation &gt; should reject negative income" time="0.000389324">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Number Validation &gt; should reject excessive income" time="0.000671679">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Emergency Contacts &gt; should accept valid emergency contacts" time="0.001328241">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Emergency Contacts &gt; should reject more than 2 emergency contacts" time="0.00055379">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; beneficiarySchema - Emergency Contacts &gt; should reject invalid emergency contact phone" time="0.000422386">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; Section Schemas &gt; should validate basicInfoSchema" time="0.001095808">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; Section Schemas &gt; should validate identityInfoSchema" time="0.000891087">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; Section Schemas &gt; should validate personalDataSchema" time="0.000789108">
+        </testcase>
+        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="Beneficiary Validation Schema &gt; Section Schemas &gt; should validate healthInfoSchema" time="0.000657673">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/cache-config.test.ts" timestamp="2025-11-15T21:31:36.020Z" hostname="runnervmg1sw1" tests="19" failures="1" errors="0" skipped="0" time="0.038084243">
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_TIMES &gt; should define all cache time constants" time="0.002569059">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_TIMES &gt; should have ascending cache times" time="0.000528764">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; GC_TIMES &gt; should define all garbage collection times" time="0.000617899">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; GC_TIMES &gt; should have GC times longer than cache times" time="0.000417386">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_STRATEGIES &gt; should define strategy for parameters" time="0.001495993">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_STRATEGIES &gt; should define strategy for real-time data" time="0.000856794">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_STRATEGIES &gt; should define strategy for beneficiaries" time="0.016707414">
+            <failure message="expected { staleTime: 1800000, …(3) } to match object { staleTime: 300000, …(3) }" type="AssertionError">
+AssertionError: expected { staleTime: 1800000, …(3) } to match object { staleTime: 300000, …(3) }
+
+- Expected
++ Received
+
+  {
+-   &quot;gcTime&quot;: 600000,
+-   &quot;refetchOnReconnect&quot;: true,
++   &quot;gcTime&quot;: 3600000,
++   &quot;refetchOnReconnect&quot;: false,
+    &quot;refetchOnWindowFocus&quot;: false,
+-   &quot;staleTime&quot;: 300000,
++   &quot;staleTime&quot;: 1800000,
+  }
+
+ ❯ src/__tests__/lib/cache-config.test.ts:97:46
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_STRATEGIES &gt; should define strategy for current user" time="0.000347065">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; CACHE_KEYS &gt; should define all cache key prefixes" time="0.000847046">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; getCacheStrategy &gt; should return correct strategy for known keys" time="0.000768529">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; getCacheStrategy &gt; should return standard strategy for unknown keys" time="0.000264471">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; invalidateRelatedCaches &gt; should invalidate beneficiaries and related caches" time="0.003353147">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; invalidateRelatedCaches &gt; should invalidate donations and statistics" time="0.000866231">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; invalidateRelatedCaches &gt; should invalidate meeting workflow caches when action items change" time="0.00229685">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; invalidateRelatedCaches &gt; should invalidate only entity cache for unknown entities" time="0.000629841">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; createOptimizedQueryClient &gt; should create a QueryClient with optimized defaults" time="0.000630903">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; cacheUtils &gt; should clear all caches" time="0.000529454">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; cacheUtils &gt; should clear entity cache" time="0.000508065">
+        </testcase>
+        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="Cache Configuration &gt; cacheUtils &gt; should get cache stats" time="0.001276617">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/env-validation.test.ts" timestamp="2025-11-15T21:31:36.024Z" hostname="runnervmg1sw1" tests="7" failures="0" errors="0" skipped="0" time="0.0974422">
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Client Environment Validation &gt; should validate client env variables (Convex)" time="0.062232708">
+        </testcase>
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Client Environment Validation &gt; should use default values for optional variables" time="0.004699319">
+        </testcase>
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Server Environment Validation &gt; should validate server env variables" time="0.00577024">
+        </testcase>
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Server Environment Validation &gt; should validate secret length in production" time="0.011806382">
+        </testcase>
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Feature Flags &gt; should parse boolean feature flags" time="0.003835112">
+        </testcase>
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Helper Functions &gt; should detect email configuration" time="0.003379644">
+        </testcase>
+        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="Environment Validation &gt; Helper Functions &gt; should detect SMS configuration" time="0.003850621">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/error-tracker.test.ts" timestamp="2025-11-15T21:31:36.025Z" hostname="runnervmg1sw1" tests="11" failures="0" errors="0" skipped="0" time="0.014211141">
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; generateErrorFingerprint &gt; should generate consistent fingerprints for same error" time="0.005636643">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; generateErrorFingerprint &gt; should generate different fingerprints for different errors" time="0.00190353">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; generateErrorFingerprint &gt; should generate different fingerprints for different components" time="0.000834432">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; generateErrorFingerprint &gt; should handle non-Error objects" time="0.000307472">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; collectDeviceInfo &gt; should collect device information" time="0.001260304">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; collectDeviceInfo &gt; should detect Chrome browser" time="0.000301922">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; collectDeviceInfo &gt; should detect Windows OS" time="0.000402739">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; collectDeviceInfo &gt; should detect desktop device type" time="0.000250075">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; getPageContext &gt; should collect page context" time="0.000730659">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; getPageContext &gt; should return correct URL" time="0.000334342">
+        </testcase>
+        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="Error Tracker &gt; getPageContext &gt; should return correct pathname" time="0.000214008">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/errors.test.ts" timestamp="2025-11-15T21:31:36.027Z" hostname="runnervmg1sw1" tests="22" failures="0" errors="0" skipped="0" time="0.010748341">
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; AppError &gt; should create custom app error" time="0.002044533">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; AppError &gt; should default to status 500" time="0.00023119">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; AppError &gt; should include details" time="0.000624121">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; AuthenticationError &gt; should create authentication error with defaults" time="0.000371441">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; AuthenticationError &gt; should accept custom message" time="0.000158455">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; UnauthorizedError &gt; should create unauthorized error" time="0.00038673">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; ValidationError &gt; should create validation error" time="0.000233565">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; NotFoundError &gt; should create not found error with default resource" time="0.000281774">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; NotFoundError &gt; should accept custom resource name" time="0.000237652">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; RateLimitError &gt; should create rate limit error" time="0.00038742">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; RateLimitError &gt; should include retry after" time="0.000266987">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; translateError &gt; should translate common HTTP status codes" time="0.000431613">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; translateError &gt; should translate Convex error codes" time="0.000276564">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; translateError &gt; should return default for unknown codes" time="0.000541427">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; formatErrorMessage &gt; should format AppError" time="0.000261356">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; formatErrorMessage &gt; should format error with code" time="0.000177851">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; formatErrorMessage &gt; should format error with status" time="0.000209299">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; formatErrorMessage &gt; should use error message if available" time="0.000184523">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; formatErrorMessage &gt; should return default for unknown error" time="0.000162372">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; createErrorResponse &gt; should create response from AppError" time="0.000588555">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; createErrorResponse &gt; should create response from generic error" time="0.000270343">
+        </testcase>
+        <testcase classname="src/__tests__/lib/errors.test.ts" name="Error Handling Library &gt; createErrorResponse &gt; should handle error with code" time="0.00018279">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/lib/performance.test.ts" timestamp="2025-11-15T21:31:36.030Z" hostname="runnervmg1sw1" tests="13" failures="3" errors="0" skipped="0" time="0.023824343">
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="PerformanceMonitor &gt; should create singleton instance" time="0.002732231">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="PerformanceMonitor &gt; should track timing correctly" time="0.000560993">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="PerformanceMonitor &gt; should handle missing start time" time="0.00242559">
+            <system-out>
+{&quot;timestamp&quot;:&quot;2025-11-15T21:31:35.409Z&quot;,&quot;level&quot;:&quot;warn&quot;,&quot;message&quot;:&quot;No start time found for label&quot;,&quot;context&quot;:{&quot;label&quot;:&quot;nonexistent-operation&quot;}}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="PerformanceMonitor &gt; should get and clear metrics" time="0.000579257">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="Cache &gt; should create singleton instance" time="0.000502555">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="Cache &gt; should set and get data" time="0.000968201">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="Cache &gt; should return null for non-existent keys" time="0.000284208">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="Cache &gt; should expire data after TTL" time="0.000310537">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="Cache &gt; should delete and clear cache" time="0.000564751">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="perfLog &gt; should log info in development" time="0.009675442">
+            <failure message="expected &quot;log&quot; to be called with arguments: [ &apos;🚀 [PERF] Test message&apos;, …(1) ][90m
+
+Number of calls: [1m0[22m
+[39m" type="AssertionError">
+AssertionError: expected &quot;log&quot; to be called with arguments: [ &apos;🚀 [PERF] Test message&apos;, …(1) ]
+
+Number of calls: 0
+
+ ❯ src/__tests__/lib/performance.test.ts:139:24
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="perfLog &gt; should not log info in production" time="0.000524686">
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="perfLog &gt; should log warnings in development" time="0.001265342">
+            <failure message="expected &quot;warn&quot; to be called with arguments: [ &apos;⚠️ [PERF] Test warning&apos;, …(1) ][90m
+
+Number of calls: [1m0[22m
+[39m" type="AssertionError">
+AssertionError: expected &quot;warn&quot; to be called with arguments: [ &apos;⚠️ [PERF] Test warning&apos;, …(1) ]
+
+Number of calls: 0
+
+ ❯ src/__tests__/lib/performance.test.ts:159:24
+            </failure>
+        </testcase>
+        <testcase classname="src/__tests__/lib/performance.test.ts" name="perfLog &gt; should log errors in all environments" time="0.000940669">
+            <failure message="expected &quot;error&quot; to be called with arguments: [ &apos;❌ [PERF] Test error&apos;, …(1) ][90m
+
+Number of calls: [1m0[22m
+[39m" type="AssertionError">
+AssertionError: expected &quot;error&quot; to be called with arguments: [ &apos;❌ [PERF] Test error&apos;, …(1) ]
+
+Number of calls: 0
+
+ ❯ src/__tests__/lib/performance.test.ts:167:24
             </failure>
         </testcase>
     </testsuite>
-    <testsuite name="src/stores/__tests__/authStore.test.ts" timestamp="2025-11-14T00:01:04.408Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/stores/__tests__/authStore.test.ts" name="src/stores/__tests__/authStore.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/stores/__tests__/authStore.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/stores/__tests__/authStore.test.ts
-            </failure>
+    <testsuite name="src/__tests__/lib/persistent-cache.test.ts" timestamp="2025-11-15T21:31:36.034Z" hostname="runnervmg1sw1" tests="23" failures="0" errors="0" skipped="0" time="0.267819877">
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; set and get &gt; should store and retrieve data" time="0.002581321">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; set and get &gt; should store data with custom TTL" time="0.00045174">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; set and get &gt; should return null for non-existent keys" time="0.000337468">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; set and get &gt; should expire data after TTL" time="0.151239066">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; set and get &gt; should handle complex objects" time="0.000619282">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; has &gt; should return true for existing keys" time="0.000410754">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; has &gt; should return false for non-existent keys" time="0.000222193">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; has &gt; should return false for expired keys" time="0.100086293">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; delete &gt; should delete existing keys" time="0.00046277">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; delete &gt; should not throw on deleting non-existent keys" time="0.00143543">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; clear &gt; should clear all entries" time="0.00038204">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; cleanup &gt; should remove expired entries" time="0.0032961">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; cleanup &gt; should return 0 when no entries to clean" time="0.00026303">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; metrics &gt; should track cache hits" time="0.000625423">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; metrics &gt; should track cache misses" time="0.000270884">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; metrics &gt; should track sets" time="0.000245537">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; metrics &gt; should track deletes" time="0.00019349">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; metrics &gt; should reset metrics" time="0.000292925">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; getSize &gt; should return cache size" time="0.00061858">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; export &gt; should export cache entries" time="0.000350381">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; getCacheHitRate &gt; should calculate hit rate correctly" time="0.000356783">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; getCacheHitRate &gt; should return 0 when no cache operations" time="0.00020963">
+        </testcase>
+        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="PersistentCache &gt; singleton pattern &gt; should return same instance" time="0.000184423">
         </testcase>
     </testsuite>
-    <testsuite name="src/__tests__/hooks/useInfiniteScroll.test.ts" timestamp="2025-11-14T00:01:04.409Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/hooks/useInfiniteScroll.test.ts" name="src/__tests__/hooks/useInfiniteScroll.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/hooks/useInfiniteScroll.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/hooks/useInfiniteScroll.test.ts
-            </failure>
+    <testsuite name="src/__tests__/lib/route-helpers.test.ts" timestamp="2025-11-15T21:31:36.037Z" hostname="runnervmg1sw1" tests="15" failures="0" errors="0" skipped="0" time="0.031430055">
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; successResponse &gt; should create a success response with data" time="0.013495307">
+            <system-err>
+Promise returned by `expect(actual).resolves.toMatchObject(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in Vitest 3. Please remember to await the assertion.
+    at /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/__tests__/lib/route-helpers.test.ts:20:18
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; successResponse &gt; should include optional message" time="0.001907517">
+            <system-err>
+Promise returned by `expect(actual).resolves.toMatchObject(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in Vitest 3. Please remember to await the assertion.
+    at /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/__tests__/lib/route-helpers.test.ts:29:18
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; errorResponse &gt; should create an error response" time="0.001488519">
+            <system-err>
+Promise returned by `expect(actual).resolves.toMatchObject(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in Vitest 3. Please remember to await the assertion.
+    at /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/__tests__/lib/route-helpers.test.ts:42:18
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; errorResponse &gt; should include optional details" time="0.001271244">
+            <system-err>
+Promise returned by `expect(actual).resolves.toMatchObject(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in Vitest 3. Please remember to await the assertion.
+    at /home/runner/work/Kafkasder-panel/Kafkasder-panel/src/__tests__/lib/route-helpers.test.ts:54:18
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleGetById &gt; should return error if id is undefined" time="0.001456538">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleGetById &gt; should return success when data is found" time="0.001519577">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleGetById &gt; should return 404 when data is not found" time="0.00055915">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleGetById &gt; should handle exceptions" time="0.002772497">
+            <system-err>
+Get User error: Error: Database error
+    at [90m/home/runner/work/Kafkasder-panel/Kafkasder-panel/[39msrc/__tests__/lib/route-helpers.test.ts:103:58
+    at [90mfile:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:157:11
+    at [90mfile:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:753:26
+    at [90mfile:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1636:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1602:10[90m)[39m
+    at runTest [90m(file:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1309:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at runSuite [90m(file:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///home/runner/work/Kafkasder-panel/Kafkasder-panel/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1468:8[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleUpdate &gt; should return error if id is undefined" time="0.000869067">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleUpdate &gt; should return validation error for invalid data" time="0.000801931">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleUpdate &gt; should return success when update succeeds" time="0.000974693">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleDelete &gt; should return error if id is undefined" time="0.000657984">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleDelete &gt; should return success when delete succeeds" time="0.000606378">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; handleDelete &gt; should return error when delete fails" time="0.000707667">
+        </testcase>
+        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="Route Helpers &gt; extractParams &gt; should extract params from promise" time="0.000296061">
         </testcase>
     </testsuite>
-    <testsuite name="src/__tests__/integration/beneficiary-sanitization.test.ts" timestamp="2025-11-14T00:01:04.409Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/integration/beneficiary-sanitization.test.ts" name="src/__tests__/integration/beneficiary-sanitization.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/integration/beneficiary-sanitization.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/integration/beneficiary-sanitization.test.ts
-            </failure>
+    <testsuite name="src/__tests__/lib/sanitization.test.ts" timestamp="2025-11-15T21:31:36.041Z" hostname="runnervmg1sw1" tests="44" failures="0" errors="0" skipped="0" time="0.759491366">
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeHtml &gt; should allow safe HTML tags" time="0.0021666">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeHtml &gt; should remove dangerous HTML" time="0.000675216">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeHtml &gt; should remove event handlers" time="0.000431453">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeText &gt; should remove all HTML tags" time="0.000466547">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeText &gt; should remove special characters" time="0.000341345">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeText &gt; should trim whitespace" time="0.000321778">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeEmail &gt; should accept valid email" time="0.000328722">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeEmail &gt; should convert to lowercase" time="0.000267698">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeEmail &gt; should reject invalid email" time="0.000526059">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeEmail &gt; should trim whitespace" time="0.000332859">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizePhone &gt; should format Turkish phone with country code" time="0.000286573">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizePhone &gt; should accept phone with country code" time="0.000228515">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizePhone &gt; should handle formatted phone" time="0.000187048">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizePhone &gt; should accept phone with plus sign" time="0.000405404">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizePhone &gt; should reject invalid phone" time="0.000339321">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeTcNo &gt; should accept valid TC Kimlik No" time="0.000361492">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeTcNo &gt; should reject TC starting with 0" time="0.000210081">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeTcNo &gt; should reject non-11-digit TC" time="0.000294898">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeTcNo &gt; should remove non-digit characters" time="0.000163054">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeUrl &gt; should accept valid HTTP URLs" time="0.00058639">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeUrl &gt; should reject javascript: URLs" time="0.000167121">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeUrl &gt; should reject data: URLs" time="0.000154959">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeFilename &gt; should replace special characters with underscore" time="0.000291462">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeFilename &gt; should remove path traversal attempts" time="0.000223576">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeFilename &gt; should remove leading dots" time="0.00024717">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeFilename &gt; should limit length to 255 characters" time="0.000251317">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeSearchQuery &gt; should remove SQL injection attempts" time="0.00037086">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeSearchQuery &gt; should limit query length" time="0.000143537">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeNumber &gt; should parse valid numbers" time="0.000289128">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeNumber &gt; should handle Turkish decimal separator" time="0.000133488">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeNumber &gt; should return null for invalid numbers" time="0.000271304">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeNumber &gt; should return null for Infinity" time="0.000147865">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeInteger &gt; should floor decimal numbers" time="0.000207165">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeInteger &gt; should return null for invalid input" time="0.000141874">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeAmount &gt; should round to 2 decimal places" time="0.000254394">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeAmount &gt; should reject negative amounts" time="0.000193049">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeAmount &gt; should accept zero" time="0.00021478">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeDate &gt; should parse valid date string" time="0.000372993">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeDate &gt; should reject invalid date" time="0.00018804">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; sanitizeDate &gt; should reject dates outside reasonable range" time="0.000182509">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; validateFile &gt; should accept valid file" time="0.001289197">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; validateFile &gt; should reject oversized file" time="0.739661754">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; validateFile &gt; should reject invalid file type" time="0.000417636">
+        </testcase>
+        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="Sanitization Library &gt; validateFile &gt; should respect custom options" time="0.000340182">
         </testcase>
     </testsuite>
-    <testsuite name="src/__tests__/lib/api-client.test.ts" timestamp="2025-11-14T00:01:04.410Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/api-client.test.ts" name="src/__tests__/lib/api-client.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/api-client.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/api-client.test.ts
-            </failure>
+    <testsuite name="src/__tests__/lib/utils.test.ts" timestamp="2025-11-15T21:31:36.048Z" hostname="runnervmg1sw1" tests="7" failures="0" errors="0" skipped="0" time="0.009090064">
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should combine class names correctly" time="0.005892046">
+        </testcase>
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should handle conditional classes" time="0.000293926">
+        </testcase>
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should handle false values" time="0.00021491">
+        </testcase>
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should merge Tailwind classes correctly" time="0.000713647">
+        </testcase>
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should handle array of classes" time="0.000315016">
+        </testcase>
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should handle undefined and null values" time="0.000227063">
+        </testcase>
+        <testcase classname="src/__tests__/lib/utils.test.ts" name="Utils Library &gt; cn (className utility) &gt; should work with empty input" time="0.000148456">
         </testcase>
     </testsuite>
-    <testsuite name="src/__tests__/lib/beneficiary-validation.test.ts" timestamp="2025-11-14T00:01:04.410Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/beneficiary-validation.test.ts" name="src/__tests__/lib/beneficiary-validation.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/beneficiary-validation.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/beneficiary-validation.test.ts
-            </failure>
+    <testsuite name="src/stores/__tests__/authStore.test.ts" timestamp="2025-11-15T21:31:36.049Z" hostname="runnervmg1sw1" tests="6" failures="0" errors="0" skipped="0" time="0.068270416">
+        <testcase classname="src/stores/__tests__/authStore.test.ts" name="AuthStore &gt; initial state &gt; should initialize with default values" time="0.029972306">
+        </testcase>
+        <testcase classname="src/stores/__tests__/authStore.test.ts" name="AuthStore &gt; login &gt; should handle successful login" time="0.007737771">
+        </testcase>
+        <testcase classname="src/stores/__tests__/authStore.test.ts" name="AuthStore &gt; login &gt; should handle login failure" time="0.004526149">
+        </testcase>
+        <testcase classname="src/stores/__tests__/authStore.test.ts" name="AuthStore &gt; logout &gt; should clear user data and session" time="0.012851592">
+        </testcase>
+        <testcase classname="src/stores/__tests__/authStore.test.ts" name="AuthStore &gt; permissions &gt; should check user permissions correctly" time="0.003666429">
+        </testcase>
+        <testcase classname="src/stores/__tests__/authStore.test.ts" name="AuthStore &gt; rate limiting &gt; should handle rate limiting" time="0.006652834">
         </testcase>
     </testsuite>
-    <testsuite name="src/__tests__/lib/cache-config.test.ts" timestamp="2025-11-14T00:01:04.411Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/cache-config.test.ts" name="src/__tests__/lib/cache-config.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/cache-config.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/cache-config.test.ts
-            </failure>
+    <testsuite name="src/__tests__/lib/validations/beneficiary.test.ts" timestamp="2025-11-15T21:31:36.050Z" hostname="runnervmg1sw1" tests="4" failures="0" errors="0" skipped="0" time="0.014381173">
+        <testcase classname="src/__tests__/lib/validations/beneficiary.test.ts" name="Beneficiary Validations &gt; Quick Add Schema &gt; should validate complete beneficiary quick add data" time="0.00878672">
         </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/env-validation.test.ts" timestamp="2025-11-14T00:01:04.411Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/env-validation.test.ts" name="src/__tests__/lib/env-validation.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/env-validation.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/env-validation.test.ts
-            </failure>
+        <testcase classname="src/__tests__/lib/validations/beneficiary.test.ts" name="Beneficiary Validations &gt; Quick Add Schema &gt; should reject incomplete data (missing required fields)" time="0.001671379">
         </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/error-tracker.test.ts" timestamp="2025-11-14T00:01:04.411Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/error-tracker.test.ts" name="src/__tests__/lib/error-tracker.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/error-tracker.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/error-tracker.test.ts
-            </failure>
+        <testcase classname="src/__tests__/lib/validations/beneficiary.test.ts" name="Beneficiary Validations &gt; Quick Add Schema &gt; should reject invalid category" time="0.000940419">
         </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/errors.test.ts" timestamp="2025-11-14T00:01:04.412Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/errors.test.ts" name="src/__tests__/lib/errors.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/errors.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/errors.test.ts
-            </failure>
-        </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/performance.test.ts" timestamp="2025-11-14T00:01:04.412Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/performance.test.ts" name="src/__tests__/lib/performance.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/performance.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/performance.test.ts
-            </failure>
-        </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/persistent-cache.test.ts" timestamp="2025-11-14T00:01:04.413Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/persistent-cache.test.ts" name="src/__tests__/lib/persistent-cache.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/persistent-cache.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/persistent-cache.test.ts
-            </failure>
-        </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/route-helpers.test.ts" timestamp="2025-11-14T00:01:04.413Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/route-helpers.test.ts" name="src/__tests__/lib/route-helpers.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/route-helpers.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/route-helpers.test.ts
-            </failure>
-        </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/sanitization.test.ts" timestamp="2025-11-14T00:01:04.414Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/sanitization.test.ts" name="src/__tests__/lib/sanitization.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/sanitization.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/sanitization.test.ts
-            </failure>
-        </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/utils.test.ts" timestamp="2025-11-14T00:01:04.414Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/utils.test.ts" name="src/__tests__/lib/utils.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/utils.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/utils.test.ts
-            </failure>
-        </testcase>
-    </testsuite>
-    <testsuite name="src/__tests__/lib/validations/beneficiary.test.ts" timestamp="2025-11-14T00:01:04.414Z" hostname="DESKTOP-SMIUJ0M" tests="1" failures="1" errors="0" skipped="0" time="0">
-        <testcase classname="src/__tests__/lib/validations/beneficiary.test.ts" name="src/__tests__/lib/validations/beneficiary.test.ts" time="0">
-            <failure message="No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/validations/beneficiary.test.ts" type="Error">
-Error: No test suite found in file c:/Users/isaha/Kafkasder-panel/src/__tests__/lib/validations/beneficiary.test.ts
-            </failure>
+        <testcase classname="src/__tests__/lib/validations/beneficiary.test.ts" name="Beneficiary Validations &gt; Quick Add Schema &gt; should accept optional fields" time="0.001344801">
         </testcase>
     </testsuite>
 </testsuites>
