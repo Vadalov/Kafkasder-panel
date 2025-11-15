@@ -58,6 +58,7 @@ next-env.d.ts
 # test results
 /test-results/
 *.test-results
+junit.xml
 
 # code quality reports
 /jscpd-report/
