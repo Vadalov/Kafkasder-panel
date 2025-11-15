@@ -6,6 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PerformanceMonitor, Cache } from '@/lib/performance';
 import { perfLog } from '@/lib/performance-monitor';
+import logger from '@/lib/logger';
 
 // Mock performance.now
 const mockNow = vi.fn();
@@ -130,40 +131,49 @@ describe('perfLog', () => {
   });
 
   it('should log info in development', () => {
-    vi.stubGlobal('process', { ...process, env: { ...process.env, NODE_ENV: 'development' } });
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
 
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'info');
 
     perfLog.info('Test message', { data: 'test' });
 
-    expect(consoleSpy).toHaveBeenCalledWith('🚀 [PERF] Test message', { data: 'test' });
+    expect(loggerSpy).toHaveBeenCalledWith('[PERF] Test message', { data: 'test' });
+    
+    process.env.NODE_ENV = originalEnv;
   });
 
   it('should not log info in production', () => {
-    vi.stubGlobal('process', { ...process, env: { ...process.env, NODE_ENV: 'production' } });
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
 
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'info');
 
     perfLog.info('Test message', { data: 'test' });
 
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(loggerSpy).not.toHaveBeenCalled();
+    
+    process.env.NODE_ENV = originalEnv;
   });
 
   it('should log warnings in development', () => {
-    vi.stubGlobal('process', { ...process, env: { ...process.env, NODE_ENV: 'development' } });
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
 
-    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'warn');
 
     perfLog.warn('Test warning', { data: 'test' });
 
-    expect(consoleSpy).toHaveBeenCalledWith('⚠️ [PERF] Test warning', { data: 'test' });
+    expect(loggerSpy).toHaveBeenCalledWith('[PERF] Test warning', { data: 'test' });
+    
+    process.env.NODE_ENV = originalEnv;
   });
 
   it('should log errors in all environments', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'error');
 
     perfLog.error('Test error', { data: 'test' });
 
-    expect(consoleSpy).toHaveBeenCalledWith('❌ [PERF] Test error', { data: 'test' });
+    expect(loggerSpy).toHaveBeenCalledWith('[PERF] Test error', { data: 'test' });
   });
 });
