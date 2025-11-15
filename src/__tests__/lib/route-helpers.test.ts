@@ -11,22 +11,22 @@ import {
 
 describe('Route Helpers', () => {
   describe('successResponse', () => {
-    it('should create a success response with data', () => {
+    it('should create a success response with data', async () => {
       const response = successResponse({ id: '123', name: 'Test' });
       expect(response.status).toBe(200);
 
       // Get the JSON body
       const body = response.json();
-      expect(body).resolves.toMatchObject({
+      await expect(body).resolves.toMatchObject({
         success: true,
         data: { id: '123', name: 'Test' },
       });
     });
 
-    it('should include optional message', () => {
+    it('should include optional message', async () => {
       const response = successResponse({ id: '123' }, 'Success message');
       const body = response.json();
-      expect(body).resolves.toMatchObject({
+      await expect(body).resolves.toMatchObject({
         success: true,
         message: 'Success message',
       });
@@ -34,24 +34,24 @@ describe('Route Helpers', () => {
   });
 
   describe('errorResponse', () => {
-    it('should create an error response', () => {
+    it('should create an error response', async () => {
       const response = errorResponse('Error occurred', 400);
       expect(response.status).toBe(400);
 
       const body = response.json();
-      expect(body).resolves.toMatchObject({
+      await expect(body).resolves.toMatchObject({
         success: false,
         error: 'Error occurred',
       });
     });
 
-    it('should include optional details', () => {
+    it('should include optional details', async () => {
       const response = errorResponse('Validation error', 400, [
         'Field 1 invalid',
         'Field 2 required',
       ]);
       const body = response.json();
-      expect(body).resolves.toMatchObject({
+      await expect(body).resolves.toMatchObject({
         success: false,
         error: 'Validation error',
         details: ['Field 1 invalid', 'Field 2 required'],
