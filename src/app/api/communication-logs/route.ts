@@ -2,13 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getConvexHttp } from '@/lib/convex/server';
 import logger from '@/lib/logger';
 import type { FunctionReference } from 'convex/server';
+import { requireModuleAccess, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit } from '@/lib/rate-limit';
 
 /**
  * GET /api/communication-logs
  * Retrieve communication logs (email and SMS)
+ * Requires authentication and messages module access
+ *
+ * SECURITY CRITICAL: Communication logs contain sensitive PII data (emails, phone numbers)
+ * GDPR/KVKK Compliance: Must be protected with authentication
  */
-export async function GET(request: NextRequest) {
+async function getCommunicationLogsHandler(request: NextRequest) {
   try {
+    // Require authentication with messages module access
+    // Communication logs contain sensitive personal data (emails, phone numbers, message content)
+    await requireModuleAccess('messages');
+
     const searchParams = request.nextUrl.searchParams;
     const type = searchParams.get('type') as 'email' | 'sms' | null;
     const status = searchParams.get('status') as 'sent' | 'failed' | 'pending' | null;
@@ -41,6 +51,11 @@ export async function GET(request: NextRequest) {
       data: logs,
     });
   } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
     logger.error('Communication logs fetch error', error, {
       endpoint: '/api/communication-logs',
       method: 'GET',
@@ -55,3 +70,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// Export handler with rate limiting
+export const GET = readOnlyRateLimit(getCommunicationLogsHandler);

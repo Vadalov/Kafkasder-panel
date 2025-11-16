@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getConvexHttp } from '@/lib/convex/server';
 import { api } from '@/convex/_generated/api';
+import { requireAuthenticatedUser, buildErrorResponse } from '@/lib/api/auth-utils';
+import { uploadRateLimit } from '@/lib/rate-limit';
+import logger from '@/lib/logger';
 
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/storage/upload
+ * Upload files to Convex storage
+ * Requires authentication - prevents file bomb attacks and unauthorized uploads
+ *
+ * SECURITY CRITICAL: File upload without auth = major vulnerability
+ */
+async function uploadFileHandler(request: NextRequest) {
   try {
+    // Require authentication - prevent anonymous file uploads
+    await requireAuthenticatedUser();
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const bucket = (formData.get('bucket') as string) || 'documents';
@@ -83,10 +96,23 @@ export async function POST(request: NextRequest) {
         fileType: file.type,
       },
     });
-  } catch (_error) {
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('File upload error', error, {
+      endpoint: '/api/storage/upload',
+      method: 'POST',
+    });
+
     return NextResponse.json(
-      { error: _error instanceof Error ? _error.message : 'Dosya yükleme hatası' },
+      { success: false, error: 'Dosya yükleme hatası' },
       { status: 500 }
     );
   }
 }
+
+// Export handler with upload rate limiting (10 uploads per minute)
+export const POST = uploadRateLimit(uploadFileHandler);
