@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { convexDonations } from '@/lib/convex/api';
 import logger from '@/lib/logger';
+import { requireModuleAccess, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit } from '@/lib/rate-limit';
 
 // Type for donation document
 interface DonationDocument {
@@ -18,9 +20,16 @@ interface DonationDocument {
 /**
  * GET /api/donations/stats
  * Get donation statistics
+ * Requires authentication and donations module access
+ *
+ * SECURITY CRITICAL: Donation statistics contain sensitive financial data
  */
-export async function GET(request: NextRequest) {
+async function getDonationStatsHandler(request: NextRequest) {
   try {
+    // Require authentication with donations module access
+    // Donation statistics are sensitive financial information
+    await requireModuleAccess('donations');
+
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'overview';
 
@@ -64,8 +73,13 @@ export async function GET(request: NextRequest) {
       success: true,
       data: stats,
     });
-  } catch (_error) {
-    logger.error('Error fetching donation stats', _error);
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('Error fetching donation stats', error);
     return NextResponse.json(
       { success: false, error: 'İstatistikler getirilemedi' },
       { status: 500 }
@@ -193,3 +207,6 @@ function calculatePaymentStats(donations: DonationDocument[]) {
     count: data.count,
   }));
 }
+
+// Export handler with rate limiting
+export const GET = readOnlyRateLimit(getDonationStatsHandler);

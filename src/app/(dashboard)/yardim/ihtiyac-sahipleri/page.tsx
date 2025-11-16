@@ -17,8 +17,8 @@ import { ArrowUpRight, Download, Plus } from 'lucide-react';
 import { useFPSMonitor } from '@/lib/performance-monitor';
 import { useCachedQuery, usePrefetchWithCache } from '@/lib/api-cache';
 
-// Optimized skeleton
-import { TableSkeleton } from '@/components/ui/skeleton-optimized';
+// Unified skeleton with all features
+import { TableSkeleton } from '@/components/ui/skeleton';
 
 // Completely independent API function to bypass HMR issues
 async function fetchBeneficiariesDirectly(params?: {

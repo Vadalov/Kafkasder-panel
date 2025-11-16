@@ -1,7 +1,7 @@
 /**
  * Error Tracking API Routes
- * POST /api/errors - Create or update error record
- * GET /api/errors - List errors with filters
+ * POST /api/errors - Create or update error record (requires auth to prevent spam)
+ * GET /api/errors - List errors with filters (requires auth and admin permission)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,6 +11,8 @@ import { createLogger } from '@/lib/logger';
 import { createErrorNotification } from '@/lib/error-notifications';
 import { z } from 'zod';
 import { toOptionalConvexId } from '@/lib/convex/id-helpers';
+import { requireAuthenticatedUser, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit, dataModificationRateLimit } from '@/lib/rate-limit';
 
 const logger = createLogger('api:errors');
 
@@ -48,9 +50,15 @@ const createErrorSchema = z.object({
 /**
  * POST /api/errors
  * Create a new error record
+ * Requires authentication - prevents error tracking spam/abuse
+ *
+ * SECURITY: Without auth, anyone could flood error logs with fake errors
  */
-export async function POST(request: NextRequest) {
+async function postErrorHandler(request: NextRequest) {
   try {
+    // Require authentication to prevent error log spam
+    await requireAuthenticatedUser();
+
     const body = await request.json();
 
     // Validate request body
@@ -111,6 +119,11 @@ export async function POST(request: NextRequest) {
       message: 'Error recorded successfully',
     });
   } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
     logger.error('Failed to create error record', error);
 
     return NextResponse.json(
@@ -127,9 +140,25 @@ export async function POST(request: NextRequest) {
 /**
  * GET /api/errors
  * List errors with filters
+ * Requires authentication and admin permissions
+ *
+ * SECURITY CRITICAL: Error logs contain sensitive system information
  */
-export async function GET(request: NextRequest) {
+async function getErrorsHandler(request: NextRequest) {
   try {
+    // Require authentication - error logs are sensitive
+    const { user } = await requireAuthenticatedUser();
+
+    // Only admins/developers can view error logs
+    const isAdmin =
+      user.role?.toUpperCase() === 'ADMIN' || user.role?.toUpperCase() === 'SUPER_ADMIN';
+    if (!isAdmin) {
+      return NextResponse.json(
+        { success: false, error: 'Hata kayıtlarını görüntülemek için admin yetkisi gerekli' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
 
     // Parse query parameters with type validation
@@ -206,6 +235,11 @@ export async function GET(request: NextRequest) {
       data: result,
     });
   } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
     logger.error('Failed to list errors', error);
 
     return NextResponse.json(
@@ -218,3 +252,8 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// Export handlers with rate limiting
+// POST uses aggressive rate limiting to prevent error log spam
+export const POST = dataModificationRateLimit(postErrorHandler);
+export const GET = readOnlyRateLimit(getErrorsHandler);

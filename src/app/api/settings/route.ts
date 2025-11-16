@@ -2,10 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getConvexHttp } from '@/lib/convex/server';
 import { api } from '@/convex/_generated/api';
 import logger from '@/lib/logger';
+import { requireAuthenticatedUser, verifyCsrfToken, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit, dataModificationRateLimit } from '@/lib/rate-limit';
 
-// GET - Get all settings or settings by category
-export async function GET(request: NextRequest) {
+/**
+ * GET - Get all settings or settings by category
+ * Requires authentication and settings:manage permission
+ */
+async function getSettingsHandler(request: NextRequest) {
   try {
+    // Require authentication with settings:manage permission
+    const { user } = await requireAuthenticatedUser();
+    if (!user.permissions.includes('settings:manage')) {
+      return NextResponse.json(
+        { success: false, error: 'Bu işlemi gerçekleştirmek için yetkiniz yok' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const convex = getConvexHttp();
@@ -23,23 +37,46 @@ export async function GET(request: NextRequest) {
       success: true,
       data: settings,
     });
-  } catch (_error) {
-    logger.error('Settings GET error', _error);
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('Settings GET error', error);
     return NextResponse.json(
-      { error: _error instanceof Error ? _error.message : 'Ayarlar alınırken hata oluştu' },
+      { success: false, error: 'Ayarlar alınırken hata oluştu' },
       { status: 500 }
     );
   }
 }
 
-// POST - Create or update settings (bulk)
-export async function POST(request: NextRequest) {
+/**
+ * POST - Create or update settings (bulk)
+ * Requires authentication, CSRF token, and settings:manage permission
+ */
+async function postSettingsHandler(request: NextRequest) {
   try {
+    // Verify CSRF token
+    await verifyCsrfToken(request);
+
+    // Require authentication with settings:manage permission
+    const { user } = await requireAuthenticatedUser();
+    if (!user.permissions.includes('settings:manage')) {
+      return NextResponse.json(
+        { success: false, error: 'Bu işlemi gerçekleştirmek için yetkiniz yok' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { category, settings } = body;
 
     if (!category || !settings) {
-      return NextResponse.json({ error: 'Kategori ve ayarlar gerekli' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'Kategori ve ayarlar gerekli' },
+        { status: 400 }
+      );
     }
 
     const convex = getConvexHttp();
@@ -52,23 +89,46 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Ayarlar başarıyla kaydedildi',
     });
-  } catch (_error) {
-    logger.error('Settings POST error', _error);
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('Settings POST error', error);
     return NextResponse.json(
-      { error: _error instanceof Error ? _error.message : 'Ayarlar kaydedilirken hata oluştu' },
+      { success: false, error: 'Ayarlar kaydedilirken hata oluştu' },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update all settings
-export async function PUT(request: NextRequest) {
+/**
+ * PUT - Update all settings
+ * Requires authentication, CSRF token, and settings:manage permission
+ */
+async function putSettingsHandler(request: NextRequest) {
   try {
+    // Verify CSRF token
+    await verifyCsrfToken(request);
+
+    // Require authentication with settings:manage permission
+    const { user } = await requireAuthenticatedUser();
+    if (!user.permissions.includes('settings:manage')) {
+      return NextResponse.json(
+        { success: false, error: 'Bu işlemi gerçekleştirmek için yetkiniz yok' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { settings } = body; // { category: { key: value } }
 
     if (!settings || typeof settings !== 'object') {
-      return NextResponse.json({ error: 'Geçersiz ayarlar formatı' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'Geçersiz ayarlar formatı' },
+        { status: 400 }
+      );
     }
 
     const convex = getConvexHttp();
@@ -78,7 +138,7 @@ export async function PUT(request: NextRequest) {
       if (categorySettings && typeof categorySettings === 'object') {
         await convex.mutation(api.system_settings.updateSettings, {
           category,
-          settings: categorySettings as Record<string, any>,
+          settings: categorySettings as Record<string, unknown>,
         });
       }
     }
@@ -87,18 +147,38 @@ export async function PUT(request: NextRequest) {
       success: true,
       message: 'Tüm ayarlar başarıyla güncellendi',
     });
-  } catch (_error) {
-    logger.error('Settings PUT error', _error);
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('Settings PUT error', error);
     return NextResponse.json(
-      { error: _error instanceof Error ? _error.message : 'Ayarlar güncellenirken hata oluştu' },
+      { success: false, error: 'Ayarlar güncellenirken hata oluştu' },
       { status: 500 }
     );
   }
 }
 
-// DELETE - Reset settings
-export async function DELETE(request: NextRequest) {
+/**
+ * DELETE - Reset settings
+ * Requires authentication, CSRF token, and settings:manage permission
+ */
+async function deleteSettingsHandler(request: NextRequest) {
   try {
+    // Verify CSRF token
+    await verifyCsrfToken(request);
+
+    // Require authentication with settings:manage permission
+    const { user } = await requireAuthenticatedUser();
+    if (!user.permissions.includes('settings:manage')) {
+      return NextResponse.json(
+        { success: false, error: 'Bu işlemi gerçekleştirmek için yetkiniz yok' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
 
@@ -111,11 +191,22 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: category ? `${category} kategorisi sıfırlandı` : 'Tüm ayarlar sıfırlandı',
     });
-  } catch (_error) {
-    logger.error('Settings DELETE error', _error);
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('Settings DELETE error', error);
     return NextResponse.json(
-      { error: _error instanceof Error ? _error.message : 'Ayarlar sıfırlanırken hata oluştu' },
+      { success: false, error: 'Ayarlar sıfırlanırken hata oluştu' },
       { status: 500 }
     );
   }
 }
+
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getSettingsHandler);
+export const POST = dataModificationRateLimit(postSettingsHandler);
+export const PUT = dataModificationRateLimit(putSettingsHandler);
+export const DELETE = dataModificationRateLimit(deleteSettingsHandler);

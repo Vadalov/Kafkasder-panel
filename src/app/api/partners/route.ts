@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { convexPartners, normalizeQueryParams } from '@/lib/convex/api';
 import logger from '@/lib/logger';
+import { dataModificationRateLimit, readOnlyRateLimit } from '@/lib/rate-limit';
+import { verifyCsrfToken, buildErrorResponse, requireModuleAccess } from '@/lib/api/auth-utils';
 
 // TypeScript interfaces
 interface PartnerFilters {
@@ -83,17 +85,20 @@ function validatePartnerData(data: PartnerData): ValidationResult {
  * List partners with pagination and filters
  */
 async function getPartnersHandler(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const params = normalizeQueryParams(searchParams);
-
-  // Extract filters from query params
-  const filters: PartnerFilters = {};
-  if (searchParams.get('type')) filters.type = searchParams.get('type') || undefined;
-  if (searchParams.get('status')) filters.status = searchParams.get('status') || undefined;
-  if (searchParams.get('partnership_type'))
-    filters.partnership_type = searchParams.get('partnership_type') || undefined;
-
   try {
+    // Require authentication and module access
+    await requireModuleAccess('partners');
+
+    const { searchParams } = new URL(request.url);
+    const params = normalizeQueryParams(searchParams);
+
+    // Extract filters from query params
+    const filters: PartnerFilters = {};
+    if (searchParams.get('type')) filters.type = searchParams.get('type') || undefined;
+    if (searchParams.get('status')) filters.status = searchParams.get('status') || undefined;
+    if (searchParams.get('partnership_type'))
+      filters.partnership_type = searchParams.get('partnership_type') || undefined;
+
     const response = await convexPartners.list({
       limit: params.limit,
       skip: params.skip,
@@ -113,10 +118,15 @@ async function getPartnersHandler(request: NextRequest) {
       message: `${total} partner bulundu`,
     });
   } catch (_error: unknown) {
+    // Handle auth errors with buildErrorResponse
+    const authError = buildErrorResponse(_error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
     logger.error('Partners list error', _error, {
       endpoint: '/api/partners',
       method: 'GET',
-      params,
     });
 
     return NextResponse.json(
@@ -133,6 +143,12 @@ async function getPartnersHandler(request: NextRequest) {
 async function createPartnerHandler(request: NextRequest) {
   let body: PartnerData | null = null;
   try {
+    // Verify CSRF token
+    await verifyCsrfToken(request);
+
+    // Require authentication and module access
+    await requireModuleAccess('partners');
+
     body = (await request.json()) as PartnerData;
 
     // Validate input
@@ -185,6 +201,12 @@ async function createPartnerHandler(request: NextRequest) {
       { status: 201 }
     );
   } catch (_error: unknown) {
+    // Handle auth errors with buildErrorResponse
+    const authError = buildErrorResponse(_error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
     logger.error('Partner creation error', _error, {
       endpoint: '/api/partners',
       method: 'POST',
@@ -198,6 +220,6 @@ async function createPartnerHandler(request: NextRequest) {
   }
 }
 
-// Export handlers
-export const GET = getPartnersHandler;
-export const POST = createPartnerHandler;
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getPartnersHandler);
+export const POST = dataModificationRateLimit(createPartnerHandler);

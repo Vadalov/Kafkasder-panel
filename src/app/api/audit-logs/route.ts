@@ -2,13 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getConvexHttp } from '@/lib/convex/server';
 import logger from '@/lib/logger';
 import type { FunctionReference } from 'convex/server';
+import { requireAuthenticatedUser, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit } from '@/lib/rate-limit';
 
 /**
  * GET /api/audit-logs
  * Retrieve audit logs for compliance
+ * Requires authentication and admin permissions (CRITICAL - compliance data)
  */
-export async function GET(request: NextRequest) {
+async function getAuditLogsHandler(request: NextRequest) {
   try {
+    // Require authentication - audit logs are CRITICAL compliance data
+    const { user } = await requireAuthenticatedUser();
+
+    // Only admins and users with audit:view permission can access audit logs
+    const isAdmin = user.role?.toUpperCase() === 'ADMIN' || user.role?.toUpperCase() === 'SUPER_ADMIN';
+    const hasAuditPermission = user.permissions.includes('audit:view');
+
+    if (!isAdmin && !hasAuditPermission) {
+      return NextResponse.json(
+        { success: false, error: 'Denetim kayıtlarını görüntülemek için yetkiniz yok' },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
     const resource = searchParams.get('resource');
@@ -41,6 +58,11 @@ export async function GET(request: NextRequest) {
       data: logs,
     });
   } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
     logger.error('Audit logs fetch error', error, {
       endpoint: '/api/audit-logs',
       method: 'GET',
@@ -55,3 +77,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// Export handler with rate limiting
+export const GET = readOnlyRateLimit(getAuditLogsHandler);

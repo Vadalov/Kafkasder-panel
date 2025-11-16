@@ -3,12 +3,24 @@ import { getConvexHttp } from '@/lib/convex/server';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import logger from '@/lib/logger';
+import { requireAuthenticatedUser, verifyCsrfToken, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit, dataModificationRateLimit } from '@/lib/rate-limit';
 
-export async function GET(
+/**
+ * GET /api/storage/[fileId]
+ * Retrieve a file from storage
+ * Requires authentication - prevents unauthorized file access
+ *
+ * SECURITY CRITICAL: File access without auth = data leak vulnerability
+ */
+async function getFileHandler(
   _request: NextRequest,
   { params }: { params: Promise<{ fileId: string }> }
 ) {
   try {
+    // Require authentication - prevent unauthorized file access
+    await requireAuthenticatedUser();
+
     const { fileId } = await params;
     const convex = getConvexHttp();
 
@@ -18,25 +30,46 @@ export async function GET(
     });
 
     if (!file) {
-      return NextResponse.json({ error: 'Dosya bulunamadı' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Dosya bulunamadı' }, { status: 404 });
     }
 
     // Redirect to the file URL from Convex storage
     if (!file.url) {
-      return NextResponse.json({ error: "Dosya URL'si bulunamadı" }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: "Dosya URL'si bulunamadı" },
+        { status: 500 }
+      );
     }
     return NextResponse.redirect(file.url);
-  } catch (_error) {
-    logger.error('File retrieval error', _error);
-    return NextResponse.json({ error: 'Dosya alınamadı' }, { status: 500 });
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('File retrieval error', error);
+    return NextResponse.json({ success: false, error: 'Dosya alınamadı' }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  _request: NextRequest,
+/**
+ * DELETE /api/storage/[fileId]
+ * Delete a file from storage
+ * Requires authentication and CSRF token - prevents unauthorized file deletion
+ *
+ * SECURITY CRITICAL: File deletion without auth = data loss vulnerability
+ */
+async function deleteFileHandler(
+  request: NextRequest,
   { params }: { params: Promise<{ fileId: string }> }
 ) {
   try {
+    // Verify CSRF token for destructive operations
+    await verifyCsrfToken(request);
+
+    // Require authentication - prevent unauthorized file deletion
+    await requireAuthenticatedUser();
+
     const { fileId } = await params;
     const convex = getConvexHttp();
 
@@ -45,9 +78,18 @@ export async function DELETE(
       documentId: fileId as Id<'files'>,
     });
 
-    return NextResponse.json({ success: true });
-  } catch (_error) {
-    logger.error('File deletion error', _error);
-    return NextResponse.json({ error: 'Dosya silinemedi' }, { status: 500 });
+    return NextResponse.json({ success: true, message: 'Dosya başarıyla silindi' });
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('File deletion error', error);
+    return NextResponse.json({ success: false, error: 'Dosya silinemedi' }, { status: 500 });
   }
 }
+
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getFileHandler);
+export const DELETE = dataModificationRateLimit(deleteFileHandler);
