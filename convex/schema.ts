@@ -1694,4 +1694,116 @@ export default defineSchema({
     .index('by_thread_id', ['thread_id'])
     .index('by_agent_name', ['agent_name'])
     .index('by_created_at', ['created_at']),
+
+  /**
+   * @collection system_settings
+   * @description Application-wide settings and configurations
+   * Supports dynamic themes, branding, integrations, and system preferences
+   */
+  system_settings: defineTable({
+    /** @type {string} - Setting category (theme, branding, email, sms, whatsapp, security, performance, etc.) */
+    category: v.string(),
+    /** @type {string} - Setting key (unique within category) */
+    key: v.string(),
+    /** @type {any} - Setting value (can be string, number, boolean, object, array) */
+    value: v.any(),
+    /** @type {string} - Human-readable label */
+    label: v.optional(v.string()),
+    /** @type {string} - Description/help text */
+    description: v.optional(v.string()),
+    /** @type {boolean} - Can be accessed by non-admins */
+    is_public: v.optional(v.boolean()),
+    /** @type {boolean} - Is sensitive data (API keys, passwords) - should be encrypted */
+    is_encrypted: v.optional(v.boolean()),
+    /** @type {string} - Data type (string, number, boolean, json, array, file) */
+    data_type: v.optional(v.string()),
+    /** @type {any} - Default value if user resets */
+    default_value: v.optional(v.any()),
+    /** @type {Id<'users'>} - User who last updated this setting */
+    updated_by: v.optional(v.id('users')),
+    /** @type {number} - Last update timestamp */
+    updated_at: v.optional(v.number()),
+    /** @type {number} - Version for rollback support */
+    version: v.optional(v.number()),
+  })
+    .index('by_category', ['category'])
+    .index('by_key', ['key'])
+    .index('by_category_and_key', ['category', 'key']),
+
+  /**
+   * @collection theme_presets
+   * @description Pre-defined and custom theme configurations
+   */
+  theme_presets: defineTable({
+    /** @type {string} - Theme name */
+    name: v.string(),
+    /** @type {string} - Theme description */
+    description: v.optional(v.string()),
+    /** @type {object} - Color palette configuration */
+    colors: v.object({
+      // Primary colors
+      primary: v.string(),
+      primary_hover: v.optional(v.string()),
+      primary_active: v.optional(v.string()),
+      // Secondary colors
+      secondary: v.optional(v.string()),
+      secondary_hover: v.optional(v.string()),
+      // Accent
+      accent: v.optional(v.string()),
+      // Status colors
+      success: v.optional(v.string()),
+      warning: v.optional(v.string()),
+      error: v.optional(v.string()),
+      info: v.optional(v.string()),
+      // Background colors
+      background: v.optional(v.string()),
+      background_secondary: v.optional(v.string()),
+      background_tertiary: v.optional(v.string()),
+      // Text colors
+      text_primary: v.optional(v.string()),
+      text_secondary: v.optional(v.string()),
+      text_muted: v.optional(v.string()),
+      // Border colors
+      border: v.optional(v.string()),
+      border_hover: v.optional(v.string()),
+      // Sidebar colors
+      sidebar_bg: v.optional(v.string()),
+      sidebar_text: v.optional(v.string()),
+      sidebar_active: v.optional(v.string()),
+    }),
+    /** @type {object} - Typography configuration */
+    typography: v.optional(
+      v.object({
+        font_family: v.optional(v.string()),
+        base_size: v.optional(v.number()),
+        heading_scale: v.optional(v.number()),
+        line_height: v.optional(v.number()),
+        font_weight_regular: v.optional(v.number()),
+        font_weight_medium: v.optional(v.number()),
+        font_weight_bold: v.optional(v.number()),
+      })
+    ),
+    /** @type {object} - Layout configuration */
+    layout: v.optional(
+      v.object({
+        sidebar_width: v.optional(v.number()),
+        container_max_width: v.optional(v.number()),
+        border_radius: v.optional(v.number()),
+        spacing_scale: v.optional(v.string()), // tight, normal, relaxed
+        card_elevation: v.optional(v.string()), // flat, subtle, medium, high
+      })
+    ),
+    /** @type {boolean} - Is this the default theme */
+    is_default: v.optional(v.boolean()),
+    /** @type {boolean} - Is this a custom user-created theme */
+    is_custom: v.optional(v.boolean()),
+    /** @type {Id<'users'>} - User who created this theme (for custom themes) */
+    created_by: v.optional(v.id('users')),
+    /** @type {number} - Creation timestamp */
+    created_at: v.optional(v.number()),
+  })
+    .index('by_name', ['name'])
+    .index('by_is_default', ['is_default'])
+    .index('by_is_custom', ['is_custom'])
+    .index('by_created_by', ['created_by']),
 });
