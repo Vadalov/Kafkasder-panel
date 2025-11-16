@@ -191,13 +191,16 @@ export default function BeneficiariesPage() {
         key: 'type',
         label: 'Tür',
         className: 'flex-none w-[140px] max-w-[140px] text-xs overflow-hidden',
-        render: (item) => (
-          <Badge variant="secondary" className="font-medium">
-            {!item.beneficiary_type || item.beneficiary_type === 'primary_person'
-              ? 'İhtiyaç Sahibi Kişi'
-              : 'Bakmakla Yükümlü Olunan Kişi'}
-          </Badge>
-        ),
+        render: (item) => {
+          const type = (item as any).beneficiary_type;
+          return (
+            <Badge variant="secondary" className="font-medium">
+              {!type || type === 'primary_person'
+                ? 'İhtiyaç Sahibi Kişi'
+                : 'Bakmakla Yükümlü Olunan Kişi'}
+            </Badge>
+          );
+        },
       },
       {
         key: 'name',

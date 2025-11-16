@@ -268,7 +268,11 @@ const docSchema = z.object({
 
 type FormValues = z.infer<typeof docSchema>;
 
-const mapBeneficiaryToFormValues = (beneficiary: BeneficiaryDocument): FormValues => ({
+// Not: BeneficiaryDocument tipinde olmayan bazı ek alanlar (ikamet_no, pasaport_no vb.)
+// geçmiş formlardan geliyor olabilir; bu yüzden burada esnek olmak için any kullanıyoruz.
+// Veri yapısı değişirse, burası güncellenmelidir.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapBeneficiaryToFormValues = (beneficiary: any): FormValues => ({
   name: beneficiary.name || '',
   firstName: beneficiary.name?.split(' ')[0] || '',
   lastName: beneficiary.name?.split(' ').slice(1).join(' ') || '',
