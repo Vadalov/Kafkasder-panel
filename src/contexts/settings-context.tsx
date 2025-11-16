@@ -134,6 +134,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       }, 0);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [defaultTheme, currentTheme]);
 
   // Resolve auto theme mode
@@ -211,7 +212,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   // Set theme
   const setTheme = useCallback(
     async (themeName: string) => {
-      const theme = themePresets.find((t) => t.name === themeName);
+      const theme = themePresets.find((t: ThemePreset) => t.name === themeName);
       if (theme) {
         setCurrentTheme(theme as ThemePreset);
         localStorage.setItem('selected-theme', themeName);
@@ -228,9 +229,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   // Refresh settings
   const refreshSettings = useCallback(() => {
-    // Convex automatically refetches, but we can force a re-render
-    setSettings({ ...settings });
-  }, [settings]);
+    // Convex automatically refetches on data changes
+    // This function is kept for API compatibility but is a no-op
+  }, []);
 
   const value: SettingsContextValue = {
     settings,

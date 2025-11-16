@@ -12,6 +12,7 @@ import { persistentCache } from '@/lib/persistent-cache';
 import { convex, shouldUseConvex } from '@/lib/convex/client';
 import { initGlobalErrorHandlers } from '@/lib/global-error-handler';
 import { initErrorTracker } from '@/lib/error-tracker';
+import { SettingsProvider } from '@/contexts/settings-context';
 
 import { SuspenseBoundary } from '@/components/ui/suspense-boundary';
 
@@ -103,21 +104,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return (
       <ConvexProvider client={convex}>
         <QueryClientProvider client={queryClient}>
-          <SuspenseBoundary
-            loadingVariant="pulse"
-            fullscreen={true}
-            loadingText="Uygulama yükleniyor..."
-            onSuspend={() => {
-              // Suspended state
-            }}
-            onResume={() => {
-              // Resumed state
-            }}
-          >
-            {children}
-          </SuspenseBoundary>
-          <Toaster position="top-right" richColors />
-          <ReactQueryDevtools initialIsOpen={false} />
+          <SettingsProvider>
+            <SuspenseBoundary
+              loadingVariant="pulse"
+              fullscreen={true}
+              loadingText="Uygulama yükleniyor..."
+              onSuspend={() => {
+                // Suspended state
+              }}
+              onResume={() => {
+                // Resumed state
+              }}
+            >
+              {children}
+            </SuspenseBoundary>
+            <Toaster position="top-right" richColors />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </SettingsProvider>
         </QueryClientProvider>
       </ConvexProvider>
     );
