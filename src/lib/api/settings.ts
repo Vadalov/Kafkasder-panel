@@ -13,7 +13,7 @@ export type SettingCategory =
   | 'integrations'
   | 'reports';
 
-export interface SettingsResponse<T = any> {
+export interface SettingsResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -85,7 +85,7 @@ export interface IntegrationSettings {
 
 export interface ReportSettings {
   defaultFormat?: string;
-  templates?: Record<string, any>;
+  templates?: Record<string, unknown>;
   autoGenerate?: boolean;
 }
 
@@ -106,7 +106,7 @@ class SettingsApi {
   /**
    * Get all settings or settings by category
    */
-  async getSettings(category?: SettingCategory): Promise<SettingsResponse<AllSettings | any>> {
+  async getSettings(category?: SettingCategory): Promise<SettingsResponse<AllSettings | unknown>> {
     try {
       const url = category ? `${this.baseUrl}?category=${category}` : this.baseUrl;
       const response = await fetch(url, {
@@ -127,7 +127,7 @@ class SettingsApi {
   /**
    * Get settings for a specific category
    */
-  async getCategorySettings<T = any>(category: SettingCategory): Promise<SettingsResponse<T>> {
+  async getCategorySettings<T = unknown>(category: SettingCategory): Promise<SettingsResponse<T>> {
     try {
       const response = await fetch(`${this.baseUrl}/${category}`, {
         method: 'GET',
@@ -150,7 +150,7 @@ class SettingsApi {
   async getSetting(
     category: SettingCategory,
     key: string
-  ): Promise<SettingsResponse<{ category: string; key: string; value: any }>> {
+  ): Promise<SettingsResponse<{ category: string; key: string; value: unknown }>> {
     try {
       const response = await fetch(`${this.baseUrl}/${category}/${key}`, {
         method: 'GET',
@@ -172,7 +172,7 @@ class SettingsApi {
    */
   async updateCategorySettings(
     category: SettingCategory,
-    settings: Record<string, any>
+    settings: Record<string, unknown>
   ): Promise<SettingsResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/${category}`, {
@@ -200,7 +200,7 @@ class SettingsApi {
   async updateSetting(
     category: SettingCategory,
     key: string,
-    value: any
+    value: unknown
   ): Promise<SettingsResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/${category}/${key}`, {
