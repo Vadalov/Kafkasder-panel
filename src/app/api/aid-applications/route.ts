@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { convexAidApplications, normalizeQueryParams } from '@/lib/convex/api';
 import logger from '@/lib/logger';
 import { Id } from '@/convex/_generated/dataModel';
+import { requireModuleAccess, verifyCsrfToken, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit, dataModificationRateLimit } from '@/lib/rate-limit';
 
 function validateApplication(data: Record<string, unknown>): {
   isValid: boolean;
@@ -31,12 +33,20 @@ function validateApplication(data: Record<string, unknown>): {
 
 /**
  * GET /api/aid-applications
+ * List aid applications
+ * Requires authentication and beneficiaries module access
+ *
+ * SECURITY CRITICAL: Aid applications contain sensitive beneficiary data
  */
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const params = normalizeQueryParams(searchParams);
-
+async function getAidApplicationsHandler(request: NextRequest) {
   try {
+    // Require authentication with beneficiaries module access
+    // Aid applications contain sensitive personal and financial data
+    await requireModuleAccess('beneficiaries');
+
+    const { searchParams } = new URL(request.url);
+    const params = normalizeQueryParams(searchParams);
+
     const response = await convexAidApplications.list({
       ...params,
       stage: searchParams.get('stage') || undefined,
@@ -48,11 +58,15 @@ export async function GET(request: NextRequest) {
       data: response.documents || [],
       total: response.total || 0,
     });
-  } catch (_error: unknown) {
-    logger.error('List aid applications error', _error, {
+  } catch (error: unknown) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('List aid applications error', error, {
       endpoint: '/api/aid-applications',
       method: 'GET',
-      params,
     });
     return NextResponse.json({ success: false, error: 'Veri alınamadı' }, { status: 500 });
   }
@@ -60,10 +74,20 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/aid-applications
+ * Create new aid application
+ * Requires authentication, CSRF token, and beneficiaries module access
+ *
+ * SECURITY CRITICAL: Creating aid applications affects financial aid distribution
  */
 async function createApplicationHandler(request: NextRequest) {
   let body: Record<string, unknown> | null = null;
   try {
+    // Verify CSRF token
+    await verifyCsrfToken(request);
+
+    // Require authentication with beneficiaries module access
+    await requireModuleAccess('beneficiaries');
+
     body = (await request.json()) as Record<string, unknown>;
     if (!body) {
       return NextResponse.json({ success: false, error: 'Geçersiz istek verisi' }, { status: 400 });
@@ -100,8 +124,13 @@ async function createApplicationHandler(request: NextRequest) {
       { success: true, data: response, message: 'Başvuru oluşturuldu' },
       { status: 201 }
     );
-  } catch (_error: unknown) {
-    logger.error('Create aid application error', _error, {
+  } catch (error: unknown) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    logger.error('Create aid application error', error, {
       endpoint: '/api/aid-applications',
       method: 'POST',
       applicantName: body?.applicant_name,
@@ -114,4 +143,6 @@ async function createApplicationHandler(request: NextRequest) {
   }
 }
 
-export const POST = createApplicationHandler;
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getAidApplicationsHandler);
+export const POST = dataModificationRateLimit(createApplicationHandler);
