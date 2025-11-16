@@ -3,6 +3,7 @@ import { convexDonations, normalizeQueryParams } from '@/lib/convex/api';
 import logger from '@/lib/logger';
 import type { DonationDocument, Document } from '@/types/database';
 import { verifyCsrfToken, buildErrorResponse, requireModuleAccess } from '@/lib/api/auth-utils';
+import { dataModificationRateLimit, readOnlyRateLimit } from '@/lib/rate-limit';
 
 /**
  * Validate donation payload
@@ -47,7 +48,7 @@ function validateDonation(data: Partial<DonationDocument>): {
  * GET /api/donations
  * List donations
  */
-export async function GET(request: NextRequest) {
+async function getDonationsHandler(request: NextRequest) {
   try {
     await requireModuleAccess('donations');
 
@@ -140,4 +141,6 @@ async function createDonationHandler(request: NextRequest) {
   }
 }
 
-export const POST = createDonationHandler;
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getDonationsHandler);
+export const POST = dataModificationRateLimit(createDonationHandler);

@@ -4,6 +4,7 @@ import logger from '@/lib/logger';
 import { Id } from '@/convex/_generated/dataModel';
 import { verifyCsrfToken, buildErrorResponse, requireModuleAccess } from '@/lib/api/auth-utils';
 import { parseBody } from '@/lib/api/route-helpers';
+import { dataModificationRateLimit, readOnlyRateLimit } from '@/lib/rate-limit';
 
 function validateTask(data: Record<string, unknown>): {
   isValid: boolean;
@@ -40,7 +41,7 @@ function validateTask(data: Record<string, unknown>): {
 /**
  * GET /api/tasks
  */
-export async function GET(request: NextRequest) {
+async function getTasksHandler(request: NextRequest) {
   try {
     await requireModuleAccess('workflow');
 
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/tasks
  */
-export async function POST(request: NextRequest) {
+async function createTaskHandler(request: NextRequest) {
   const body: unknown = null;
   try {
     await verifyCsrfToken(request);
@@ -137,3 +138,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getTasksHandler);
+export const POST = dataModificationRateLimit(createTaskHandler);
