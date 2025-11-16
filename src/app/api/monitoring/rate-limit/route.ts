@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // Only import rate-limit-monitor at runtime to avoid build-time jsdom issues
 // This prevents Next.js from trying to bundle jsdom during build
 import type { RateLimitViolation } from '@/lib/rate-limit-monitor';
+import { requireAuthenticatedUser, buildErrorResponse } from '@/lib/api/auth-utils';
+import { readOnlyRateLimit, dataModificationRateLimit } from '@/lib/rate-limit';
 
 let RateLimitMonitor: typeof import('@/lib/rate-limit-monitor').RateLimitMonitor;
 
@@ -17,21 +19,39 @@ async function loadRateLimitMonitor() {
 /**
  * GET /api/monitoring/rate-limit
  * Rate limit monitoring endpoint
+ * Requires authentication and admin permissions
  *
  * Query Parameters:
  * - action: stats|violations|ip-stats|export|reset
  * - timeRange: 1h|24h|7d|30d (for stats and ip-stats)
  * - ip: IP address (for ip-stats)
  * - limit: number (for violations, default: 50)
+ *
+ * SECURITY CRITICAL: Rate limit monitoring data reveals system security patterns
  */
-export async function GET(request: NextRequest) {
-  const { RateLimitMonitor: Monitor } = await loadRateLimitMonitor();
-  const { searchParams } = new URL(request.url);
-  const action = searchParams.get('action');
-  const timeRange = (searchParams.get('timeRange') as '1h' | '24h' | '7d' | '30d') || '24h';
-  const ip = searchParams.get('ip');
-
+async function getMonitoringHandler(request: NextRequest) {
   try {
+    // Require authentication - monitoring data is sensitive system information
+    const { user } = await requireAuthenticatedUser();
+
+    // Only admins can view rate limit monitoring data
+    const isAdmin =
+      user.role?.toUpperCase() === 'ADMIN' || user.role?.toUpperCase() === 'SUPER_ADMIN';
+    if (!isAdmin) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Rate limit izleme verilerini görüntülemek için admin yetkisi gerekli',
+        },
+        { status: 403 }
+      );
+    }
+
+    const { RateLimitMonitor: Monitor } = await loadRateLimitMonitor();
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get('action');
+    const timeRange = (searchParams.get('timeRange') as '1h' | '24h' | '7d' | '30d') || '24h';
+    const ip = searchParams.get('ip');
     switch (action) {
       case 'stats':
         const stats = Monitor.getStats(timeRange);
@@ -87,15 +107,7 @@ export async function GET(request: NextRequest) {
         });
 
       case 'reset':
-        // Sadece admin kullanıcılar için (basit auth check)
-        const authHeader = request.headers.get('authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return NextResponse.json(
-            { success: false, error: 'Unauthorized - Admin token required' },
-            { status: 401 }
-          );
-        }
-
+        // Admin check already done at the beginning of the function
         Monitor.reset();
         return NextResponse.json({
           success: true,
@@ -124,8 +136,13 @@ export async function GET(request: NextRequest) {
           timestamp: new Date().toISOString(),
         });
     }
-  } catch (_error: unknown) {
-    const errorMessage = _error instanceof Error ? _error.message : 'Unknown error';
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       {
         success: false,
@@ -140,9 +157,28 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/monitoring/rate-limit
  * Additional monitoring actions
+ * Requires authentication and admin permissions
+ *
+ * SECURITY CRITICAL: Recording violations and exporting data requires admin access
  */
-export async function POST(request: NextRequest) {
+async function postMonitoringHandler(request: NextRequest) {
   try {
+    // Require authentication - prevent unauthorized monitoring actions
+    const { user } = await requireAuthenticatedUser();
+
+    // Only admins can perform monitoring actions
+    const isAdmin =
+      user.role?.toUpperCase() === 'ADMIN' || user.role?.toUpperCase() === 'SUPER_ADMIN';
+    if (!isAdmin) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Rate limit izleme işlemleri için admin yetkisi gerekli',
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { action, data } = body;
 
@@ -179,8 +215,13 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
     }
-  } catch (_error: unknown) {
-    const errorMessage = _error instanceof Error ? _error.message : 'Unknown error';
+  } catch (error) {
+    const authError = buildErrorResponse(error);
+    if (authError) {
+      return NextResponse.json(authError.body, { status: authError.status });
+    }
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       {
         success: false,
@@ -191,3 +232,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getMonitoringHandler);
+export const POST = dataModificationRateLimit(postMonitoringHandler);
