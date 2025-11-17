@@ -4,9 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Eye, Mail, MessageCircle, Phone } from 'lucide-react';
+import { AlertCircle, Eye } from 'lucide-react';
 import { calculateEstimatedSendTime, getMessageTypeIcon, getSmsMessageCount } from '@/lib/messages/calculations';
-import type { MessageType } from '@/lib/messages/calculations';
 
 interface PreviewStepProps {
   messageType: MessageType;

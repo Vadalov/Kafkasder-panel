@@ -127,8 +127,8 @@ export function useStandardForm<TFormData extends FieldValues, TResponse = unkno
 
   // Initialize form with schema validation
   const form = useForm<TFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: defaultValues as TFormData,
+    resolver: zodResolver(schema) as any,
+    defaultValues: defaultValues as any,
     mode: 'onBlur',
   });
 
@@ -155,12 +155,12 @@ export function useStandardForm<TFormData extends FieldValues, TResponse = unkno
   });
 
   // Create form submission handler
-  const handleSubmit = form.handleSubmit(async (data: TFormData) => {
-    await mutation.mutate(data);
+  const handleSubmit = form.handleSubmit(async (data) => {
+    await mutation.mutate(data as TFormData);
   });
 
   return {
-    form,
+    form: form as any,
     handleSubmit,
     isSubmitting: form.formState.isSubmitting || mutation.isPending,
     isDirty: form.formState.isDirty,

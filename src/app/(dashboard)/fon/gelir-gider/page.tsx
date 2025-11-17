@@ -24,8 +24,8 @@ export default function IncomeExpensePage() {
 
   // Dialog state
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<FinanceRecord | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [_selectedRecord, _setSelectedRecord] = useState<FinanceRecord | null>(null);
+  const [_isViewDialogOpen, _setIsViewDialogOpen] = useState(false);
 
   // Fetch data with filters
   const { data: recordsData, isLoading } = useFinancialData({
@@ -53,12 +53,12 @@ export default function IncomeExpensePage() {
   };
 
   const handleViewRecord = (record: FinanceRecord) => {
-    setSelectedRecord(record);
-    setIsViewDialogOpen(true);
+    _setSelectedRecord(record);
+    _setIsViewDialogOpen(true);
   };
 
   const handleEditRecord = (record: FinanceRecord) => {
-    setSelectedRecord(record);
+    _setSelectedRecord(record);
     // Open edit dialog or navigate to edit page
     // TODO: Implement edit functionality
   };

@@ -484,7 +484,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create donation in Convex
-    const donationId = await convexDonations.create(validation.normalizedData || {});
+    const donationId = await convexDonations.create((validation.normalizedData || {}) as any);
 
     // Generate QR code for the kumbara
     const qrCode = await generateKumbaraQR({

@@ -115,7 +115,7 @@ async function createTaskHandler(request: NextRequest) {
       is_read: validation.normalizedData.is_read ?? false,
     };
 
-    const response = await convexTasks.create(taskData);
+    const response = await convexTasks.create(taskData as any);
 
     return NextResponse.json(
       { success: true, data: response, message: 'Görev başarıyla oluşturuldu' },

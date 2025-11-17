@@ -161,7 +161,7 @@ async function createMessageHandler(request: NextRequest) {
       );
     }
 
-    const response = await convexMessages.create(messageData);
+    const response = await convexMessages.create(messageData as any);
 
     return NextResponse.json(
       { success: true, data: response, message: 'Mesaj taslağı oluşturuldu' },

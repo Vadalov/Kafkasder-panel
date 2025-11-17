@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import logger from '@/lib/logger';
 import { requireModuleAccess } from '@/lib/api/auth-utils';
-import { ApiResponse, errorResponse, successResponse } from '@/lib/api/route-helpers';
+import { errorResponse } from '@/lib/api/route-helpers';
 
 export type RouteHandler = (
   request: NextRequest,

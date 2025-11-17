@@ -30,8 +30,6 @@ import type {
   FinanceRecordUpdateInput,
   PartnerCreateInput,
   PartnerUpdateInput,
-  ScholarshipCreateInput,
-  ScholarshipUpdateInput,
   CreateMutationPayload,
   UpdateMutationPayload,
 } from '@/lib/api/types';
@@ -109,7 +107,7 @@ export const convexBeneficiaries = {
       ...(context.auth ? { auth: context.auth } : {}),
       ...data,
     };
-    return await convexHttp.mutation(api.beneficiaries.create, payload);
+    return await convexHttp.mutation(api.beneficiaries.create, payload as any);
   },
   update: async (id: Id<'beneficiaries'>, data: BeneficiaryUpdateInput, context: AuthContext = {}) => {
     const payload: UpdateMutationPayload<BeneficiaryUpdateInput> = {

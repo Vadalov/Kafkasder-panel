@@ -1,6 +1,5 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
 import dynamic from 'next/dynamic';
 import type { MessageType } from '@/lib/messages/calculations';
 
@@ -17,7 +16,10 @@ const MessageForm = dynamic(
 );
 
 const MessageTemplateSelector = dynamic(
-  () => import('@/components/messages/MessageTemplateSelector'),
+  () =>
+    import('@/components/messages/MessageTemplateSelector').then((mod) => ({
+      default: mod.MessageTemplateSelector,
+    })),
   {
     loading: () => <div className="p-8 text-center text-muted-foreground">Yükleniyor...</div>,
     ssr: false,

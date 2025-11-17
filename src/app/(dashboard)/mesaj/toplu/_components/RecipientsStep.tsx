@@ -5,7 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users } from 'lucide-react';
 
 const RecipientSelector = dynamic(
-  () => import('@/components/messages/RecipientSelector'),
+  () =>
+    import('@/components/messages/RecipientSelector').then((mod) => ({
+      default: mod.RecipientSelector,
+    })),
   {
     loading: () => (
       <div className="flex items-center justify-center p-8">

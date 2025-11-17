@@ -8,7 +8,7 @@ import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQuery, UseMutationResult, UseQueryResult } from '@tanstack/react-query';
+import { useMutation, useQuery, UseMutationResult } from '@tanstack/react-query';
 import logger from '@/lib/logger';
 
 import { docSchema, type FormValues } from '@/types/beneficiary-form';

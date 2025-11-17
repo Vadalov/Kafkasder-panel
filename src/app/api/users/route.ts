@@ -204,7 +204,7 @@ async function createUserHandler(request: NextRequest) {
     const response = await convexUsers.create({
       name: validation.data.name,
       email: validation.data.email,
-      role: validation.data.role,
+      role: validation.data.role as any,
       permissions: validation.data.permissions,
       passwordHash,
       isActive: validation.data.isActive,

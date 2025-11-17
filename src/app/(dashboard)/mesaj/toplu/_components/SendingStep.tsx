@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
 import type { SendingResult } from '@/lib/messages/calculations';
 

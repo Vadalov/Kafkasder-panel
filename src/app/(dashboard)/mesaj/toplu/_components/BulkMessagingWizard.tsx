@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, CheckCircle, Clock, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Send } from 'lucide-react';
 import { STEP_TITLES, STEP_DESCRIPTIONS, WIZARD_STEPS } from '@/lib/messages/constants';
 import type { MessageType } from '@/lib/messages/calculations';
 
@@ -119,7 +119,7 @@ interface WizardProgressIndicatorProps {
   isSending: boolean;
 }
 
-function WizardProgressIndicator({ currentStep, isSending }: WizardProgressIndicatorProps) {
+function WizardProgressIndicator({ currentStep, isSending: _isSending }: WizardProgressIndicatorProps) {
   const steps: WizardStep[] = [WIZARD_STEPS.COMPOSE, WIZARD_STEPS.RECIPIENTS, WIZARD_STEPS.PREVIEW, WIZARD_STEPS.SENDING];
   const currentIndex = steps.indexOf(currentStep);
 

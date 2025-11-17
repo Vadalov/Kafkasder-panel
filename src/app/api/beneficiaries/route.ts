@@ -187,7 +187,7 @@ async function createBeneficiaryHandler(request: NextRequest) {
       approved_at: body.approved_at,
     };
 
-    const response = await convexBeneficiaries.create(beneficiaryData, {
+    const response = await convexBeneficiaries.create(beneficiaryData as any, {
       auth: { userId: user.id, role: user.role ?? 'Personel' },
     });
 

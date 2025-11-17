@@ -131,7 +131,7 @@ export default function BulkMessagingPage() {
     setWizardStep(step);
   };
 
-  const handleStartOver = () => {
+  const _handleStartOver = () => {
     setWizardStep('compose');
     setMessageType('sms');
     setMessageData({ content: '' });

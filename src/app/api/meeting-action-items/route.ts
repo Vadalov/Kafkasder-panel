@@ -96,16 +96,16 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await convexMeetingActionItems.create({
-      meeting_id: body.meeting_id,
-      decision_id: body.decision_id,
-      title: body.title,
-      description: body.description,
-      assigned_to: body.assigned_to,
-      created_by: body.created_by,
-      status: (body.status as ActionStatus) ?? 'beklemede',
-      due_date: body.due_date,
-      notes: body.notes,
-      reminder_scheduled_at: body.reminder_scheduled_at,
+      meeting_id: body.meeting_id as any,
+      decision_id: body.decision_id as any,
+      title: body.title as any,
+      description: body.description as any,
+      assigned_to: body.assigned_to as any,
+      created_by: body.created_by as any,
+      status: (body.status as any) ?? 'beklemede',
+      due_date: body.due_date as any,
+      notes: body.notes as any,
+      reminder_scheduled_at: body.reminder_scheduled_at as any,
     });
 
     return NextResponse.json(

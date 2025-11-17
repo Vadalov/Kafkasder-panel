@@ -50,7 +50,7 @@ export function useCountUp({
 }: UseCountUpOptions) {
   // Initialize with correct value based on enabled state
   const [count, setCount] = useState(() => (enabled ? start : end));
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | undefined>(undefined);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {

@@ -87,14 +87,14 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await convexMeetingDecisions.create({
-      meeting_id: body.meeting_id,
-      title: body.title,
-      summary: body.summary,
-      owner: body.owner,
-      created_by: body.created_by,
-      status: (body.status as 'acik' | 'devam' | 'kapatildi') ?? 'acik',
-      tags: body.tags,
-      due_date: body.due_date,
+      meeting_id: body.meeting_id as any,
+      title: body.title as any,
+      summary: body.summary as any,
+      owner: body.owner as any,
+      created_by: body.created_by as any,
+      status: (body.status as any) ?? 'acik',
+      tags: body.tags as any,
+      due_date: body.due_date as any,
     });
 
     return NextResponse.json(

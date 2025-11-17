@@ -122,7 +122,7 @@ async function updateUserHandler(
     const userData: Parameters<typeof convexUsers.update>[1] = {
       name: typeof body.name === 'string' ? body.name.trim() : undefined,
       email: typeof body.email === 'string' ? body.email.trim().toLowerCase() : undefined,
-      role: typeof body.role === 'string' ? body.role.trim() : undefined,
+      role: typeof body.role === 'string' ? (body.role.trim() as any) : undefined,
       permissions,
       isActive: typeof body.isActive === 'boolean' ? body.isActive : undefined,
       phone:

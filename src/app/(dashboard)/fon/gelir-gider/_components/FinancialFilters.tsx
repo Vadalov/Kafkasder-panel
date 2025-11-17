@@ -161,7 +161,7 @@ export function FinancialFilters({
             <Select
               value={categoryFilter}
               onValueChange={onCategoryChange}
-              disabled={recordTypeFilter !== 'all' && availableCategories.length === 0}
+              disabled={recordTypeFilter !== 'all' && (availableCategories.length as number) === 0}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Kategori" />
