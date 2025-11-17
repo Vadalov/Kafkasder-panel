@@ -13,6 +13,8 @@ import { v } from 'convex/values';
 import { PersistentTextStreaming } from '@convex-dev/persistent-text-streaming';
 import { components } from './_generated/api';
 import type { StreamId } from '@convex-dev/persistent-text-streaming';
+import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
 
 const persistentTextStreaming = new PersistentTextStreaming(components.persistentTextStreaming);
 
@@ -139,8 +141,7 @@ export const streamChat = httpAction(async (ctx, request) => {
 
   /**
    * Generate chat response function
-   * This is where you'd integrate with your AI service (OpenAI, Anthropic, etc.)
-   * For now, this is a placeholder that demonstrates the streaming pattern
+   * Integrates with OpenAI using Vercel AI SDK
    */
   const generateChat = async (
     ctx: any,
@@ -149,42 +150,55 @@ export const streamChat = httpAction(async (ctx, request) => {
     chunkAppender: (chunk: string) => Promise<void>
   ) => {
     try {
-      // TODO: Replace this with your actual AI integration
-      // Example with OpenAI:
-      // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-      // const stream = await openai.chat.completions.create({
-      //   model: "gpt-4",
-      //   messages: [{ role: "user", content: body.prompt }],
-      //   stream: true,
-      // });
-      //
-      // for await (const chunk of stream) {
-      //   const content = chunk.choices[0]?.delta?.content || '';
-      //   if (content) {
-      //     await chunkAppender(content);
-      //   }
-      // }
+      // Check if API key is configured
+      const apiKey = process.env.OPENAI_API_KEY;
 
-      // Placeholder simulation
-      const simulatedResponse = [
-        'Merhaba! ',
-        'Size nasıl yardımcı olabilirim?\n\n',
-        'Bu, Convex persistent text streaming ',
-        'bileşenini kullanan bir demo yanıttır. ',
-        'Gerçek bir AI entegrasyonu için, ',
-        'yukarıdaki TODO yorumunu takip edin.\n\n',
-        'Özellikler:\n',
-        '- HTTP streaming ile anlık yanıtlar\n',
-        '- Veritabanında kalıcı saklama\n',
-        '- Çoklu kullanıcı desteği\n',
-        '- Bağlantı kopsa bile erişilebilir geçmiş\n\n',
-        'İyi günler! 🚀',
-      ];
+      if (!apiKey) {
+        // Fallback to demo mode if no API key
+        const demoResponse =
+          'Demo Mode: OPENAI_API_KEY yapılandırılmamış.\n\n' +
+          'Gerçek AI yanıtları almak için .env.local dosyasına OPENAI_API_KEY ekleyin.\n\n' +
+          `Kullanıcı sorusu: "${body.prompt}"`;
 
-      for (const chunk of simulatedResponse) {
-        await chunkAppender(chunk);
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await chunkAppender(demoResponse);
+
+        await ctx.runMutation(ctx.mutations.ai_chat.updateChatStatus, {
+          chatId: body.chatId,
+          status: 'completed',
+        });
+        return;
+      }
+
+      // Configure OpenAI model with API key
+      const model = openai('gpt-4o-mini', {
+        apiKey: apiKey,
+      });
+
+      // Stream AI response using Vercel AI SDK
+      const result = await streamText({
+        model: model,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Sen Kafkasder derneklerinin yönetim sistemi için yardımcı bir AI asistanısın. ' +
+              'Türkçe olarak yardımcı ol. Dernek yönetimi, bağış takibi, ihtiyaç sahipleri, ' +
+              'burs yönetimi ve benzer konularda bilgi ver. Kısa ve öz yanıtlar ver.',
+          },
+          {
+            role: 'user',
+            content: body.prompt,
+          },
+        ],
+        maxTokens: 1000,
+        temperature: 0.7,
+      });
+
+      // Stream chunks to the client
+      for await (const textPart of result.textStream) {
+        if (textPart) {
+          await chunkAppender(textPart);
+        }
       }
 
       // Update chat status to completed
@@ -193,11 +207,30 @@ export const streamChat = httpAction(async (ctx, request) => {
         status: 'completed',
       });
     } catch (error) {
-      console.error('Error generating chat:', error);
+      // Enhanced error logging
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error generating AI chat response:', {
+        error: errorMessage,
+        chatId: body.chatId,
+        promptLength: body.prompt?.length || 0,
+      });
+
+      // Try to send error message to user
+      try {
+        await chunkAppender(
+          '\n\n[Hata: AI yanıtı oluşturulamadı. ' +
+          'Lütfen daha sonra tekrar deneyin veya sistem yöneticisiyle iletişime geçin.]'
+        );
+      } catch (appendError) {
+        console.error('Failed to append error message:', appendError);
+      }
+
+      // Update status to error
       await ctx.runMutation(ctx.mutations.ai_chat.updateChatStatus, {
         chatId: body.chatId,
         status: 'error',
       });
+
       throw error;
     }
   };
