@@ -3,20 +3,64 @@
  * Extracted form logic for better organization
  */
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useCallback } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 import logger from '@/lib/logger';
 
 import { docSchema, type FormValues } from '@/types/beneficiary-form';
 import { beneficiaries } from '@/lib/api/crud-factory';
 import type { BeneficiaryDocument } from '@/types/database';
 
-// Stub function for Mernis TC Kimlik validation
-const checkMernis = async (tcNo: string) => {
+/**
+ * Mernis TC validation response type
+ */
+interface MernisValidationResponse {
+  valid: boolean;
+}
+
+/**
+ * Beneficiary form hook return type
+ */
+interface UseBeneficiaryFormReturn {
+  // Form
+  form: UseFormReturn<FormValues>;
+  onSubmit: (data: FormValues) => void;
+  resetForm: () => void;
+
+  // State
+  openModal: string | null;
+  setOpenModal: (modal: string | null) => void;
+  selectedCity: string;
+  setSelectedCity: (city: string) => void;
+  selectedDistrict: string;
+  setSelectedDistrict: (district: string) => void;
+  selectedNeighborhood: string;
+  setSelectedNeighborhood: (neighborhood: string) => void;
+  selectedDiseaseCategory: string;
+  setSelectedDiseaseCategory: (category: string) => void;
+
+  // Data
+  beneficiary: BeneficiaryDocument | undefined;
+  isLoading: boolean;
+  error: Error | null;
+
+  // Mutations
+  updateMutation: UseMutationResult<unknown, Error, FormValues, unknown>;
+  deleteMutation: UseMutationResult<void, Error, void, unknown>;
+
+  // Handlers
+  handleDelete: () => void;
+  handleMernisCheck: () => Promise<void>;
+}
+
+/**
+ * Stub function for Mernis TC Kimlik validation
+ */
+const checkMernis = async (tcNo: string): Promise<boolean> => {
   try {
     const response = await fetch('/api/mernis/validate', {
       method: 'POST',
@@ -28,7 +72,7 @@ const checkMernis = async (tcNo: string) => {
       throw new Error('Mernis validation failed');
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as MernisValidationResponse;
     return data.valid;
   } catch (error) {
     logger.error('Mernis validation error:', error);
@@ -36,7 +80,10 @@ const checkMernis = async (tcNo: string) => {
   }
 };
 
-export function useBeneficiaryForm(beneficiaryId: string) {
+/**
+ * Hook for managing beneficiary form state and mutations
+ */
+export function useBeneficiaryForm(beneficiaryId: string): UseBeneficiaryFormReturn {
   const router = useRouter();
 
   // Form state
@@ -130,18 +177,18 @@ export function useBeneficiaryForm(beneficiaryId: string) {
     },
   });
 
-  // Form handlers
-  const onSubmit = (data: FormValues) => {
+  // Form handlers with useCallback for optimization
+  const onSubmit = useCallback((data: FormValues): void => {
     updateMutation.mutate(data);
-  };
+  }, [updateMutation]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback((): void => {
     if (confirm('Bu başvuru sahibini silmek istediğinizden emin misiniz?')) {
       deleteMutation.mutate();
     }
-  };
+  }, [deleteMutation]);
 
-  const handleMernisCheck = async () => {
+  const handleMernisCheck = useCallback(async (): Promise<void> => {
     const tcNo = form.getValues('tc_no');
     if (!tcNo || tcNo.length !== 11) {
       toast.error('Geçerli TC Kimlik No giriniz');
@@ -154,16 +201,16 @@ export function useBeneficiaryForm(beneficiaryId: string) {
     } else {
       toast.error('TC Kimlik No geçersiz');
     }
-  };
+  }, [form]);
 
   // Reset form
-  const resetForm = () => {
+  const resetForm = useCallback((): void => {
     form.reset();
     setSelectedCity('');
     setSelectedDistrict('');
     setSelectedNeighborhood('');
     setSelectedDiseaseCategory('');
-  };
+  }, [form]);
 
   return {
     // Form
