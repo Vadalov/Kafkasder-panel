@@ -1,8 +1,10 @@
 /**
  * Donor Information Section for Kumbara Form
  * Extracted from KumbaraForm for better modularity
+ * Memoized to prevent unnecessary re-renders
  */
 
+import { memo } from 'react';
 import { Control } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -12,7 +14,7 @@ interface DonorInfoSectionProps {
   control: Control<KumbaraCreateInput>;
 }
 
-export function DonorInfoSection({ control }: DonorInfoSectionProps) {
+export const DonorInfoSection = memo(function DonorInfoSection({ control }: DonorInfoSectionProps) {
   return (
     <div className="space-y-2 p-2 bg-gray-50/50 dark:bg-gray-900/20 rounded-md border border-gray-200 dark:border-gray-800">
       <div className="flex items-center gap-1.5">
@@ -101,4 +103,4 @@ export function DonorInfoSection({ control }: DonorInfoSectionProps) {
       </div>
     </div>
   );
-}
+});

@@ -1,8 +1,10 @@
 /**
  * Donation Details Section for Kumbara Form
  * Extracted from KumbaraForm for better modularity
+ * Memoized to prevent unnecessary re-renders
  */
 
+import { memo } from 'react';
 import { Control } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,7 +23,7 @@ interface DonationDetailsSectionProps {
   currentCurrency: 'TRY' | 'USD' | 'EUR';
 }
 
-export function DonationDetailsSection({ control, currentCurrency }: DonationDetailsSectionProps) {
+export const DonationDetailsSection = memo(function DonationDetailsSection({ control, currentCurrency }: DonationDetailsSectionProps) {
   const { getCurrencySymbol } = useCurrencyFormat();
 
   return (
@@ -117,4 +119,4 @@ export function DonationDetailsSection({ control, currentCurrency }: DonationDet
       </div>
     </div>
   );
-}
+});
