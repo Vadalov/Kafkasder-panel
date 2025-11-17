@@ -284,8 +284,8 @@ export default defineSchema({
       v.literal('SMS'),
       v.literal('AYNI')
     ),
-    /** @type {object} - Payment method-specific details stored as JSON. */
-    payment_details: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Payment method-specific details stored as JSON. */
+    payment_details: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - The specific purpose or campaign for the donation. */
     donation_purpose: v.string(),
     /** @type {string} - Additional notes about the donation. */
@@ -539,8 +539,8 @@ export default defineSchema({
         id: v.string(),
       })
     ),
-    /** @type {any} - Any additional metadata associated with the notification. */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Any additional metadata associated with the notification. */
+    metadata: v.optional(v.record(v.string(), v.any())),
   })
     .index('by_recipient', ['recipient'])
     .index('by_status', ['status'])
@@ -773,8 +773,8 @@ export default defineSchema({
     name: v.string(),
     /** @type {string} - The type of report this configuration generates. */
     report_type: v.string(),
-    /** @type {any} - Serialized filters applied when generating the report. */
-    filters: v.any(),
+    /** @type {Record<string, unknown>} - Serialized filters applied when generating the report. */
+    filters: v.record(v.string(), v.any()),
     /** @type {{frequency: 'daily' | 'weekly' | 'monthly', recipients: Id<'users'>[]}} - Optional scheduling settings. */
     schedule: v.optional(
       v.object({
@@ -805,8 +805,8 @@ export default defineSchema({
     ip_address: v.optional(v.string()),
     /** @type {string | undefined} - User agent string. */
     user_agent: v.optional(v.string()),
-    /** @type {any} - Additional contextual details. */
-    details: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional contextual details. */
+    details: v.optional(v.record(v.string(), v.any())),
     /** @type {'low'|'medium'|'high'|'critical'} - Severity level. */
     severity: v.union(
       v.literal('low'),
@@ -1064,38 +1064,6 @@ export default defineSchema({
     .index('by_relationship', ['relationship']),
 
   /**
-   * @collection system_settings
-   * @description Stores system-wide settings and configurations.
-   */
-  system_settings: defineTable({
-    /** @type {string} - The category of the setting (e.g., 'organization', 'security'). */
-    category: v.string(), // 'organization', 'email', 'notifications', 'system', 'security', 'appearance', 'integrations', 'reports'
-    /** @type {string} - The unique key for the setting (e.g., 'org_name', 'smtp_host'). */
-    key: v.string(), // Unique key for the setting (e.g., 'org_name', 'smtp_host')
-    /** @type {any} - The value of the setting, can be of any type. */
-    value: v.any(), // Flexible value type (string, number, boolean, object)
-    /** @type {string} - A human-readable description of the setting. */
-    description: v.optional(v.string()), // Human-readable description
-    /** @type {'string'|'number'|'boolean'|'object'|'array'} - The data type of the setting's value. */
-    data_type: v.union(
-      v.literal('string'),
-      v.literal('number'),
-      v.literal('boolean'),
-      v.literal('object'),
-      v.literal('array')
-    ),
-    /** @type {boolean} - Flag indicating if the setting contains sensitive data that should be masked or encrypted. */
-    is_sensitive: v.optional(v.boolean()), // For sensitive data like passwords
-    /** @type {Id<'users'>} - The ID of the user who last updated the setting. */
-    updated_by: v.optional(v.id('users')),
-    /** @type {string} - The timestamp when the setting was last updated. */
-    updated_at: v.string(),
-  })
-    .index('by_category', ['category'])
-    .index('by_key', ['key'])
-    .index('by_category_key', ['category', 'key']),
-
-  /**
    * @collection scholarships
    * @description Defines available scholarship programs.
    */
@@ -1271,8 +1239,8 @@ export default defineSchema({
     sentAt: v.string(),
     /** @type {Id<'users'>} - User who initiated the communication */
     userId: v.optional(v.id('users')),
-    /** @type {any} - Additional metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
   })
     .index('by_type', ['type'])
     .index('by_status', ['status'])
@@ -1321,16 +1289,16 @@ export default defineSchema({
     resource: v.string(),
     /** @type {string} - Resource ID */
     resourceId: v.string(),
-    /** @type {any} - Before and after values for updates */
-    changes: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Before and after values for updates */
+    changes: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - IP address */
     ipAddress: v.optional(v.string()),
     /** @type {string} - User agent */
     userAgent: v.optional(v.string()),
     /** @type {string} - Timestamp */
     timestamp: v.string(),
-    /** @type {any} - Additional metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
   })
     .index('by_user', ['userId'])
     .index('by_resource', ['resource', 'resourceId'])
@@ -1377,14 +1345,14 @@ export default defineSchema({
     ),
     /** @type {string} - Technical stack trace (for runtime errors) */
     stack_trace: v.optional(v.string()),
-    /** @type {any} - Additional context data */
-    error_context: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional context data */
+    error_context: v.optional(v.record(v.string(), v.any())),
     /** @type {Id<'users'>} - User who encountered the error */
     user_id: v.optional(v.id('users')),
     /** @type {string} - User session identifier */
     session_id: v.optional(v.string()),
-    /** @type {any} - Browser, OS, device information */
-    device_info: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Browser, OS, device information */
+    device_info: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - Page URL where error occurred */
     url: v.optional(v.string()),
     /** @type {string} - React component or module name */
@@ -1403,8 +1371,8 @@ export default defineSchema({
     reporter_id: v.optional(v.id('users')),
     /** @type {string[]} - Custom tags for categorization */
     tags: v.optional(v.array(v.string())),
-    /** @type {any} - Additional flexible metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional flexible metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - Notes on how error was resolved */
     resolution_notes: v.optional(v.string()),
     /** @type {string} - Resolution timestamp */
@@ -1454,8 +1422,8 @@ export default defineSchema({
     ip_address: v.optional(v.string()),
     /** @type {string} - Browser user agent string */
     user_agent: v.optional(v.string()),
-    /** @type {any} - Application state at error time */
-    context_snapshot: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Application state at error time */
+    context_snapshot: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - Reference to Sentry event */
     sentry_event_id: v.optional(v.string()),
     /** @type {string} - Stack trace for this occurrence */
@@ -1483,8 +1451,8 @@ export default defineSchema({
     value: v.number(),
     /** @type {string} - Unit of measurement */
     unit: v.string(),
-    /** @type {any} - Additional metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - Timestamp when recorded */
     recorded_at: v.string(),
   })
@@ -1505,8 +1473,8 @@ export default defineSchema({
     stack_trace: v.optional(v.string()),
     /** @type {Id<'users'>} - User who encountered the error */
     user_id: v.optional(v.id('users')),
-    /** @type {any} - Additional context */
-    context: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional context */
+    context: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - Timestamp when error occurred */
     occurred_at: v.string(),
     /** @type {boolean} - Whether error is resolved */
@@ -1545,8 +1513,8 @@ export default defineSchema({
     title: v.string(),
     /** @type {string} - Alert description */
     description: v.string(),
-    /** @type {any} - Additional metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Additional metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
     /** @type {string} - Creation timestamp */
     created_at: v.string(),
     /** @type {boolean} - Whether alert is acknowledged */
@@ -1599,8 +1567,8 @@ export default defineSchema({
     title: v.string(),
     /** @type {string} - Agent name/type that owns this thread */
     agent_name: v.string(),
-    /** @type {object} - Thread metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Thread metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
     /** @type {'active'|'archived'} - Thread status */
     status: v.union(v.literal('active'), v.literal('archived')),
     /** @type {number} - Creation timestamp */
@@ -1633,10 +1601,10 @@ export default defineSchema({
     content: v.string(),
     /** @type {string} - Agent name that created this message */
     agent_name: v.optional(v.string()),
-    /** @type {object} - Tool calls or results */
-    tool_calls: v.optional(v.any()),
-    /** @type {object} - Additional metadata */
-    metadata: v.optional(v.any()),
+    /** @type {Record<string, unknown>} - Tool calls or results */
+    tool_calls: v.optional(v.record(v.string(), v.any())),
+    /** @type {Record<string, unknown>} - Additional metadata */
+    metadata: v.optional(v.record(v.string(), v.any())),
     /** @type {number} - Creation timestamp */
     created_at: v.number(),
   })
