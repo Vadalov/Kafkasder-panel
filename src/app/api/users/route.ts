@@ -10,6 +10,7 @@ import {
 import { parseBody, handleApiError } from '@/lib/api/route-helpers';
 import { ALL_PERMISSIONS, type PermissionValue } from '@/types/permissions';
 import { InputSanitizer } from '@/lib/security';
+import { dataModificationRateLimit, readOnlyRateLimit } from '@/lib/rate-limit';
 
 const PERMISSION_SET = new Set(ALL_PERMISSIONS);
 
@@ -109,7 +110,7 @@ const normalizeUserPayload = (
   };
 };
 
-export async function GET(request: NextRequest) {
+async function getUsersHandler(request: NextRequest) {
   try {
     const { user } = await requireAuthenticatedUser();
     if (!user.permissions.includes('users:manage')) {
@@ -235,4 +236,6 @@ async function createUserHandler(request: NextRequest) {
   }
 }
 
-export const POST = createUserHandler;
+// Export handlers with rate limiting
+export const GET = readOnlyRateLimit(getUsersHandler);
+export const POST = dataModificationRateLimit(createUserHandler);

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link';
 import type { BeneficiaryDocument } from '@/types/database';
 import { toast } from 'sonner';
+import logger from '@/lib/logger';
 import { ArrowUpRight, Download, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -17,8 +18,8 @@ import { useRouter } from 'next/navigation';
 import { useFPSMonitor } from '@/lib/performance-monitor';
 import { useCachedQuery, usePrefetchWithCache } from '@/lib/api-cache';
 
-// Optimized skeleton
-import { TableSkeleton } from '@/components/ui/skeleton-optimized';
+// Unified skeleton with all features
+import { TableSkeleton } from '@/components/ui/skeleton';
 
 // Completely independent API function to bypass HMR issues
 async function fetchBeneficiariesDirectly(params?: {
@@ -47,7 +48,7 @@ async function fetchBeneficiariesDirectly(params?: {
 
     return await response.json();
   } catch (error) {
-    console.error('Direct API call failed:', error);
+    logger.error('Direct API call failed', { error });
     throw error;
   }
 }
@@ -152,7 +153,7 @@ export default function BeneficiariesPage() {
   // Performance monitoring
   React.useEffect(() => {
     if (!isGoodPerformance() && process.env.NODE_ENV === 'development') {
-      console.warn('Performance degraded:', { fps: getFPS() });
+      logger.warn('Performance degraded', { fps: getFPS() });
     }
   }, [getFPS, isGoodPerformance]);
 

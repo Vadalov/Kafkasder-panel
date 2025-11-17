@@ -95,10 +95,10 @@ describe('Cache Configuration', () => {
 
     it('should define strategy for beneficiaries', () => {
       expect(CACHE_STRATEGIES.BENEFICIARIES).toMatchObject({
-        staleTime: CACHE_TIMES.STANDARD,
-        gcTime: GC_TIMES.STANDARD,
+        staleTime: CACHE_TIMES.LONG,
+        gcTime: GC_TIMES.LONG,
         refetchOnWindowFocus: false,
-        refetchOnReconnect: true,
+        refetchOnReconnect: false,
       });
     });
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { generateCsrfToken } from '@/lib/csrf';
+import logger from '@/lib/logger';
 
 /**
  * GET /api/csrf
@@ -32,7 +33,7 @@ export async function GET(_request: NextRequest) {
       token: csrfToken,
     });
   } catch (_error) {
-    console.error('CSRF token generation error:', _error);
+    logger.error('CSRF token generation error', { error: _error });
 
     return NextResponse.json(
       { success: false, error: 'Failed to generate CSRF token' },
