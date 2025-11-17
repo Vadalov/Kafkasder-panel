@@ -8,11 +8,16 @@ interface RateLimitOptions {
   skipFailedRequests?: boolean;
 }
 
+// Next.js route handler context type
+interface RouteContext {
+  params?: Record<string, string | string[]>;
+}
+
 export function withRateLimit(
-  handler: (req: NextRequest, context?: any) => Promise<NextResponse> | NextResponse,
+  handler: (req: NextRequest, context?: RouteContext) => Promise<NextResponse> | NextResponse,
   options: RateLimitOptions = { maxRequests: 100, windowMs: 15 * 60 * 1000 } // 100 requests per 15 minutes
 ) {
-  return async (req: NextRequest, context?: any): Promise<NextResponse> => {
+  return async (req: NextRequest, context?: RouteContext): Promise<NextResponse> => {
     // Get client identifier (IP address)
     const clientIP =
       req.headers.get('x-forwarded-for') ||
@@ -90,7 +95,7 @@ export function withRateLimit(
 
 // Pre-configured rate limiters for different endpoints
 export const authRateLimit = (
-  handler: (req: NextRequest, context?: any) => Promise<NextResponse> | NextResponse
+  handler: (req: NextRequest, context?: RouteContext) => Promise<NextResponse> | NextResponse
 ) =>
   withRateLimit(handler, {
     maxRequests: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '10'),

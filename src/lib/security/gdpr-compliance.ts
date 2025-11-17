@@ -60,11 +60,11 @@ export const PERSONAL_DATA_FIELDS = {
 /**
  * Anonymize personal data for compliance
  */
-export function anonymizePersonalData(
-  data: Record<string, any>,
+export function anonymizePersonalData<T extends Record<string, unknown>>(
+  data: T,
   fieldsToAnonymize: string[] = [...PERSONAL_DATA_FIELDS.IDENTIFIABLE]
-): Record<string, any> {
-  const anonymized: Record<string, any> = { ...data };
+): T {
+  const anonymized: Record<string, unknown> = { ...data };
 
   for (const field of fieldsToAnonymize) {
     if (field in anonymized) {
@@ -82,7 +82,7 @@ export function anonymizePersonalData(
     }
   }
 
-  return anonymized;
+  return anonymized as T;
 }
 
 /**
@@ -98,21 +98,69 @@ export function isRetentionPeriodExpired(
   return Date.now() - created > retentionMs;
 }
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  createdAt: string;
+  lastLogin?: string;
+}
+
+export interface ActivityLog {
+  timestamp: string;
+  action: string;
+  details?: Record<string, unknown>;
+}
+
+export interface DonationRecord {
+  id: string;
+  amount: number;
+  date: string;
+  [key: string]: unknown;
+}
+
+export interface ApplicationRecord {
+  id: string;
+  type: string;
+  status: string;
+  [key: string]: unknown;
+}
+
+export interface UserDataExport {
+  exportDate: string;
+  userId: string;
+  format: 'JSON';
+  data: {
+    personalInformation: {
+      name: string;
+      email: string;
+      phone?: string;
+      accountCreated: string;
+      lastLogin?: string;
+    };
+    activityLogs: ActivityLog[];
+    consents: ConsentRecord[];
+    donations: DonationRecord[];
+    applications: ApplicationRecord[];
+    exportMetadata: {
+      requestDate: string;
+      dataTypes: string[];
+      gdprCompliant: boolean;
+    };
+  };
+}
+
 /**
  * Generate user data export package
  */
 export function generateUserDataExport(userData: {
-  profile: any;
-  activityLogs?: any[];
+  profile: UserProfile;
+  activityLogs?: ActivityLog[];
   consents?: ConsentRecord[];
-  donations?: any[];
-  applications?: any[];
-}): {
-  exportDate: string;
-  userId: string;
-  data: any;
-  format: 'JSON';
-} {
+  donations?: DonationRecord[];
+  applications?: ApplicationRecord[];
+}): UserDataExport {
   return {
     exportDate: new Date().toISOString(),
     userId: userData.profile.id,
@@ -174,17 +222,23 @@ export function validateDeletionRequest(request: UserDataDeletionRequest): {
   };
 }
 
-/**
- * Create deletion audit trail
- */
-export function createDeletionAuditTrail(request: UserDataDeletionRequest): {
+export interface DeletionAuditTrail {
   auditId: string;
   userId: string;
   action: 'DATA_DELETION_REQUESTED' | 'DATA_DELETION_COMPLETED';
   timestamp: string;
   reason?: string;
-  metadata: any;
-} {
+  metadata: {
+    retentionOverride: boolean;
+    requestDate: string;
+    gdprCompliant: boolean;
+  };
+}
+
+/**
+ * Create deletion audit trail
+ */
+export function createDeletionAuditTrail(request: UserDataDeletionRequest): DeletionAuditTrail {
   return {
     auditId: `DEL_${Date.now()}_${request.userId}`,
     userId: request.userId,

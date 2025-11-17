@@ -63,11 +63,12 @@ export function useDeviceDetection(): DeviceInfo {
     const height = window.innerHeight;
     const screenSize = getScreenSize(width);
     const deviceType = getDeviceType(width);
+    // Check for touch support (including legacy IE)
     const isTouchDevice =
       'ontouchstart' in window ||
       navigator.maxTouchPoints > 0 ||
-      // @ts-expect-error - for older browsers
-      navigator.msMaxTouchPoints > 0;
+      // Legacy IE support - check if property exists before accessing
+      ('msMaxTouchPoints' in navigator && (navigator as Navigator & { msMaxTouchPoints: number }).msMaxTouchPoints > 0);
 
     return {
       deviceType,
@@ -89,11 +90,12 @@ export function useDeviceDetection(): DeviceInfo {
       const height = window.innerHeight;
       const screenSize = getScreenSize(width);
       const deviceType = getDeviceType(width);
+      // Check for touch support (including legacy IE)
       const isTouchDevice =
         'ontouchstart' in window ||
         navigator.maxTouchPoints > 0 ||
-        // @ts-expect-error - for older browsers
-        navigator.msMaxTouchPoints > 0;
+        // Legacy IE support - check if property exists before accessing
+        ('msMaxTouchPoints' in navigator && (navigator as Navigator & { msMaxTouchPoints: number }).msMaxTouchPoints > 0);
 
       setDeviceInfo({
         deviceType,
