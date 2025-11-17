@@ -29,7 +29,7 @@ import { validateRecipients, formatPhoneNumber } from '@/lib/validations/message
 import type { BeneficiaryDocument, DonationDocument, UserDocument } from '@/types/database';
 
 interface RecipientSelectorProps {
-  messageType: 'sms' | 'email' | 'internal';
+  messageType: 'sms' | 'email' | 'internal' | 'whatsapp';
   selectedRecipients: string[];
   onRecipientsChange: (recipients: string[]) => void;
   maxRecipients?: number;

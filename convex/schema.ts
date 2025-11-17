@@ -552,7 +552,7 @@ export default defineSchema({
    */
   messages: defineTable({
     /** @type {'sms'|'email'|'internal'} - The type of the message. */
-    message_type: v.union(v.literal('sms'), v.literal('email'), v.literal('internal')),
+    message_type: v.union(v.literal('sms'), v.literal('email'), v.literal('internal'), v.literal('whatsapp')),
     /** @type {Id<'users'>} - The ID of the user who sent the message. */
     sender: v.id('users'),
     /** @type {Id<'users'>[]} - An array of user IDs for the recipients. */

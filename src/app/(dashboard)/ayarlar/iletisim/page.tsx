@@ -5,7 +5,7 @@
  * Manage Email/SMTP, SMS/Twilio, and WhatsApp configurations
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,8 +42,6 @@ export default function CommunicationSettingsPage() {
     },
   });
 
-  const settings = settingsData?.data || { email: {}, sms: {}, whatsapp: {} };
-
   // Email form state
   const [emailForm, setEmailForm] = useState({
     smtpHost: '',
@@ -77,9 +75,29 @@ export default function CommunicationSettingsPage() {
     testMode: true,
   });
 
-  // Update forms when data loads
+  // Track previous data key to prevent re-initialization
+  const previousDataKeyRef = useRef<string>('');
+
+  // Update forms when settings data loads (only when data actually changes)
   useEffect(() => {
-    if (settings.email) {
+    // Skip if no data
+    if (!settingsData?.data) {
+      return;
+    }
+
+    // Create a stable key from the data
+    const dataKey = JSON.stringify(settingsData.data);
+    
+    // Skip if data hasn't changed
+    if (previousDataKeyRef.current === dataKey) {
+      return;
+    }
+
+    previousDataKeyRef.current = dataKey;
+    const settings = settingsData.data;
+
+    // Update email form only if email settings exist
+    if (settings.email && Object.keys(settings.email).length > 0) {
       setEmailForm({
         smtpHost: settings.email.smtpHost || '',
         smtpPort: settings.email.smtpPort || 587,
@@ -93,7 +111,8 @@ export default function CommunicationSettingsPage() {
       });
     }
 
-    if (settings.sms) {
+    // Update SMS form only if SMS settings exist
+    if (settings.sms && Object.keys(settings.sms).length > 0) {
       setSmsForm({
         twilioAccountSid: settings.sms.twilioAccountSid || '',
         twilioAuthToken: settings.sms.twilioAuthToken || '',
@@ -104,7 +123,8 @@ export default function CommunicationSettingsPage() {
       });
     }
 
-    if (settings.whatsapp) {
+    // Update WhatsApp form only if WhatsApp settings exist
+    if (settings.whatsapp && Object.keys(settings.whatsapp).length > 0) {
       setWhatsappForm({
         phoneNumberId: settings.whatsapp.phoneNumberId || '',
         accessToken: settings.whatsapp.accessToken || '',
@@ -114,7 +134,8 @@ export default function CommunicationSettingsPage() {
         testMode: settings.whatsapp.testMode ?? true,
       });
     }
-  }, [settings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsData?.data]);
 
   // Update mutation
   const updateMutation = useMutation({

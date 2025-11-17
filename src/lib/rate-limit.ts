@@ -9,10 +9,10 @@ interface RateLimitOptions {
 }
 
 export function withRateLimit(
-  handler: (req: NextRequest) => Promise<NextResponse> | NextResponse,
+  handler: (req: NextRequest, context?: any) => Promise<NextResponse> | NextResponse,
   options: RateLimitOptions = { maxRequests: 100, windowMs: 15 * 60 * 1000 } // 100 requests per 15 minutes
 ) {
-  return async (req: NextRequest): Promise<NextResponse> => {
+  return async (req: NextRequest, context?: any): Promise<NextResponse> => {
     // Get client identifier (IP address)
     const clientIP =
       req.headers.get('x-forwarded-for') ||
@@ -60,7 +60,7 @@ export function withRateLimit(
     }
 
     try {
-      const response = await handler(req);
+      const response = await handler(req, context);
 
       // Skip rate limit counting for successful requests if configured
       if (options.skipSuccessfulRequests && response.status < 400) {
@@ -90,7 +90,7 @@ export function withRateLimit(
 
 // Pre-configured rate limiters for different endpoints
 export const authRateLimit = (
-  handler: (req: NextRequest) => Promise<NextResponse> | NextResponse
+  handler: (req: NextRequest, context?: any) => Promise<NextResponse> | NextResponse
 ) =>
   withRateLimit(handler, {
     maxRequests: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '10'),
@@ -106,6 +106,9 @@ export const dataModificationRateLimit = (
     maxRequests: parseInt(process.env.RATE_LIMIT_DATA_MODIFY_MAX || '50'),
     windowMs: parseInt(process.env.RATE_LIMIT_DATA_MODIFY_WINDOW || '900000'), // 50 requests per 15 minutes
   });
+
+// Alias for dataModificationRateLimit (for backward compatibility)
+export const mutationRateLimit = dataModificationRateLimit;
 
 export const readOnlyRateLimit = (
   handler: (req: NextRequest) => Promise<NextResponse> | NextResponse

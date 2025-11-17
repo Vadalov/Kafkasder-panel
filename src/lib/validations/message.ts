@@ -20,7 +20,7 @@ export const recipientSchema = z
   .max(100, 'Alıcı en fazla 100 karakter olmalıdır');
 
 // Message type enum
-export const messageTypeEnum = z.enum(['sms', 'email', 'internal'], {
+export const messageTypeEnum = z.enum(['sms', 'email', 'internal', 'whatsapp'], {
   message: 'Mesaj türü seçiniz',
 });
 
@@ -157,6 +157,8 @@ export const getMessageTypeLabel = (type: MessageDocument['message_type']) => {
       return 'E-posta';
     case 'internal':
       return 'Kurum İçi';
+    case 'whatsapp':
+      return 'WhatsApp';
     default:
       return 'Bilinmiyor';
   }

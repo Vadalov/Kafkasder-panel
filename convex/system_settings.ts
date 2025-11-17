@@ -49,7 +49,7 @@ export async function getSettingValue(
 ): Promise<unknown> {
   const setting = await ctx.db
     .query('system_settings')
-    .withIndex('by_category_key', (q) => q.eq('category', category).eq('key', key))
+    .withIndex('by_category_and_key', (q) => q.eq('category', category).eq('key', key))
     .first();
 
   return setting?.value ?? null;
@@ -77,7 +77,7 @@ export const updateSettings = mutation({
   },
   handler: async (ctx, args) => {
     const settingsObj = args.settings as Record<string, unknown>;
-    const updatedAt = new Date().toISOString();
+    const updatedAt = Date.now();
 
     // Process each setting individually using indexed queries
     // This minimizes the read scope and reduces conflicts
@@ -92,7 +92,7 @@ export const updateSettings = mutation({
       // Check if setting exists
       const existing = await ctx.db
         .query('system_settings')
-        .withIndex('by_category_key', (q) => q.eq('category', args.category).eq('key', key))
+        .withIndex('by_category_and_key', (q) => q.eq('category', args.category).eq('key', key))
         .first();
 
       if (existing) {
@@ -110,7 +110,7 @@ export const updateSettings = mutation({
           key,
           value,
           data_type: dataType,
-          is_sensitive:
+          is_encrypted:
             key.toLowerCase().includes('password') ||
             key.toLowerCase().includes('secret') ||
             key.toLowerCase().includes('key'),
@@ -133,7 +133,7 @@ export const updateSetting = mutation({
     updatedBy: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
-    const updatedAt = new Date().toISOString();
+    const updatedAt = Date.now();
 
     // Determine data type
     let dataType: 'string' | 'number' | 'boolean' | 'object' | 'array' = 'string';
@@ -145,7 +145,7 @@ export const updateSetting = mutation({
     // Check if setting exists
     const existing = await ctx.db
       .query('system_settings')
-      .withIndex('by_category_key', (q) => q.eq('category', args.category).eq('key', args.key))
+      .withIndex('by_category_and_key', (q) => q.eq('category', args.category).eq('key', args.key))
       .first();
 
     if (existing) {
@@ -161,7 +161,7 @@ export const updateSetting = mutation({
         key: args.key,
         value: args.value,
         data_type: dataType,
-        is_sensitive:
+        is_encrypted:
           args.key.toLowerCase().includes('password') ||
           args.key.toLowerCase().includes('secret') ||
           args.key.toLowerCase().includes('key'),

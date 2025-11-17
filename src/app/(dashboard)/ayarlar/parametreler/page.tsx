@@ -62,9 +62,16 @@ export default function ParametersPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['parameters', search, categoryFilter, statusFilter],
-    queryFn: () => parametersApi.getAllParameters(),
+    queryFn: async () => {
+      const result = await parametersApi.getAllParameters();
+      if (!result.success) {
+        throw new Error(result.error instanceof Error ? result.error.message : 'Parametreler alınamadı');
+      }
+      return result;
+    },
+    retry: 1,
   });
 
   const parameters = (data?.data || []) as unknown as Array<{
@@ -199,6 +206,21 @@ export default function ParametersPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            </div>
+          ) : isError ? (
+            <div className="text-center text-red-500 py-12">
+              <p className="text-lg font-medium mb-2">Parametreler yüklenirken hata oluştu</p>
+              <p className="text-sm text-gray-600 mb-4">
+                {error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu'}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  void queryClient.invalidateQueries({ queryKey: ['parameters'] });
+                }}
+              >
+                Tekrar Dene
+              </Button>
             </div>
           ) : parameters.length === 0 ? (
             <div className="text-center text-gray-500 py-12">

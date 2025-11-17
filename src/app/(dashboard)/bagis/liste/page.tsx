@@ -7,7 +7,13 @@ import { VirtualizedDataTable, type DataTableColumn } from '@/components/ui/virt
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Search, Plus, DollarSign, User, Calendar, FileText } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
@@ -148,6 +154,10 @@ export default function DonationsPage() {
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogTitle>Yeni Bağış Ekle</DialogTitle>
+            <DialogDescription>
+              Bağış bilgilerini girerek yeni kayıt oluşturun
+            </DialogDescription>
             <DonationForm
               onSuccess={() => {
                 setShowCreateForm(false);
