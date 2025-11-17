@@ -1,3 +1,20 @@
+/**
+ * ⚠️ DEPRECATED: This component is deprecated and no longer in active use.
+ *
+ * Please use BeneficiaryFormWizard instead:
+ * @see src/components/forms/BeneficiaryFormWizard.tsx
+ *
+ * BeneficiaryFormWizard provides:
+ * - Step-by-step form navigation (5 steps vs single long form)
+ * - Better UX with progress tracking
+ * - Modular architecture with separate step components
+ * - Full support for create and update operations
+ *
+ * This file is kept for reference only and may be removed in a future release.
+ * Last used: Never (no imports found in codebase)
+ * Deprecated: 2025-01-17
+ */
+
 'use client';
 
 import { useState } from 'react';
