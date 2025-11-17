@@ -552,7 +552,7 @@ export default defineSchema({
    */
   messages: defineTable({
     /** @type {'sms'|'email'|'internal'} - The type of the message. */
-    message_type: v.union(v.literal('sms'), v.literal('email'), v.literal('internal')),
+    message_type: v.union(v.literal('sms'), v.literal('email'), v.literal('internal'), v.literal('whatsapp')),
     /** @type {Id<'users'>} - The ID of the user who sent the message. */
     sender: v.id('users'),
     /** @type {Id<'users'>[]} - An array of user IDs for the recipients. */
@@ -1063,37 +1063,6 @@ export default defineSchema({
     .index('by_beneficiary', ['beneficiary_id'])
     .index('by_relationship', ['relationship']),
 
-  /**
-   * @collection system_settings
-   * @description Stores system-wide settings and configurations.
-   */
-  system_settings: defineTable({
-    /** @type {string} - The category of the setting (e.g., 'organization', 'security'). */
-    category: v.string(), // 'organization', 'email', 'notifications', 'system', 'security', 'appearance', 'integrations', 'reports'
-    /** @type {string} - The unique key for the setting (e.g., 'org_name', 'smtp_host'). */
-    key: v.string(), // Unique key for the setting (e.g., 'org_name', 'smtp_host')
-    /** @type {any} - The value of the setting, can be of any type. */
-    value: v.any(), // Flexible value type (string, number, boolean, object)
-    /** @type {string} - A human-readable description of the setting. */
-    description: v.optional(v.string()), // Human-readable description
-    /** @type {'string'|'number'|'boolean'|'object'|'array'} - The data type of the setting's value. */
-    data_type: v.union(
-      v.literal('string'),
-      v.literal('number'),
-      v.literal('boolean'),
-      v.literal('object'),
-      v.literal('array')
-    ),
-    /** @type {boolean} - Flag indicating if the setting contains sensitive data that should be masked or encrypted. */
-    is_sensitive: v.optional(v.boolean()), // For sensitive data like passwords
-    /** @type {Id<'users'>} - The ID of the user who last updated the setting. */
-    updated_by: v.optional(v.id('users')),
-    /** @type {string} - The timestamp when the setting was last updated. */
-    updated_at: v.string(),
-  })
-    .index('by_category', ['category'])
-    .index('by_key', ['key'])
-    .index('by_category_key', ['category', 'key']),
 
   /**
    * @collection scholarships

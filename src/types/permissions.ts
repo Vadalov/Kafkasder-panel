@@ -13,6 +13,8 @@ export const MODULE_PERMISSIONS = {
 
 export const SPECIAL_PERMISSIONS = {
   USERS_MANAGE: 'users:manage',
+  SETTINGS_MANAGE: 'settings:manage',
+  AUDIT_VIEW: 'audit:view',
 } as const;
 
 export const ALL_PERMISSIONS = [
@@ -34,4 +36,6 @@ export const PERMISSION_LABELS: Record<PermissionValue, string> = {
   [MODULE_PERMISSIONS.WORKFLOW]: 'Görev & Toplantılar',
   [MODULE_PERMISSIONS.PARTNERS]: 'Ortak Yönetimi',
   [SPECIAL_PERMISSIONS.USERS_MANAGE]: 'Kullanıcı Yönetimi',
+  [SPECIAL_PERMISSIONS.SETTINGS_MANAGE]: 'Ayarları Yönet',
+  [SPECIAL_PERMISSIONS.AUDIT_VIEW]: 'Denetim Kayıtlarını Görüntüle',
 };

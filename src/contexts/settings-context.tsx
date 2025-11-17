@@ -212,9 +212,34 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   // Set theme
   const setTheme = useCallback(
     async (themeName: string) => {
-      const theme = themePresets.find((t: ThemePreset) => t.name === themeName);
+      const theme = themePresets.find((t) => t.name === themeName);
       if (theme) {
-        setCurrentTheme(theme as ThemePreset);
+        // Map Convex theme to ThemePreset format
+        const mappedTheme: ThemePreset = {
+          _id: theme._id,
+          name: theme.name,
+          description: theme.description,
+          colors: theme.colors,
+          typography: theme.typography ? {
+            fontFamily: theme.typography.font_family,
+            baseSize: theme.typography.base_size,
+            headingScale: theme.typography.heading_scale,
+            lineHeight: theme.typography.line_height,
+            fontWeightRegular: theme.typography.font_weight_regular,
+            fontWeightMedium: theme.typography.font_weight_medium,
+            fontWeightBold: theme.typography.font_weight_bold,
+          } : undefined,
+          layout: theme.layout ? {
+            sidebarWidth: theme.layout.sidebar_width,
+            containerMaxWidth: theme.layout.container_max_width,
+            borderRadius: theme.layout.border_radius,
+            spacingScale: theme.layout.spacing_scale as 'tight' | 'normal' | 'relaxed',
+            cardElevation: theme.layout.card_elevation as 'flat' | 'subtle' | 'medium' | 'high',
+          } : undefined,
+          isDefault: theme.is_default,
+          isCustom: theme.is_custom,
+        };
+        setCurrentTheme(mappedTheme);
         localStorage.setItem('selected-theme', themeName);
       }
     },

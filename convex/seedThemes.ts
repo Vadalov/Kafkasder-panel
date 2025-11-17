@@ -4,17 +4,17 @@
  */
 
 import { mutation } from './_generated/server';
+import type { MutationCtx } from './_generated/server';
 
 /**
- * Initialize default theme presets
- * Can be run manually or called from setup
+ * Helper function to seed default themes
+ * Can be called from mutations
  */
-export const seedDefaultThemes = mutation({
-  handler: async (ctx) => {
+async function seedThemesHandler(ctx: MutationCtx, skipIfExists: boolean = true) {
     const existingThemes = await ctx.db.query('theme_presets').collect();
 
     // If themes already exist, don't seed again
-    if (existingThemes.length > 0) {
+    if (skipIfExists && existingThemes.length > 0) {
       return {
         success: false,
         message: 'Themes already exist. Skipping seed.',
@@ -273,6 +273,15 @@ export const seedDefaultThemes = mutation({
         'Minimal Black & White',
       ],
     };
+}
+
+/**
+ * Initialize default theme presets
+ * Can be run manually or called from setup
+ */
+export const seedDefaultThemes = mutation({
+  handler: async (ctx) => {
+    return await seedThemesHandler(ctx, true);
   },
 });
 
@@ -306,8 +315,8 @@ export const reseedThemes = mutation({
       await ctx.db.delete(theme._id);
     }
 
-    // Re-run seed
-    const result = await seedDefaultThemes(ctx, {});
+    // Re-run seed (skip existence check)
+    const result = await seedThemesHandler(ctx, false);
     return result;
   },
 });

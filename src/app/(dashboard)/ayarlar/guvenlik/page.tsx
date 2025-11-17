@@ -6,7 +6,7 @@
  * SUPER ADMIN ONLY
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,19 +34,21 @@ export default function SecuritySettingsPage() {
   const queryClient = useQueryClient();
 
   // Fetch security settings
-  const { data: settingsData, isLoading } = useQuery({
+  const { data: settingsData, isLoading, isError, error } = useQuery({
     queryKey: ['security-settings'],
     queryFn: async () => {
       const response = await fetch('/api/security');
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch security settings');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch security settings');
       }
       return response.json();
     },
+    retry: 1,
   });
 
-  const settings = settingsData?.data || {};
+  // Memoize settings to prevent unnecessary re-renders
+  const settings = useMemo(() => settingsData?.data || {}, [settingsData?.data]);
 
   // Password Policy form
   const [passwordForm, setPasswordForm] = useState({
@@ -89,8 +91,10 @@ export default function SecuritySettingsPage() {
   });
 
   // Update forms when data loads
+  // This effect synchronizes external API data (settings) with form state
   useEffect(() => {
     if (settings) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- External data sync is the intended use case
       setPasswordForm({
         minLength: settings.minLength ?? 8,
         requireUppercase: settings.requireUppercase ?? true,
@@ -103,6 +107,7 @@ export default function SecuritySettingsPage() {
         lockoutDuration: settings.lockoutDuration ?? 30,
       });
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- External data sync is the intended use case
       setSessionForm({
         sessionTimeout: settings.sessionTimeout ?? 120,
         maxConcurrentSessions: settings.maxConcurrentSessions ?? 3,
@@ -111,12 +116,14 @@ export default function SecuritySettingsPage() {
         enableSessionMonitoring: settings.enableSessionMonitoring ?? true,
       });
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- External data sync is the intended use case
       setTfaForm({
         enabled: settings.enabled ?? false,
         required: settings.required ?? false,
         gracePeriod: settings.gracePeriod ?? 7,
       });
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- External data sync is the intended use case
       setGeneralForm({
         enableAuditLog: settings.enableAuditLog ?? true,
         enableIpWhitelist: settings.enableIpWhitelist ?? false,
@@ -187,6 +194,38 @@ export default function SecuritySettingsPage() {
           <RefreshCw className="w-5 h-5 animate-spin" />
           <span>Güvenlik ayarları yükleniyor...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="w-5 h-5" />
+              Hata Oluştu
+            </CardTitle>
+            <CardDescription>
+              Güvenlik ayarları yüklenirken bir hata oluştu
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              {error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu'}
+            </p>
+            <Button
+              onClick={() => {
+                void queryClient.invalidateQueries({ queryKey: ['security-settings'] });
+              }}
+              variant="outline"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Tekrar Dene
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -655,7 +694,7 @@ export default function SecuritySettingsPage() {
                     <div className="space-y-0.5">
                       <Label htmlFor="ip-whitelist">IP Beyaz Listesi</Label>
                       <p className="text-xs text-muted-foreground">
-                        Sadece belirli IP'lerden erişim
+                        Sadece belirli IP&apos;lerden erişim
                       </p>
                     </div>
                     <Switch
@@ -717,7 +756,7 @@ export default function SecuritySettingsPage() {
                     <div className="space-y-0.5">
                       <Label htmlFor="email-alerts">Güvenlik E-posta Bildirimleri</Label>
                       <p className="text-xs text-muted-foreground">
-                        Şüpheli aktivitelerde admin'lere e-posta
+                        Şüpheli aktivitelerde admin&apos;lere e-posta
                       </p>
                     </div>
                     <Switch

@@ -104,6 +104,7 @@ export function DonationForm({ onSuccess, onCancel }: DonationFormProps) {
   const [fieldValidation, setFieldValidation] = useState<
     Record<string, 'valid' | 'invalid' | 'pending'>
   >({});
+  const [amountDisplay, setAmountDisplay] = useState<string>('');
 
   // Real-time field validation
   const validateField = async (fieldName: keyof DonationFormData, value: unknown) => {
@@ -171,9 +172,19 @@ export function DonationForm({ onSuccess, onCancel }: DonationFormProps) {
         }
       }
 
+      // Amount is already a number from the form (validated by schema)
+      // The amountDisplay state handles Turkish format display, but form value is always number
+      // Ensure amount is valid
+      if (isNaN(data.amount) || data.amount <= 0) {
+        toast.error('Geçerli bir tutar giriniz');
+        setIsSubmitting(false);
+        return;
+      }
+
       // Create donation with file reference
       const donationData = {
         ...data,
+        amount: data.amount,
         receipt_file_id: uploadedFileId,
       };
 
@@ -308,7 +319,7 @@ export function DonationForm({ onSuccess, onCancel }: DonationFormProps) {
               >
                 <Input
                   id="amount"
-                  {...register('amount', { valueAsNumber: true })}
+                  value={amountDisplay}
                   placeholder="1.000,00"
                   onChange={(e) => {
                     // Format currency input for Turkish locale
@@ -325,13 +336,18 @@ export function DonationForm({ onSuccess, onCancel }: DonationFormProps) {
                       value = `${parts[0]},${parts[1].substring(0, 2)}`;
                     }
 
-                    e.target.value = value;
-                    register('amount').onChange(e);
-
-                    // Convert to number for validation
-                    const numValue = parseFloat(value.replace(',', '.'));
+                    setAmountDisplay(value);
+                    
+                    // Convert to number for form state and validation
+                    // Remove thousand separators (dots) and replace comma with dot
+                    const cleanedValue = value.replace(/\./g, '').replace(',', '.');
+                    const numValue = parseFloat(cleanedValue);
+                    
                     if (!isNaN(numValue) && numValue > 0) {
+                      setValue('amount', numValue, { shouldValidate: true });
                       void validateField('amount', numValue);
+                    } else {
+                      setValue('amount', 0, { shouldValidate: false });
                     }
                   }}
                   aria-describedby={errors.amount ? 'amount-error' : undefined}
@@ -348,7 +364,7 @@ export function DonationForm({ onSuccess, onCancel }: DonationFormProps) {
                 errorId="currency-error"
               >
                 <Select
-                  value={watch('currency')}
+                  value={watch('currency') || 'TRY'}
                   onValueChange={(value) => {
                     setValue('currency', value as 'TRY' | 'USD' | 'EUR');
                     void validateField('currency', value);
@@ -422,7 +438,7 @@ export function DonationForm({ onSuccess, onCancel }: DonationFormProps) {
                 errorId="payment_method-error"
               >
                 <Select
-                  value={watch('payment_method')}
+                  value={watch('payment_method') || ''}
                   onValueChange={(value) => {
                     setValue('payment_method', value);
                     validateField('payment_method', value);

@@ -309,7 +309,7 @@ export interface WorkflowNotificationDocument extends Document {
 
 // Messages Collection (SMS & E-posta)
 export interface MessageDocument extends Document {
-  message_type: 'sms' | 'email' | 'internal';
+  message_type: 'sms' | 'email' | 'internal' | 'whatsapp';
   sender: string;
   recipients: string[];
   subject?: string;
