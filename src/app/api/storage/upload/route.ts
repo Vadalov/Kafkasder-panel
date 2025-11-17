@@ -107,7 +107,10 @@ async function uploadFileHandler(request: NextRequest) {
       method: 'POST',
     });
 
-    return NextResponse.json({ success: false, error: 'Dosya yükleme hatası' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Dosya yükleme hatası' },
+      { status: 500 }
+    );
   }
 }
 

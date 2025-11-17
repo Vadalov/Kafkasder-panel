@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import {
   Mail,
   Phone,
+  MessageCircle,
   Send,
   ArrowRight,
   ArrowLeft,
@@ -54,7 +55,7 @@ import {
 } from '@/lib/validations/message';
 import type { MessageDocument } from '@/types/database';
 
-type MessageType = 'sms' | 'email';
+type MessageType = 'sms' | 'email' | 'whatsapp';
 type WizardStep = 'compose' | 'recipients' | 'preview' | 'sending';
 
 interface SendingResult {
@@ -123,10 +124,6 @@ export default function BulkMessagingPage() {
     },
   });
 
-  const sendMessageMutation = useMutation({
-    mutationFn: (_id: string) => Promise.resolve({ data: null, error: null }), // api.messages.sendMessage(id),
-  });
-
   // Event handlers
   const handleNextStep = () => {
     if (step === 'compose') {
@@ -181,53 +178,50 @@ export default function BulkMessagingPage() {
         sent_at: new Date().toISOString(),
       };
 
-      const result = await createMessageMutation.mutateAsync(bulkMessageData);
+      // Send bulk messages via API
+      setSendingProgress(10);
 
-      if (result.data) {
-        // Simulate batch sending (in real implementation, this would be handled by backend)
-        const batchSize = 50;
-        const totalBatches = Math.ceil(selectedRecipients.length / batchSize);
-        let successCount = 0;
-        let failedCount = 0;
-        const errors: Array<{ recipient: string; error: string }> = [];
+      const response = await fetch('/api/messages/send-bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: messageType,
+          recipients: selectedRecipients,
+          message: messageData.content,
+          subject: messageData.subject,
+        }),
+      });
 
-        for (let i = 0; i < totalBatches; i++) {
-          const batchStart = i * batchSize;
-          const batchEnd = Math.min(batchStart + batchSize, selectedRecipients.length);
-          const batch = selectedRecipients.slice(batchStart, batchEnd);
+      setSendingProgress(90);
 
-          // Simulate sending delay
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+      const apiResult = await response.json();
 
-          // Simulate some failures (10% failure rate)
-          batch.forEach((recipient) => {
-            if (Math.random() < 0.1) {
-              failedCount++;
-              errors.push({
-                recipient,
-                error: 'Alıcı bulunamadı',
-              });
-            } else {
-              successCount++;
-            }
-          });
-
-          setSendingProgress(Math.round(((i + 1) / totalBatches) * 100));
-          setSendingResults({
-            success: successCount,
-            failed: failedCount,
-            errors,
-          });
-        }
-
-        // Send the actual message
-        // await sendMessageMutation.mutateAsync(result.data._id);
-        await sendMessageMutation.mutateAsync('dummy-id');
-
-        toast.success(
-          `Toplu mesaj gönderildi! ${successCount} başarılı, ${failedCount} başarısız.`
-        );
+      if (!response.ok || !apiResult.success) {
+        throw new Error(apiResult.error || 'Mesaj gönderilemedi');
       }
+
+      // Update results
+      const { data } = apiResult;
+      setSendingProgress(100);
+      setSendingResults({
+        success: data.successful,
+        failed: data.failed,
+        errors: data.failedRecipients || [],
+      });
+
+      // Save to database (optional - could be done in backend)
+      try {
+        await createMessageMutation.mutateAsync(bulkMessageData);
+      } catch (dbError) {
+        console.error('Failed to save to database:', dbError);
+        // Continue anyway - message was sent
+      }
+
+      toast.success(
+        `Toplu mesaj gönderildi! ${data.successful} başarılı${data.failed > 0 ? `, ${data.failed} başarısız` : ''}`
+      );
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       toast.error(`Toplu mesaj gönderilirken hata oluştu: ${errorMessage}`);
@@ -342,6 +336,15 @@ export default function BulkMessagingPage() {
             >
               <Phone className="h-4 w-4" />
               SMS
+            </Button>
+            <Button
+              variant={messageType === 'whatsapp' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setMessageType('whatsapp')}
+              className="gap-1"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp
             </Button>
             <Button
               variant={messageType === 'email' ? 'default' : 'ghost'}

@@ -16,8 +16,7 @@ async function getAuditLogsHandler(request: NextRequest) {
     const { user } = await requireAuthenticatedUser();
 
     // Only admins and users with audit:view permission can access audit logs
-    const isAdmin =
-      user.role?.toUpperCase() === 'ADMIN' || user.role?.toUpperCase() === 'SUPER_ADMIN';
+    const isAdmin = user.role?.toUpperCase() === 'ADMIN' || user.role?.toUpperCase() === 'SUPER_ADMIN';
     const hasAuditPermission = user.permissions.includes('audit:view');
 
     if (!isAdmin && !hasAuditPermission) {
