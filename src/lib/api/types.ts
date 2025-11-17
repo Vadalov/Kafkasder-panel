@@ -1,0 +1,291 @@
+/**
+ * API Types for Convex CRUD Operations
+ *
+ * Replaces 'any' types with proper TypeScript interfaces
+ * Provides type-safe API contracts for all resources
+ */
+
+import type { Id } from '@/convex/_generated/dataModel';
+
+// ========================================
+// BENEFICIARY TYPES
+// ========================================
+
+export interface BeneficiaryCreateInput {
+  name: string;
+  tc_no: string;
+  phone: string;
+  address: string;
+  email?: string;
+  status?: 'TASLAK' | 'AKTIF' | 'PASIF' | 'SILINDI';
+  city?: string;
+  district?: string;
+  neighborhood?: string;
+  family_size?: number;
+  birth_date?: string;
+  gender?: string;
+  nationality?: string;
+  [key: string]: unknown;
+}
+
+export interface BeneficiaryUpdateInput extends Partial<BeneficiaryCreateInput> {
+  auth?: { userId: string; role: string };
+}
+
+// ========================================
+// DONATION TYPES
+// ========================================
+
+export interface DonationCreateInput {
+  donor_id?: string;
+  beneficiary_id?: string;
+  amount: number;
+  currency: string;
+  donation_date: string;
+  description?: string;
+  status?: string;
+  payment_method?: string;
+  [key: string]: unknown;
+}
+
+export interface DonationUpdateInput extends Partial<DonationCreateInput> {
+  auth?: { userId: string; role: string };
+}
+
+// ========================================
+// TASK TYPES
+// ========================================
+
+export interface TaskCreateInput {
+  title: string;
+  description?: string;
+  assigned_to?: string;
+  due_date?: string;
+  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  [key: string]: unknown;
+}
+
+export interface TaskUpdateInput extends Partial<TaskCreateInput> {
+  auth?: { userId: string; role: string };
+}
+
+// ========================================
+// MEETING TYPES
+// ========================================
+
+export interface MeetingCreateInput {
+  title: string;
+  description?: string;
+  start_time: string;
+  end_time: string;
+  location?: string;
+  organizer_id?: string;
+  attendees?: string[];
+  status?: 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
+  meeting_type?: 'internal' | 'external' | 'board';
+  [key: string]: unknown;
+}
+
+export interface MeetingUpdateInput extends Partial<MeetingCreateInput> {
+  auth?: { userId: string; role: string };
+}
+
+// ========================================
+// MEETING DECISION TYPES
+// ========================================
+
+export interface MeetingDecisionCreateInput {
+  meeting_id: Id<'meetings'>;
+  description: string;
+  decided_by?: string;
+  implementation_date?: string;
+  status?: 'pending' | 'implemented' | 'cancelled';
+  [key: string]: unknown;
+}
+
+export interface MeetingDecisionUpdateInput extends Partial<MeetingDecisionCreateInput> {}
+
+// ========================================
+// MEETING ACTION ITEM TYPES
+// ========================================
+
+export interface MeetingActionItemCreateInput {
+  meeting_id: Id<'meetings'>;
+  title: string;
+  assigned_to?: string;
+  due_date?: string;
+  status?: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  priority?: 'low' | 'medium' | 'high';
+  [key: string]: unknown;
+}
+
+export interface MeetingActionItemUpdateInput extends Partial<MeetingActionItemCreateInput> {}
+
+// ========================================
+// MESSAGE TYPES
+// ========================================
+
+export interface MessageCreateInput {
+  recipient_id?: string;
+  subject?: string;
+  content: string;
+  message_type: 'sms' | 'email' | 'whatsapp' | 'in_app';
+  status?: 'draft' | 'sent' | 'delivered' | 'failed';
+  sent_by?: string;
+  sent_at?: string;
+  [key: string]: unknown;
+}
+
+export interface MessageUpdateInput extends Partial<MessageCreateInput> {}
+
+// ========================================
+// USER TYPES
+// ========================================
+
+export interface UserCreateInput {
+  email: string;
+  name: string;
+  role?: 'admin' | 'user' | 'viewer';
+  status?: 'active' | 'inactive' | 'suspended';
+  password_hash?: string;
+  [key: string]: unknown;
+}
+
+export interface UserUpdateInput extends Partial<UserCreateInput> {
+  auth?: { userId: string; role: string };
+}
+
+// ========================================
+// AID APPLICATION TYPES
+// ========================================
+
+export interface AidApplicationCreateInput {
+  beneficiary_id: Id<'beneficiaries'>;
+  aid_type: string;
+  amount_requested: number;
+  reason?: string;
+  status?: 'pending' | 'approved' | 'rejected' | 'in_review';
+  applied_date?: string;
+  [key: string]: unknown;
+}
+
+export interface AidApplicationUpdateInput extends Partial<AidApplicationCreateInput> {}
+
+// ========================================
+// FINANCE RECORD TYPES
+// ========================================
+
+export interface FinanceRecordCreateInput {
+  record_type: 'income' | 'expense';
+  category: string;
+  amount: number;
+  currency: string;
+  description: string;
+  transaction_date: string;
+  payment_method?: string;
+  receipt_number?: string;
+  status?: 'pending' | 'approved' | 'rejected';
+  [key: string]: unknown;
+}
+
+export interface FinanceRecordUpdateInput extends Partial<FinanceRecordCreateInput> {}
+
+// ========================================
+// PARTNER TYPES
+// ========================================
+
+export interface PartnerCreateInput {
+  name: string;
+  type: 'organization' | 'individual' | 'sponsor';
+  partnership_type: 'donor' | 'supplier' | 'volunteer' | 'sponsor' | 'service_provider';
+  contact_person?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  website?: string;
+  tax_number?: string;
+  status?: 'active' | 'inactive' | 'pending';
+  [key: string]: unknown;
+}
+
+export interface PartnerUpdateInput extends Partial<PartnerCreateInput> {}
+
+// ========================================
+// SCHOLARSHIP TYPES
+// ========================================
+
+export interface ScholarshipCreateInput {
+  beneficiary_id: Id<'beneficiaries'>;
+  scholarship_type: string;
+  amount: number;
+  start_date: string;
+  end_date?: string;
+  status?: 'active' | 'completed' | 'cancelled';
+  [key: string]: unknown;
+}
+
+export interface ScholarshipUpdateInput extends Partial<ScholarshipCreateInput> {}
+
+// ========================================
+// GENERIC MUTATION PAYLOAD TYPES
+// ========================================
+
+/**
+ * Payload for create mutations with auth context
+ */
+export type CreateMutationPayload<T extends { [key: string]: unknown }> = T & {
+  auth?: { userId: string; role: string };
+};
+
+/**
+ * Payload for update mutations with ID and auth
+ */
+export type UpdateMutationPayload<T extends { [key: string]: unknown }> = T & {
+  id: Id<any>;
+  auth?: { userId: string; role: string };
+};
+
+// ========================================
+// CONVEX RESPONSE TYPES
+// ========================================
+
+/**
+ * Standard response from Convex HTTP API
+ */
+export interface ConvexListResponse<T> {
+  documents?: T[];
+  data?: T[];
+  total?: number;
+  error?: string | null;
+  message?: string;
+}
+
+export interface ConvexGetResponse<T> {
+  data?: T;
+  error?: string | null;
+}
+
+export interface ConvexMutationResponse<T> {
+  data?: T;
+  error?: string | null;
+}
+
+// ========================================
+// TYPE EXPORTS
+// ========================================
+
+export const ApiTypes = {
+  Beneficiary: {} as BeneficiaryCreateInput,
+  Donation: {} as DonationCreateInput,
+  Task: {} as TaskCreateInput,
+  Meeting: {} as MeetingCreateInput,
+  MeetingDecision: {} as MeetingDecisionCreateInput,
+  MeetingActionItem: {} as MeetingActionItemCreateInput,
+  Message: {} as MessageCreateInput,
+  User: {} as UserCreateInput,
+  AidApplication: {} as AidApplicationCreateInput,
+  FinanceRecord: {} as FinanceRecordCreateInput,
+  Partner: {} as PartnerCreateInput,
+  Scholarship: {} as ScholarshipCreateInput,
+};
