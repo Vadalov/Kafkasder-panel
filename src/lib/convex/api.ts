@@ -1,12 +1,40 @@
 /**
  * Convex API Helper
  * Provides a unified interface for calling Convex functions from API routes
+ *
+ * Type-safe CRUD operations without any 'any' types
  */
 
 import { convexHttp, api } from './server';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Id } from '@/convex/_generated/dataModel';
+import type {
+  BeneficiaryCreateInput,
+  BeneficiaryUpdateInput,
+  DonationCreateInput,
+  DonationUpdateInput,
+  TaskCreateInput,
+  TaskUpdateInput,
+  MeetingCreateInput,
+  MeetingUpdateInput,
+  MeetingDecisionCreateInput,
+  MeetingDecisionUpdateInput,
+  MeetingActionItemCreateInput,
+  MeetingActionItemUpdateInput,
+  MessageCreateInput,
+  MessageUpdateInput,
+  UserCreateInput,
+  UserUpdateInput,
+  AidApplicationCreateInput,
+  AidApplicationUpdateInput,
+  FinanceRecordCreateInput,
+  FinanceRecordUpdateInput,
+  PartnerCreateInput,
+  PartnerUpdateInput,
+  ScholarshipCreateInput,
+  ScholarshipUpdateInput,
+  CreateMutationPayload,
+  UpdateMutationPayload,
+} from '@/lib/api/types';
 
 export interface ConvexQueryParams {
   limit?: number;
@@ -76,20 +104,20 @@ export const convexBeneficiaries = {
   getByTcNo: async (tc_no: string) => {
     return await convexHttp.query(api.beneficiaries.getByTcNo, { tc_no });
   },
-  create: async (data: unknown, context: AuthContext = {}) => {
-    const payload = {
+  create: async (data: BeneficiaryCreateInput, context: AuthContext = {}) => {
+    const payload: CreateMutationPayload<BeneficiaryCreateInput> = {
       ...(context.auth ? { auth: context.auth } : {}),
-      ...(data as Record<string, unknown>),
+      ...data,
     };
-    return await convexHttp.mutation(api.beneficiaries.create, payload as any);
+    return await convexHttp.mutation(api.beneficiaries.create, payload);
   },
-  update: async (id: Id<'beneficiaries'>, data: unknown, context: AuthContext = {}) => {
-    const payload = {
+  update: async (id: Id<'beneficiaries'>, data: BeneficiaryUpdateInput, context: AuthContext = {}) => {
+    const payload: UpdateMutationPayload<BeneficiaryUpdateInput> = {
       id,
-      ...(data as Record<string, unknown>),
+      ...data,
       ...(context.auth ? { auth: context.auth } : {}),
     };
-    return await convexHttp.mutation(api.beneficiaries.update, payload as any);
+    return await convexHttp.mutation(api.beneficiaries.update, payload);
   },
   remove: async (id: Id<'beneficiaries'>) => {
     return await convexHttp.mutation(api.beneficiaries.remove, { id });
@@ -109,15 +137,15 @@ export const convexDonations = {
   getByReceiptNumber: async (receipt_number: string) => {
     return await convexHttp.query(api.donations.getByReceiptNumber, { receipt_number });
   },
-  create: async (data: unknown) => {
-    return await convexHttp.mutation(api.donations.create, data as any);
+  create: async (data: DonationCreateInput) => {
+    return await convexHttp.mutation(api.donations.create, data);
   },
-  update: async (id: Id<'donations'>, data: unknown) => {
-    const payload = {
+  update: async (id: Id<'donations'>, data: DonationUpdateInput) => {
+    const payload: UpdateMutationPayload<DonationUpdateInput> = {
       id,
-      ...(data as Record<string, unknown>),
+      ...data,
     };
-    return await convexHttp.mutation(api.donations.update, payload as any);
+    return await convexHttp.mutation(api.donations.update, payload);
   },
   remove: async (id: Id<'donations'>) => {
     return await convexHttp.mutation(api.donations.remove, { id });
@@ -136,15 +164,15 @@ export const convexTasks = {
   get: async (id: Id<'tasks'>) => {
     return await convexHttp.query(api.tasks.get, { id });
   },
-  create: async (data: unknown) => {
-    return await convexHttp.mutation(api.tasks.create, data as any);
+  create: async (data: TaskCreateInput) => {
+    return await convexHttp.mutation(api.tasks.create, data);
   },
-  update: async (id: Id<'tasks'>, data: unknown) => {
-    const payload = {
+  update: async (id: Id<'tasks'>, data: TaskUpdateInput) => {
+    const payload: UpdateMutationPayload<TaskUpdateInput> = {
       id,
-      ...(data as Record<string, unknown>),
+      ...data,
     };
-    return await convexHttp.mutation(api.tasks.update, payload as any);
+    return await convexHttp.mutation(api.tasks.update, payload);
   },
   remove: async (id: Id<'tasks'>) => {
     return await convexHttp.mutation(api.tasks.remove, { id });
@@ -161,15 +189,15 @@ export const convexMeetings = {
   get: async (id: Id<'meetings'>) => {
     return await convexHttp.query(api.meetings.get, { id });
   },
-  create: async (data: unknown) => {
-    return await convexHttp.mutation(api.meetings.create, data as any);
+  create: async (data: MeetingCreateInput) => {
+    return await convexHttp.mutation(api.meetings.create, data);
   },
-  update: async (id: Id<'meetings'>, data: unknown) => {
-    const payload = {
+  update: async (id: Id<'meetings'>, data: MeetingUpdateInput) => {
+    const payload: UpdateMutationPayload<MeetingUpdateInput> = {
       id,
-      ...(data as Record<string, unknown>),
+      ...data,
     };
-    return await convexHttp.mutation(api.meetings.update, payload as any);
+    return await convexHttp.mutation(api.meetings.update, payload);
   },
   remove: async (id: Id<'meetings'>) => {
     return await convexHttp.mutation(api.meetings.remove, { id });
@@ -190,10 +218,10 @@ export const convexMeetingDecisions = {
   get: async (id: Id<'meeting_decisions'>) => {
     return await convexHttp.query(api.meeting_decisions.get, { id });
   },
-  create: async (data: any) => {
+  create: async (data: MeetingDecisionCreateInput) => {
     return await convexHttp.mutation(api.meeting_decisions.create, data);
   },
-  update: async (id: Id<'meeting_decisions'>, data: any) => {
+  update: async (id: Id<'meeting_decisions'>, data: MeetingDecisionUpdateInput) => {
     return await convexHttp.mutation(api.meeting_decisions.update, { id, ...data });
   },
   remove: async (id: Id<'meeting_decisions'>) => {
@@ -215,10 +243,10 @@ export const convexMeetingActionItems = {
   get: async (id: Id<'meeting_action_items'>) => {
     return await convexHttp.query(api.meeting_action_items.get, { id });
   },
-  create: async (data: any) => {
+  create: async (data: MeetingActionItemCreateInput) => {
     return await convexHttp.mutation(api.meeting_action_items.create, data);
   },
-  update: async (id: Id<'meeting_action_items'>, data: any) => {
+  update: async (id: Id<'meeting_action_items'>, data: MeetingActionItemUpdateInput) => {
     return await convexHttp.mutation(api.meeting_action_items.update, { id, ...data });
   },
   updateStatus: async (
@@ -250,7 +278,7 @@ export const convexWorkflowNotifications = {
   get: async (id: Id<'workflow_notifications'>) => {
     return await convexHttp.query(api.workflow_notifications.get, { id });
   },
-  create: async (data: any) => {
+  create: async (data: Record<string, unknown>) => {
     return await convexHttp.mutation(api.workflow_notifications.create, data);
   },
   markAsSent: async (id: Id<'workflow_notifications'>, sent_at?: string) => {
@@ -274,10 +302,10 @@ export const convexMessages = {
   get: async (id: Id<'messages'>) => {
     return await convexHttp.query(api.messages.get, { id });
   },
-  create: async (data: any) => {
+  create: async (data: MessageCreateInput) => {
     return await convexHttp.mutation(api.messages.create, data);
   },
-  update: async (id: Id<'messages'>, data: any) => {
+  update: async (id: Id<'messages'>, data: MessageUpdateInput) => {
     return await convexHttp.mutation(api.messages.update, { id, ...data });
   },
   remove: async (id: Id<'messages'>) => {
@@ -304,10 +332,10 @@ export const convexUsers = {
   getByEmail: async (email: string) => {
     return await convexHttp.query(api.users.getByEmail, { email });
   },
-  create: async (data: any) => {
+  create: async (data: UserCreateInput) => {
     return await convexHttp.mutation(api.users.create, data);
   },
-  update: async (id: Id<'users'>, data: any) => {
+  update: async (id: Id<'users'>, data: UserUpdateInput) => {
     return await convexHttp.mutation(api.users.update, { id, ...data });
   },
   remove: async (id: Id<'users'>) => {
@@ -330,10 +358,10 @@ export const convexAidApplications = {
   get: async (id: Id<'aid_applications'>) => {
     return await convexHttp.query(api.aid_applications.get, { id });
   },
-  create: async (data: any) => {
+  create: async (data: AidApplicationCreateInput) => {
     return await convexHttp.mutation(api.aid_applications.create, data);
   },
-  update: async (id: Id<'aid_applications'>, data: any) => {
+  update: async (id: Id<'aid_applications'>, data: AidApplicationUpdateInput) => {
     return await convexHttp.mutation(api.aid_applications.update, { id, ...data });
   },
   remove: async (id: Id<'aid_applications'>) => {
@@ -356,10 +384,10 @@ export const convexFinanceRecords = {
   get: async (id: Id<'finance_records'>) => {
     return await convexHttp.query(api.finance_records.get, { id });
   },
-  create: async (data: any) => {
+  create: async (data: FinanceRecordCreateInput) => {
     return await convexHttp.mutation(api.finance_records.create, data);
   },
-  update: async (id: Id<'finance_records'>, data: any) => {
+  update: async (id: Id<'finance_records'>, data: FinanceRecordUpdateInput) => {
     return await convexHttp.mutation(api.finance_records.update, { id, ...data });
   },
   remove: async (id: Id<'finance_records'>) => {
@@ -378,23 +406,18 @@ export const convexPartners = {
       partnership_type?: 'donor' | 'supplier' | 'volunteer' | 'sponsor' | 'service_provider';
     }
   ) => {
-    // @ts-expect-error - partners types
     return await convexHttp.query(api.partners.list, params || {});
   },
   get: async (id: Id<'partners'>) => {
-    // @ts-expect-error - partners types
     return await convexHttp.query(api.partners.get, { id });
   },
-  create: async (data: any) => {
-    // @ts-expect-error - partners types
+  create: async (data: PartnerCreateInput) => {
     return await convexHttp.mutation(api.partners.create, data);
   },
-  update: async (id: Id<'partners'>, data: any) => {
-    // @ts-expect-error - partners types
+  update: async (id: Id<'partners'>, data: PartnerUpdateInput) => {
     return await convexHttp.mutation(api.partners.update, { id, ...data });
   },
   remove: async (id: Id<'partners'>) => {
-    // @ts-expect-error - partners types
     return await convexHttp.mutation(api.partners.remove, { id });
   },
 };

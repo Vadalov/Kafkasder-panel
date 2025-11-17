@@ -6,65 +6,141 @@
 
 import { useForm, UseFormReturn, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import type { ZodType } from 'zod';
 import { useFormMutation } from './useFormMutation';
 
-// Disable strict typing for this hook due to complex React Hook Form generics
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-export interface UseStandardFormOptions<TFormData extends FieldValues = any, TResponse = any> {
-  schema: z.ZodType<TFormData>;
+export interface UseStandardFormOptions<TFormData extends FieldValues, TResponse> {
+  /**
+   * Zod schema for form validation
+   */
+  schema: ZodType<TFormData>;
+  /**
+   * Mutation function
+   */
   mutationFn: (variables: TFormData) => Promise<TResponse>;
+  /**
+   * Query key for invalidation after success
+   */
   queryKey: string | string[];
+  /**
+   * Success message to show
+   */
   successMessage?: string;
+  /**
+   * Error message prefix
+   */
   errorMessage?: string;
+  /**
+   * Default form values
+   */
   defaultValues?: Partial<TFormData>;
+  /**
+   * Callback after successful mutation
+   */
   onSuccess?: (data: TResponse) => void;
+  /**
+   * Callback on error
+   */
   onError?: (error: unknown) => void;
-  transformData?: (data: TFormData) => any;
+  /**
+   * Transform data before mutation
+   */
+  transformData?: (data: TFormData) => TFormData | Promise<TFormData>;
+  /**
+   * Reset form after success
+   */
   resetOnSuccess?: boolean;
+  /**
+   * Show success toast (default: true)
+   */
   showSuccessToast?: boolean;
+  /**
+   * Show error toast (default: true)
+   */
   showErrorToast?: boolean;
 }
 
-export interface UseStandardFormReturn<TFormData extends FieldValues = any, TResponse = any> {
+export interface UseStandardFormReturn<TFormData extends FieldValues, TResponse> {
+  /**
+   * React Hook Form instance
+   */
   form: UseFormReturn<TFormData>;
+  /**
+   * Form submission handler
+   */
   handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  /**
+   * Is form currently submitting
+   */
   isSubmitting: boolean;
+  /**
+   * Has form been modified
+   */
   isDirty: boolean;
+  /**
+   * Is form valid
+   */
   isValid: boolean;
+  /**
+   * Was mutation successful
+   */
   isSuccess: boolean;
+  /**
+   * Did mutation have error
+   */
   isError: boolean;
+  /**
+   * Error from mutation
+   */
   error: unknown;
+  /**
+   * Response data from mutation
+   */
   data: TResponse | undefined;
+  /**
+   * Reset form to initial state
+   */
   reset: () => void;
 }
 
 /**
  * Standard form hook with built-in validation, mutation, and error handling
+ * Combines React Hook Form with React Query mutations
  */
-export function useStandardForm<TFormData extends FieldValues = any, TResponse = any>({
-  schema,
-  mutationFn,
-  queryKey,
-  successMessage = 'İşlem başarılı',
-  errorMessage = 'İşlem başarısız',
-  defaultValues,
-  onSuccess,
-  onError: _onError,
-  transformData,
-  resetOnSuccess = true,
-  showSuccessToast = true,
-  showErrorToast = true,
-}: UseStandardFormOptions<TFormData, TResponse>): UseStandardFormReturn<TFormData, TResponse> {
+export function useStandardForm<TFormData extends FieldValues, TResponse = unknown>(
+  options: UseStandardFormOptions<TFormData, TResponse>
+): UseStandardFormReturn<TFormData, TResponse> {
+  const {
+    schema,
+    mutationFn,
+    queryKey,
+    successMessage = 'İşlem başarılı',
+    errorMessage = 'İşlem başarısız',
+    defaultValues,
+    onSuccess,
+    onError: _onError,
+    transformData,
+    resetOnSuccess = true,
+    showSuccessToast = true,
+    showErrorToast = true,
+  } = options;
+
+  // Initialize form with schema validation
   const form = useForm<TFormData>({
-    resolver: zodResolver(schema as any) as any,
-    defaultValues: defaultValues as any,
+    resolver: zodResolver(schema),
+    defaultValues: defaultValues as TFormData,
     mode: 'onBlur',
   });
 
-  const mutation = useFormMutation({
-    mutationFn: transformData ? (data: any) => mutationFn(transformData(data)) : mutationFn,
+  // Handle mutation with form data transformation
+  const handleMutationFn = async (data: TFormData): Promise<TResponse> => {
+    const transformedData = transformData ? await transformData(data) : data;
+    return mutationFn(transformedData);
+  };
+
+  // Create mutation hook
+  const mutation = useFormMutation<TResponse, TFormData>({
+    mutationFn: handleMutationFn,
     queryKey,
     successMessage,
     errorMessage,
@@ -74,11 +150,12 @@ export function useStandardForm<TFormData extends FieldValues = any, TResponse =
       if (resetOnSuccess) {
         form.reset();
       }
-      onSuccess?.(undefined as any);
+      onSuccess?.(mutation.data as TResponse);
     },
   });
 
-  const handleSubmit = form.handleSubmit(async (data: any) => {
+  // Create form submission handler
+  const handleSubmit = form.handleSubmit(async (data: TFormData) => {
     await mutation.mutate(data);
   });
 
@@ -100,15 +177,19 @@ export function useStandardForm<TFormData extends FieldValues = any, TResponse =
 // SPECIALIZED HOOKS
 // ============================================================================
 
+interface CreateFormOptions<TFormData extends FieldValues, TResponse = unknown>
+  extends Omit<UseStandardFormOptions<TFormData, TResponse>, 'queryKey' | 'successMessage' | 'errorMessage'> {
+  entityName: string;
+  queryKey: string | string[];
+}
+
 /**
  * Hook for creating new entities
+ * Pre-configured with appropriate messages
  */
 export function useCreateForm<TFormData extends FieldValues, TResponse = unknown>(
-  options: Omit<UseStandardFormOptions<TFormData, TResponse>, 'queryKey' | 'successMessage'> & {
-    entityName: string;
-    queryKey: string | string[];
-  }
-) {
+  options: CreateFormOptions<TFormData, TResponse>
+): UseStandardFormReturn<TFormData, TResponse> {
   return useStandardForm({
     ...options,
     successMessage: `${options.entityName} başarıyla oluşturuldu`,
@@ -117,15 +198,19 @@ export function useCreateForm<TFormData extends FieldValues, TResponse = unknown
   });
 }
 
+interface UpdateFormOptions<TFormData extends FieldValues, TResponse = unknown>
+  extends Omit<UseStandardFormOptions<TFormData, TResponse>, 'queryKey' | 'successMessage' | 'errorMessage'> {
+  entityName: string;
+  queryKey: string | string[];
+}
+
 /**
  * Hook for updating existing entities
+ * Pre-configured with appropriate messages
  */
 export function useUpdateForm<TFormData extends FieldValues, TResponse = unknown>(
-  options: Omit<UseStandardFormOptions<TFormData, TResponse>, 'queryKey' | 'successMessage'> & {
-    entityName: string;
-    queryKey: string | string[];
-  }
-) {
+  options: UpdateFormOptions<TFormData, TResponse>
+): UseStandardFormReturn<TFormData, TResponse> {
   return useStandardForm({
     ...options,
     successMessage: `${options.entityName} başarıyla güncellendi`,
@@ -134,22 +219,30 @@ export function useUpdateForm<TFormData extends FieldValues, TResponse = unknown
   });
 }
 
-/**
- * Hook for delete confirmations
- */
-export function useDeleteForm<TResponse = unknown>(options: {
+interface DeleteFormOptions<TResponse = unknown> {
   mutationFn: () => Promise<TResponse>;
   queryKey: string | string[];
   entityName: string;
   onSuccess?: (data: TResponse) => void;
-}) {
+}
+
+/**
+ * Hook for delete confirmations
+ * Pre-configured for delete operations
+ */
+export function useDeleteForm<TResponse = unknown>(
+  options: DeleteFormOptions<TResponse>
+): ReturnType<typeof useFormMutation<TResponse, void>> {
   const { mutationFn, queryKey, entityName, onSuccess } = options;
 
-  return useFormMutation({
+  return useFormMutation<TResponse, void>({
     mutationFn,
     queryKey,
     successMessage: `${entityName} başarıyla silindi`,
     errorMessage: `${entityName} silinirken hata`,
-    onSuccess: onSuccess as any,
+    onSuccess: () => {
+      onSuccess?.(undefined as unknown as TResponse);
+    },
   });
 }
+
