@@ -256,8 +256,35 @@ async function sendBulkMessageHandler(request: NextRequest) {
       failed: result.failed,
     });
 
-    // TODO: Save to communication_logs in Convex
-    // This would require creating a mutation in convex/communication_logs.ts
+    // Save to communication_logs in Convex
+    try {
+      const { api } = await import('@/convex/_generated/api');
+      const { fetchMutation } = await import('convex/nextjs');
+
+      const logId = await fetchMutation(api.communication_logs.createBulkLog, {
+        type: type as 'email' | 'sms' | 'whatsapp',
+        recipientCount: recipients.length,
+        message,
+        successful: result.successful,
+        failed: result.failed,
+        sentAt: new Date().toISOString(),
+        userId: user.id as any,
+        metadata: {
+          subject,
+          failedRecipients: result.failedRecipients,
+        },
+      });
+
+      logger.info('Bulk operation logged successfully', {
+        service: 'messages',
+        logId,
+      });
+    } catch (logError) {
+      // Log error but don't fail the request
+      logger.error('Failed to save communication log', logError, {
+        service: 'messages',
+      });
+    }
 
     return NextResponse.json({
       success: true,

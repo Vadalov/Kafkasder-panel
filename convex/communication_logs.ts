@@ -11,7 +11,7 @@ import { mutation, query } from './_generated/server';
  */
 export const create = mutation({
   args: {
-    type: v.union(v.literal('email'), v.literal('sms')),
+    type: v.union(v.literal('email'), v.literal('sms'), v.literal('whatsapp')),
     to: v.string(),
     subject: v.optional(v.string()),
     message: v.string(),
@@ -28,11 +28,46 @@ export const create = mutation({
 });
 
 /**
+ * Create bulk communication log entry
+ * For logging bulk message operations with summary statistics
+ */
+export const createBulkLog = mutation({
+  args: {
+    type: v.union(v.literal('email'), v.literal('sms'), v.literal('whatsapp')),
+    recipientCount: v.number(),
+    message: v.string(),
+    successful: v.number(),
+    failed: v.number(),
+    sentAt: v.string(),
+    userId: v.optional(v.id('users')),
+    metadata: v.optional(v.any()),
+  },
+  handler: async (ctx, args) => {
+    // Log bulk operation as a special entry
+    return await ctx.db.insert('communication_logs', {
+      type: args.type,
+      to: `Bulk: ${args.recipientCount} recipients`,
+      message: args.message,
+      status: args.failed === 0 ? 'sent' : args.successful > 0 ? 'sent' : 'failed',
+      sentAt: args.sentAt,
+      userId: args.userId,
+      metadata: {
+        ...args.metadata,
+        bulkOperation: true,
+        recipientCount: args.recipientCount,
+        successful: args.successful,
+        failed: args.failed,
+      },
+    });
+  },
+});
+
+/**
  * List communication logs with optional filters
  */
 export const list = query({
   args: {
-    type: v.optional(v.union(v.literal('email'), v.literal('sms'))),
+    type: v.optional(v.union(v.literal('email'), v.literal('sms'), v.literal('whatsapp'))),
     status: v.optional(v.union(v.literal('sent'), v.literal('failed'), v.literal('pending'))),
     userId: v.optional(v.id('users')),
     limit: v.optional(v.number()),
@@ -72,7 +107,7 @@ export const list = query({
  */
 export const getStats = query({
   args: {
-    type: v.union(v.literal('email'), v.literal('sms')),
+    type: v.union(v.literal('email'), v.literal('sms'), v.literal('whatsapp')),
     startDate: v.string(),
     endDate: v.string(),
   },

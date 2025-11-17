@@ -4,7 +4,7 @@
  */
 
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { mutation, query, action } from './_generated/server';
 
 /**
  * Get all communication settings by type (email, sms, whatsapp)
@@ -235,52 +235,178 @@ export const updateWhatsAppSettings = mutation({
 
 /**
  * Test email configuration
+ * Sends a test email to verify SMTP configuration
  */
-export const testEmailConnection = mutation({
+export const testEmailConnection = action({
   args: {
     testEmail: v.string(),
   },
-  handler: async (_ctx, _args) => {
-    // TODO: Implement actual email test
-    // This would send a test email using the configured SMTP settings
-    return {
-      success: true,
-      message: 'Test email sent successfully (TODO: implement actual test)',
-    };
+  handler: async (_ctx, args) => {
+    try {
+      // Dynamically import email service (only in server environment)
+      const { sendEmail } = await import('../src/lib/services/email');
+
+      const result = await sendEmail({
+        to: args.testEmail,
+        subject: 'Dernek Yönetim Sistemi - Email Test',
+        template: 'notification',
+        templateData: {
+          title: 'Email Test Başarılı',
+          message:
+            'Bu bir test emailidir. Email yapılandırmanız doğru şekilde çalışıyor.\n\n' +
+            'SMTP ayarlarınız başarıyla doğrulandı.',
+        },
+      });
+
+      if (result) {
+        return {
+          success: true,
+          message: `Test email sent successfully to ${args.testEmail}`,
+          timestamp: new Date().toISOString(),
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Email configuration missing or send failed. Check SMTP settings in .env.local',
+          error: 'Email service returned false',
+        };
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return {
+        success: false,
+        message: 'Email test failed',
+        error: errorMessage,
+        hint: 'Check SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, and SMTP_FROM in .env.local',
+      };
+    }
   },
 });
 
 /**
  * Test SMS configuration
+ * Sends a test SMS to verify Twilio configuration
  */
-export const testSmsConnection = mutation({
+export const testSmsConnection = action({
   args: {
     testPhoneNumber: v.string(),
   },
-  handler: async (_ctx, _args) => {
-    // TODO: Implement actual SMS test
-    // This would send a test SMS using Twilio
-    return {
-      success: true,
-      message: 'Test SMS sent successfully (TODO: implement actual test)',
-    };
+  handler: async (_ctx, args) => {
+    try {
+      // Dynamically import SMS service (only in server environment)
+      const { sendSMS } = await import('../src/lib/services/sms');
+
+      const testMessage =
+        'Dernek Yönetim Sistemi - SMS Test\n\n' +
+        'Bu bir test mesajıdır. SMS yapılandırmanız doğru şekilde çalışıyor.\n\n' +
+        'Twilio ayarlarınız başarıyla doğrulandı.';
+
+      const result = await sendSMS({
+        to: args.testPhoneNumber,
+        message: testMessage,
+      });
+
+      if (result) {
+        return {
+          success: true,
+          message: `Test SMS sent successfully to ${args.testPhoneNumber}`,
+          timestamp: new Date().toISOString(),
+        };
+      } else {
+        return {
+          success: false,
+          message: 'SMS configuration missing or send failed. Check Twilio settings in .env.local',
+          error: 'SMS service returned false',
+        };
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return {
+        success: false,
+        message: 'SMS test failed',
+        error: errorMessage,
+        hint:
+          'Check TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in .env.local. ' +
+          'Phone number must be in format: +90 5XX XXX XX XX',
+      };
+    }
   },
 });
 
 /**
  * Test WhatsApp configuration
+ * Sends a test WhatsApp message to verify client is ready
  */
-export const testWhatsAppConnection = mutation({
+export const testWhatsAppConnection = action({
   args: {
     testPhoneNumber: v.string(),
   },
-  handler: async (_ctx, _args) => {
-    // TODO: Implement actual WhatsApp test
-    // This would send a test message using WhatsApp Business API
-    return {
-      success: true,
-      message: 'Test WhatsApp message sent successfully (TODO: implement actual test)',
-    };
+  handler: async (_ctx, args) => {
+    try {
+      // Dynamically import WhatsApp service (only in server environment)
+      const { sendWhatsAppMessage, getWhatsAppStatus } = await import(
+        '../src/lib/services/whatsapp'
+      );
+
+      // Check WhatsApp client status first
+      const status = getWhatsAppStatus();
+
+      if (!status.isReady || !status.isAuthenticated) {
+        return {
+          success: false,
+          message: 'WhatsApp client not ready',
+          error: status.lastError || 'Client not initialized or not authenticated',
+          hint:
+            'Initialize WhatsApp client first via /api/whatsapp/init endpoint and scan the QR code. ' +
+            'Then set WHATSAPP_AUTO_INIT=true in .env.local for automatic initialization on server start.',
+          status: {
+            isReady: status.isReady,
+            isAuthenticated: status.isAuthenticated,
+            phoneNumber: status.phoneNumber,
+          },
+        };
+      }
+
+      const testMessage =
+        'Dernek Yönetim Sistemi - WhatsApp Test\n\n' +
+        'Bu bir test mesajıdır. WhatsApp yapılandırmanız doğru şekilde çalışıyor.\n\n' +
+        'WhatsApp istemciniz başarıyla doğrulandı.';
+
+      const result = await sendWhatsAppMessage({
+        to: args.testPhoneNumber,
+        message: testMessage,
+      });
+
+      if (result) {
+        return {
+          success: true,
+          message: `Test WhatsApp message sent successfully to ${args.testPhoneNumber}`,
+          timestamp: new Date().toISOString(),
+          clientStatus: {
+            isReady: status.isReady,
+            isAuthenticated: status.isAuthenticated,
+            phoneNumber: status.phoneNumber,
+          },
+        };
+      } else {
+        return {
+          success: false,
+          message: 'WhatsApp message send failed',
+          error: 'WhatsApp service returned false',
+        };
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return {
+        success: false,
+        message: 'WhatsApp test failed',
+        error: errorMessage,
+        hint:
+          'Ensure WhatsApp client is initialized and authenticated. ' +
+          'Phone number must be in format: +90 5XX XXX XX XX. ' +
+          'Check WhatsApp client status via /api/whatsapp/status endpoint.',
+      };
+    }
   },
 });
 

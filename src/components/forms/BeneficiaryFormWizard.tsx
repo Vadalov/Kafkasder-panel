@@ -19,6 +19,9 @@ import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 // Import step components
 import { PersonalInfoStep } from './beneficiary-steps/PersonalInfoStep';
 import { AddressInfoStep } from './beneficiary-steps/AddressInfoStep';
+import { FamilyInfoStep } from './beneficiary-steps/FamilyInfoStep';
+import { FinancialInfoStep } from './beneficiary-steps/FinancialInfoStep';
+import { HealthInfoStep } from './beneficiary-steps/HealthInfoStep';
 
 // Import validation and types
 import { beneficiarySchema, type BeneficiaryFormData } from '@/lib/validations/beneficiary';
@@ -37,10 +40,9 @@ interface BeneficiaryFormWizardProps {
 const FORM_STEPS = [
   { id: 'personal', title: 'Kişisel Bilgiler', component: PersonalInfoStep },
   { id: 'address', title: 'Adres Bilgileri', component: AddressInfoStep },
-  // TODO: Add more steps
-  // { id: 'family', title: 'Aile Bilgileri', component: FamilyInfoStep },
-  // { id: 'financial', title: 'Maddi Durum', component: FinancialInfoStep },
-  // { id: 'health', title: 'Sağlık Durumu', component: HealthInfoStep },
+  { id: 'family', title: 'Aile Bilgileri', component: FamilyInfoStep },
+  { id: 'financial', title: 'Maddi Durum', component: FinancialInfoStep },
+  { id: 'health', title: 'Sağlık Durumu', component: HealthInfoStep },
 ] as const;
 
 export function BeneficiaryFormWizard({
@@ -166,18 +168,81 @@ export function BeneficiaryFormWizard({
         return ['firstName', 'lastName', 'identityNumber', 'mobilePhone'];
       case 1: // Address Info
         return ['address', 'city', 'district', 'neighborhood'];
+      case 2: // Family Info
+        return ['familyMemberCount'];
+      case 3: // Financial Info
+        return []; // Optional fields
+      case 4: // Health Info
+        return []; // Optional fields
       default:
         return [];
     }
   };
+
+  // UPDATE MUTATION
+  const updateMutation = useMutation({
+    mutationFn: (data: BeneficiaryFormData) => {
+      if (!beneficiaryId) {
+        throw new Error('Beneficiary ID is required for update');
+      }
+
+      const updateData: Partial<BeneficiaryDocument> = {
+        name: `${data.firstName} ${data.lastName}`.trim(),
+        tc_no: data.identityNumber || '',
+        phone: data.mobilePhone || '',
+        address: data.address || '',
+        city: data.city || '',
+        district: data.district || '',
+        neighborhood: data.neighborhood || '',
+        family_size: data.familyMemberCount || 1,
+        email: data.email,
+        birth_date: data.birthDate,
+        gender: data.gender,
+        nationality: data.nationality,
+        religion: data.religion,
+        marital_status: data.maritalStatus,
+        children_count: data.children_count,
+        orphan_children_count: data.orphan_children_count,
+        elderly_count: data.elderly_count,
+        disabled_count: data.disabled_count,
+        income_level: data.income_level,
+        income_source: data.incomeSources?.join(', '),
+        has_debt: data.has_debt,
+        housing_type: data.livingPlace,
+        has_vehicle: data.has_vehicle,
+        has_chronic_illness: data.hasChronicIllness,
+        chronic_illness_detail: data.chronicIllnessDetail,
+        has_disability: data.hasDisability,
+        disability_detail: data.disabilityDetail,
+        has_health_insurance: data.has_health_insurance,
+        education_level: data.educationLevel,
+        occupation: data.occupation,
+        employment_status: data.employment_status,
+        notes: data.notes,
+        contact_preference: data.contactPreference,
+      };
+
+      return api.beneficiaries.updateBeneficiary(beneficiaryId, updateData);
+    },
+    onSuccess: () => {
+      toast.success('İhtiyaç sahibi başarıyla güncellendi');
+      queryClient.invalidateQueries({ queryKey: ['beneficiaries'] });
+      queryClient.invalidateQueries({ queryKey: ['beneficiaries', beneficiaryId] });
+      onSuccess?.();
+    },
+    onError: (err: unknown) => {
+      const error = err as Error;
+      const userMessage = formatErrorMessage(error);
+      toast.error(`Güncelleme sırasında hata oluştu: ${userMessage}`);
+    },
+  });
 
   // Handle form submission
   const onSubmit: SubmitHandler<BeneficiaryFormData> = async (data) => {
     setIsSubmitting(true);
     try {
       if (isUpdateMode && beneficiaryId) {
-        // TODO: Implement update mutation
-        toast.info('Güncelleme özelliği yakında eklenecek');
+        await updateMutation.mutateAsync(data);
       } else {
         await createMutation.mutateAsync(data);
       }
