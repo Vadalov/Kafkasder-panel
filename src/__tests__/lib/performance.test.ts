@@ -132,11 +132,11 @@ describe('perfLog', () => {
 
   it('should have info method', () => {
     expect(typeof perfLog.info).toBe('function');
-    
+
     // In test environment, info/warn are skipped (NODE_ENV !== 'development')
     const loggerSpy = vi.spyOn(logger, 'info');
     perfLog.info('Test message', { data: 'test' });
-    
+
     // info only logs in development, not in test environment
     if (process.env.NODE_ENV === 'development') {
       expect(loggerSpy).toHaveBeenCalledWith('[PERF] Test message', { data: 'test' });
@@ -147,11 +147,11 @@ describe('perfLog', () => {
 
   it('should have warn method', () => {
     expect(typeof perfLog.warn).toBe('function');
-    
+
     // In test environment, warn is skipped (NODE_ENV !== 'development')
     const loggerSpy = vi.spyOn(logger, 'warn');
     perfLog.warn('Test warning', { data: 'test' });
-    
+
     // warn only logs in development, not in test environment
     if (process.env.NODE_ENV === 'development') {
       expect(loggerSpy).toHaveBeenCalledWith('[PERF] Test warning', { data: 'test' });
@@ -162,7 +162,7 @@ describe('perfLog', () => {
 
   it('should log errors in all environments', () => {
     expect(typeof perfLog.error).toBe('function');
-    
+
     const loggerSpy = vi.spyOn(logger, 'error');
     perfLog.error('Test error', { data: 'test' });
 
