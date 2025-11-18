@@ -9,47 +9,47 @@ import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 
 // Types
-export interface ExportColumn {
+export interface ExportColumn<T = Record<string, unknown>> {
   header: string;
-  key: string;
+  key: keyof T;
   width?: number;
-  formatter?: (value: any) => string;
+  formatter?: (value: T[keyof T]) => string;
 }
 
-export interface ExportOptions {
+export interface ExportOptions<T = Record<string, unknown>> {
   title?: string;
   subtitle?: string;
   filename?: string;
   orientation?: 'portrait' | 'landscape';
-  columns: ExportColumn[];
-  data: any[];
+  columns: ExportColumn<T>[];
+  data: T[];
   includeDate?: boolean;
   includeFooter?: boolean;
 }
 
-export interface PDFExportOptions extends ExportOptions {
+export interface PDFExportOptions<T = Record<string, unknown>> extends ExportOptions<T> {
   pageFormat?: 'a4' | 'letter';
   showLogo?: boolean;
   logoUrl?: string;
 }
 
-export interface ExcelExportOptions extends ExportOptions {
+export interface ExcelExportOptions<T = Record<string, unknown>> extends ExportOptions<T> {
   sheetName?: string;
   includeTotal?: boolean;
   totalColumns?: string[];
 }
 
-export interface CSVExportOptions {
+export interface CSVExportOptions<T = Record<string, unknown>> {
   filename?: string;
-  columns: ExportColumn[];
-  data: any[];
+  columns: ExportColumn<T>[];
+  data: T[];
   delimiter?: string;
 }
 
 /**
  * Export data to PDF format
  */
-export async function exportToPDF(options: PDFExportOptions): Promise<void> {
+export async function exportToPDF<T = Record<string, unknown>>(options: PDFExportOptions<T>): Promise<void> {
   const {
     title = 'Rapor',
     subtitle,
@@ -117,17 +117,17 @@ export async function exportToPDF(options: PDFExportOptions): Promise<void> {
     alternateRowStyles: {
       fillColor: [245, 245, 245],
     },
-    columnStyles: columns.reduce((acc, col, index) => {
+    columnStyles: columns.reduce<Record<number, { cellWidth: number }>>((acc, col, index) => {
       if (col.width) {
         acc[index] = { cellWidth: col.width };
       }
       return acc;
-    }, {} as any),
+    }, {}),
   });
 
   // Add footer
   if (includeFooter) {
-    const pageCount = (doc as any).internal.getNumberOfPages();
+    const pageCount = (doc as typeof doc & { internal: { getNumberOfPages: () => number } }).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(8);
@@ -148,7 +148,7 @@ export async function exportToPDF(options: PDFExportOptions): Promise<void> {
 /**
  * Export data to Excel format
  */
-export async function exportToExcel(options: ExcelExportOptions): Promise<void> {
+export async function exportToExcel<T = Record<string, unknown>>(options: ExcelExportOptions<T>): Promise<void> {
   const {
     title = 'Rapor',
     filename = `${title}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
@@ -216,7 +216,7 @@ export async function exportToExcel(options: ExcelExportOptions): Promise<void> 
 /**
  * Export data to CSV format
  */
-export async function exportToCSV(options: CSVExportOptions): Promise<void> {
+export async function exportToCSV<T = Record<string, unknown>>(options: CSVExportOptions<T>): Promise<void> {
   const {
     filename = `export_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.csv`,
     columns,
@@ -300,17 +300,17 @@ export enum ExportType {
 /**
  * Main export function that handles all formats
  */
-export async function exportData(
+export async function exportData<T = Record<string, unknown>>(
   type: ExportType,
-  options: PDFExportOptions | ExcelExportOptions | CSVExportOptions
+  options: PDFExportOptions<T> | ExcelExportOptions<T> | CSVExportOptions<T>
 ): Promise<void> {
   switch (type) {
     case ExportType.PDF:
-      return exportToPDF(options as PDFExportOptions);
+      return exportToPDF(options as PDFExportOptions<T>);
     case ExportType.EXCEL:
-      return exportToExcel(options as ExcelExportOptions);
+      return exportToExcel(options as ExcelExportOptions<T>);
     case ExportType.CSV:
-      return exportToCSV(options as CSVExportOptions);
+      return exportToCSV(options as CSVExportOptions<T>);
     default:
       throw new Error(`Unsupported export type: ${type}`);
   }
