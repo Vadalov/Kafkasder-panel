@@ -11,6 +11,9 @@ import { toast } from 'sonner';
 import logger from '@/lib/logger';
 import type { KumbaraCreateInput } from '@/lib/validations/kumbara';
 import { kumbaraCreateSchema } from '@/lib/validations/kumbara';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FormError } from '@/components/errors/FormError';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { DonorInfoSection } from './sections/DonorInfoSection';
 import { DonationDetailsSection } from './sections/DonationDetailsSection';
 import { PiggyBankInfoSection } from './sections/PiggyBankInfoSection';
@@ -232,116 +235,147 @@ export function KumbaraForm({ onSuccess, onCancel }: KumbaraFormProps) {
     [uploadedFile, createKumbaraDonation]
   );
 
+  // Keyboard navigation
+  useKeyboardNavigation({
+    onEscape: onCancel,
+    onCtrlEnter: () => {
+      if (form.formState.isValid) {
+        form.handleSubmit(onSubmit)();
+      }
+    },
+    onCtrlS: () => {
+      if (form.formState.isValid) {
+        form.handleSubmit(onSubmit)();
+      }
+    },
+    enabled: !isPending,
+  });
+
   return (
-    <div className="w-full">
-      <div className="mb-2 pb-2 border-b">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold flex items-center gap-1.5">
-              <span className="text-lg">🐷</span>
-              Yeni Kumbara Bağışı
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Formu doldurunuz. <span className="text-red-500 font-semibold">*</span> zorunlu
-            </p>
-          </div>
-          {/* Progress Indicator */}
-          <div className="flex flex-col items-end gap-1">
-            <div className="text-xs font-medium text-muted-foreground">%{progress}</div>
-            <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
+    <ErrorBoundary fallback={<FormError onClose={onCancel} />}>
+      <div className="w-full" role="region" aria-label="Kumbara Bağışı Formu">
+        <div className="mb-2 pb-2 border-b">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 id="form-title" className="text-base font-bold flex items-center gap-1.5">
+                <span className="text-lg" role="img" aria-label="Kumbara ikonu">
+                  🐷
+                </span>
+                Yeni Kumbara Bağışı
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Formu doldurunuz. <span className="text-red-500 font-semibold">*</span> zorunlu
+              </p>
+            </div>
+            {/* Progress Indicator */}
+            <div
+              className="flex flex-col items-end gap-1"
+              role="progressbar"
+              aria-valuenow={progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Form tamamlanma durumu"
+            >
+              <div className="text-xs font-medium text-muted-foreground">%{progress}</div>
+              <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2.5">
-          {/* Bağışçı Bilgileri */}
-          <DonorInfoSection control={form.control} />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-2.5"
+            aria-labelledby="form-title"
+          >
+            {/* Bağışçı Bilgileri */}
+            <DonorInfoSection control={form.control} />
 
-          {/* Bağış Detayları */}
-          <DonationDetailsSection control={form.control} currentCurrency={currentCurrency} />
+            {/* Bağış Detayları */}
+            <DonationDetailsSection control={form.control} currentCurrency={currentCurrency} />
 
-          {/* Kumbara Bilgileri */}
-          <PiggyBankInfoSection control={form.control} />
+            {/* Kumbara Bilgileri */}
+            <PiggyBankInfoSection control={form.control} />
 
-          {/* Konum Bilgileri */}
-          <LocationSection control={form.control} />
+            {/* Konum Bilgileri */}
+            <LocationSection control={form.control} />
 
-          {/* Notlar ve Belgeler */}
-          <NotesAndDocumentsSection
-            control={form.control}
-            onFileSelect={handleFileSelect}
-            uploadedFileName={uploadedFileName}
-            isPending={isPending}
-          />
+            {/* Notlar ve Belgeler */}
+            <NotesAndDocumentsSection
+              control={form.control}
+              onFileSelect={handleFileSelect}
+              uploadedFileName={uploadedFileName}
+              isPending={isPending}
+            />
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-800">
-            <Button
-              type="submit"
-              disabled={isPending || !form.formState.isValid}
-              className="flex-1 h-8 text-xs font-semibold"
-              data-testid="saveButton"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
-                  Kaydediliyor...
-                </>
-              ) : (
-                <>
-                  <span className="mr-1.5">💾</span>
-                  Kaydet
-                </>
-              )}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isPending}
-              className="h-8 px-4 text-xs"
-              data-testid="cancelButton"
-            >
-              <span className="mr-1.5">✖️</span>
-              İptal
-            </Button>
-          </div>
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-800">
+              <Button
+                type="submit"
+                disabled={isPending || !form.formState.isValid}
+                className="flex-1 h-8 text-xs font-semibold"
+                data-testid="saveButton"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+                    Kaydediliyor...
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-1.5">💾</span>
+                    Kaydet
+                  </>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={isPending}
+                className="h-8 px-4 text-xs"
+                data-testid="cancelButton"
+              >
+                <span className="mr-1.5">✖️</span>
+                İptal
+              </Button>
+            </div>
 
-          {/* Form Validation Summary */}
-          {Object.keys(form.formState.errors).length > 0 && (
-            <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-              <div className="flex items-start gap-1.5">
-                <AlertCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-xs font-medium text-red-900 dark:text-red-100 mb-0.5">
-                    Hataları düzeltin
-                  </p>
-                  <ul className="text-xs text-red-700 dark:text-red-300 space-y-0.5">
-                    {Object.entries(form.formState.errors)
-                      .slice(0, 2)
-                      .map(([field, error]) => (
-                        <li key={field}>
-                          •{' '}
-                          {typeof error === 'object' && error !== null && 'message' in error
-                            ? (error as { message?: string }).message || `${field} hatalı`
-                            : `${field} hatalı`}
-                        </li>
-                      ))}
-                    {Object.keys(form.formState.errors).length > 2 && (
-                      <li>• +{Object.keys(form.formState.errors).length - 2} hata daha</li>
-                    )}
-                  </ul>
+            {/* Form Validation Summary */}
+            {Object.keys(form.formState.errors).length > 0 && (
+              <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                <div className="flex items-start gap-1.5">
+                  <AlertCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-red-900 dark:text-red-100 mb-0.5">
+                      Hataları düzeltin
+                    </p>
+                    <ul className="text-xs text-red-700 dark:text-red-300 space-y-0.5">
+                      {Object.entries(form.formState.errors)
+                        .slice(0, 2)
+                        .map(([field, error]) => (
+                          <li key={field}>
+                            •{' '}
+                            {typeof error === 'object' && error !== null && 'message' in error
+                              ? (error as { message?: string }).message || `${field} hatalı`
+                              : `${field} hatalı`}
+                          </li>
+                        ))}
+                      {Object.keys(form.formState.errors).length > 2 && (
+                        <li>• +{Object.keys(form.formState.errors).length - 2} hata daha</li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </form>
-      </Form>
-    </div>
+            )}
+          </form>
+        </Form>
+      </div>
+    </ErrorBoundary>
   );
 }

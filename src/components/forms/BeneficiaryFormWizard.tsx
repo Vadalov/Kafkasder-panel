@@ -15,6 +15,8 @@ import { Progress } from '@/components/ui/progress';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FormError } from '@/components/errors/FormError';
 
 // Import step components
 import { PersonalInfoStep } from './beneficiary-steps/PersonalInfoStep';
@@ -257,83 +259,85 @@ export function BeneficiaryFormWizard({
   const CurrentStepComponent = FORM_STEPS[currentStep].component;
 
   return (
-    <FormProvider {...methods}>
-      <div className="space-y-6">
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>
-              Adım {currentStep + 1} / {FORM_STEPS.length}
-            </span>
-            <span>{Math.round(progress)}% tamamlandı</span>
+    <ErrorBoundary fallback={<FormError onClose={onCancel} />}>
+      <FormProvider {...methods}>
+        <div className="space-y-6">
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>
+                Adım {currentStep + 1} / {FORM_STEPS.length}
+              </span>
+              <span>{Math.round(progress)}% tamamlandı</span>
+            </div>
+            <Progress value={progress} className="h-2" />
           </div>
-          <Progress value={progress} className="h-2" />
+
+          {/* Step Tabs */}
+          <Tabs value={FORM_STEPS[currentStep].id} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              {FORM_STEPS.map((step, index) => (
+                <TabsTrigger
+                  key={step.id}
+                  value={step.id}
+                  disabled={index !== currentStep}
+                  className="flex items-center gap-2"
+                >
+                  <span className="hidden sm:inline">{step.title}</span>
+                  <span className="sm:hidden">Adım {index + 1}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <TabsContent value={FORM_STEPS[currentStep].id} className="mt-6">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                {/* Current Step Component */}
+                <CurrentStepComponent isUpdateMode={isUpdateMode} />
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-6">
+                  <div className="flex gap-2">
+                    {currentStep > 0 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={prevStep}
+                        className="flex items-center gap-2"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Önceki
+                      </Button>
+                    )}
+                    {onCancel && (
+                      <Button type="button" variant="ghost" onClick={onCancel}>
+                        İptal
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    {currentStep < FORM_STEPS.length - 1 ? (
+                      <Button type="button" onClick={nextStep} className="flex items-center gap-2">
+                        Sonraki
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex items-center gap-2"
+                      >
+                        {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                        {isUpdateMode ? 'Güncelle' : 'Kaydet'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </form>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        {/* Step Tabs */}
-        <Tabs value={FORM_STEPS[currentStep].id} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            {FORM_STEPS.map((step, index) => (
-              <TabsTrigger
-                key={step.id}
-                value={step.id}
-                disabled={index !== currentStep}
-                className="flex items-center gap-2"
-              >
-                <span className="hidden sm:inline">{step.title}</span>
-                <span className="sm:hidden">Adım {index + 1}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          <TabsContent value={FORM_STEPS[currentStep].id} className="mt-6">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {/* Current Step Component */}
-              <CurrentStepComponent isUpdateMode={isUpdateMode} />
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-6">
-                <div className="flex gap-2">
-                  {currentStep > 0 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={prevStep}
-                      className="flex items-center gap-2"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Önceki
-                    </Button>
-                  )}
-                  {onCancel && (
-                    <Button type="button" variant="ghost" onClick={onCancel}>
-                      İptal
-                    </Button>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  {currentStep < FORM_STEPS.length - 1 ? (
-                    <Button type="button" onClick={nextStep} className="flex items-center gap-2">
-                      Sonraki
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex items-center gap-2"
-                    >
-                      {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {isUpdateMode ? 'Güncelle' : 'Kaydet'}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </form>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </FormProvider>
+      </FormProvider>
+    </ErrorBoundary>
   );
 }

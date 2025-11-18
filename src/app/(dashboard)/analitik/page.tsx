@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageLayout } from '@/components/layouts/PageLayout';
 import { DemoBanner } from '@/components/ui/demo-banner';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DashboardError } from '@/components/errors/DashboardError';
 import { TrendingUp, Users, MousePointerClick, Clock, Activity, Eye, Zap } from 'lucide-react';
 import {
   AreaChart,
@@ -67,7 +69,7 @@ const mockTopUsers = [
   { name: 'Ali Öztürk', events: 218, sessions: 17, avgDuration: 340 },
 ];
 
-export default function AnalyticsPage() {
+function AnalyticsPageContent() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [timeRange] = useState<'day' | 'week' | 'month'>('week');
 
@@ -403,5 +405,13 @@ export default function AnalyticsPage() {
         </TabsContent>
       </Tabs>
     </PageLayout>
+  );
+}
+
+export default function AnalyticsPage() {
+  return (
+    <ErrorBoundary fallback={<DashboardError />}>
+      <AnalyticsPageContent />
+    </ErrorBoundary>
   );
 }

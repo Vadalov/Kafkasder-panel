@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 // import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DashboardError } from '@/components/errors/DashboardError';
 import { cn } from '@/lib/utils';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -49,7 +51,7 @@ const COLORS = [
   '#FF6B9D',
 ];
 
-export default function FinancialDashboardPage() {
+function FinancialDashboardPageContent() {
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
     from: startOfMonth(subMonths(new Date(), 11)),
     to: endOfMonth(new Date()),
@@ -409,5 +411,13 @@ export default function FinancialDashboardPage() {
         </TabsContent>
       </Tabs>
     </PageLayout>
+  );
+}
+
+export default function FinancialDashboardPage() {
+  return (
+    <ErrorBoundary fallback={<DashboardError />}>
+      <FinancialDashboardPageContent />
+    </ErrorBoundary>
   );
 }
