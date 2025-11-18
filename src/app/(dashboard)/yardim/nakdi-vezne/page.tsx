@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation } from 'convex/react';
+import { useMutation } from 'convex/react';
+import { useRealtimeQuery, useRealtimeList } from '@/hooks/useRealtimeQuery';
 import { api } from '@/convex/_generated/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,13 +66,28 @@ export default function CashVaultPage() {
   const [receiptNumber, setReceiptNumber] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Fetch vault balance
-  const vaultBalance = useQuery(api.finance_records.getVaultBalance);
+  // Fetch vault balance with real-time updates
+  const vaultBalance = useRealtimeQuery(
+    api.finance_records.getVaultBalance,
+    {},
+    {
+      notifyOnChange: true,
+      changeMessage: 'Vezne bakiyesi güncellendi',
+      skipInitial: true,
+    }
+  );
 
-  // Fetch recent transactions
-  const recentTransactions = useQuery(api.finance_records.list, {
-    limit: 50,
-  });
+  // Fetch recent transactions with real-time list monitoring
+  const recentTransactions = useRealtimeList(
+    api.finance_records.list,
+    {
+      limit: 50,
+    },
+    {
+      itemName: 'işlem',
+      skipInitial: true,
+    }
+  );
 
   // Mutation for creating vault transaction
   const createTransaction = useMutation(api.finance_records.createVaultTransaction);

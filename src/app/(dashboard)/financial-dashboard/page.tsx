@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery } from 'convex/react';
+import { useRealtimeQuery } from '@/hooks/useRealtimeQuery';
 import logger from '@/lib/logger';
 import { api } from '@/convex/_generated/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,27 +58,49 @@ function FinancialDashboardPageContent() {
     to: endOfMonth(new Date()),
   });
 
-  // Fetch dashboard metrics
-  const metrics = useQuery(api.finance_records.getDashboardMetrics, {
-    startDate: dateRange.from?.toISOString(),
-    endDate: dateRange.to?.toISOString(),
-  });
+  // Fetch dashboard metrics with real-time updates
+  const metrics = useRealtimeQuery(
+    api.finance_records.getDashboardMetrics,
+    {
+      startDate: dateRange.from?.toISOString(),
+      endDate: dateRange.to?.toISOString(),
+    },
+    {
+      notifyOnChange: true,
+      changeMessage: 'Finansal veriler güncellendi',
+      skipInitial: true,
+    }
+  );
 
   // Fetch monthly data for charts
   const monthlyData = useQuery(api.finance_records.getMonthlyData, { months: 12 });
 
-  // Fetch category breakdown
-  const incomeByCategory = useQuery(api.finance_records.getCategoryBreakdown, {
-    recordType: 'income',
-    startDate: dateRange.from?.toISOString(),
-    endDate: dateRange.to?.toISOString(),
-  });
+  // Fetch category breakdown with real-time monitoring
+  const incomeByCategory = useRealtimeQuery(
+    api.finance_records.getCategoryBreakdown,
+    {
+      recordType: 'income',
+      startDate: dateRange.from?.toISOString(),
+      endDate: dateRange.to?.toISOString(),
+    },
+    {
+      notifyOnChange: false,
+      skipInitial: true,
+    }
+  );
 
-  const expensesByCategory = useQuery(api.finance_records.getCategoryBreakdown, {
-    recordType: 'expense',
-    startDate: dateRange.from?.toISOString(),
-    endDate: dateRange.to?.toISOString(),
-  });
+  const expensesByCategory = useRealtimeQuery(
+    api.finance_records.getCategoryBreakdown,
+    {
+      recordType: 'expense',
+      startDate: dateRange.from?.toISOString(),
+      endDate: dateRange.to?.toISOString(),
+    },
+    {
+      notifyOnChange: false,
+      skipInitial: true,
+    }
+  );
 
   // Fetch all records for table view
 

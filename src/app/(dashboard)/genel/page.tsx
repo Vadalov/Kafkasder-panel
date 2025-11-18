@@ -10,6 +10,7 @@ import { CurrencyWidget } from '@/components/ui/currency-widget';
 import { PageLayout } from '@/components/layouts/PageLayout';
 import { DemoBanner } from '@/components/ui/demo-banner';
 import { useQuery } from 'convex/react';
+import { useRealtimeQuery } from '@/hooks/useRealtimeQuery';
 import { api } from '../../../../convex/_generated/api';
 import {
   Users,
@@ -77,10 +78,25 @@ const DynamicCell = dynamic(() => import('recharts').then((mod) => mod.Cell), { 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading } = useAuthStore();
 
-  // Fetch enhanced KPIs and currency rates
+  // Fetch enhanced KPIs and currency rates with real-time updates
   const enhancedKPIs = useQuery(api.monitoring.getEnhancedKPIs);
-  const currencyData = useQuery(api.monitoring.getCurrencyRates);
-  const dashboardStats = useQuery(api.monitoring.getDashboardStats);
+  const currencyData = useRealtimeQuery(
+    api.monitoring.getCurrencyRates,
+    {},
+    {
+      notifyOnChange: true,
+      changeMessage: 'Döviz kurları güncellendi',
+      skipInitial: true,
+    }
+  );
+  const dashboardStats = useRealtimeQuery(
+    api.monitoring.getDashboardStats,
+    {},
+    {
+      notifyOnChange: false, // Too frequent, no notification
+      skipInitial: true,
+    }
+  );
 
   // ⚠️ DEMO DATA: Aşağıdaki veriler gerçek API'lerden alınmalı (bkz: docs/TODO.md - Mock Data)
   // Sample chart data - memoized to prevent re-renders (moved before early returns)
