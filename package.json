@@ -137,7 +137,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/twilio": "^3.19.2",
-    "@vitejs/plugin-react": "^4.0.4",
+    "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.0.8",
     "@vitest/ui": "^4.0.6",
     "dotenv": "^17.2.3",
