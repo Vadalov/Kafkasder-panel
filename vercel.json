@@ -3,19 +3,8 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["fra1"],
-  "env": {
-    "NEXT_PUBLIC_CONVEX_URL": "@convex_url",
-    "BACKEND_PROVIDER": "convex",
-    "NEXT_PUBLIC_BACKEND_PROVIDER": "convex",
-    "CSRF_SECRET": "@csrf_secret",
-    "SESSION_SECRET": "@session_secret"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_CONVEX_URL": "@convex_url",
-      "BACKEND_PROVIDER": "convex",
-      "NEXT_PUBLIC_BACKEND_PROVIDER": "convex"
-    }
-  }
+  "regions": ["fra1"]
+  // Note: Environment variables should be set in Vercel Dashboard
+  // Settings → Environment Variables
+  // See VERCEL_DEPLOYMENT.md for complete setup guide
 }
