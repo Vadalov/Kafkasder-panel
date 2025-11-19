@@ -73,7 +73,7 @@ export function FinancialInfoStep() {
             <Label htmlFor="incomeSource">Gelir Kaynağı</Label>
             <ParameterSelect
               parameter="GELIR_KAYNAGI"
-              value={watch('incomeSource')}
+              value={(watch('incomeSource') as unknown) as string}
               onValueChange={(value) => setValue('incomeSource', value as any)}
               placeholder="Gelir kaynağı seçin"
               className={errors.incomeSource ? 'border-red-500' : ''}
