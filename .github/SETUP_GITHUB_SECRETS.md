@@ -41,19 +41,17 @@ GitHub Actions workflow'ları için aşağıdaki secrets'ları ayarlamanız gere
 
 1. **Repository'ye gidin:**
    ```
-   https://github.com/Vadalov/Kafkasder-panel
+   https://github.com/Vadalov/Kafkasder-panel/settings/secrets/actions
    ```
 
-2. **Settings → Secrets and variables → Actions**
+2. **"New repository secret" butonuna tıklayın**
 
-3. **"New repository secret" butonuna tıklayın**
-
-4. **Her secret için:**
+3. **Her secret için:**
    - **Name:** Secret adı (örn: `CONVEX_DEPLOY_KEY`)
    - **Secret:** Değer
    - **"Add secret" butonuna tıklayın**
 
-5. **Tüm secrets eklendikten sonra:**
+4. **Tüm secrets eklendikten sonra:**
    - Secrets listesinde görünecektir
    - Workflow'lar otomatik olarak kullanabilecektir
 
@@ -112,4 +110,3 @@ env:
 ---
 
 **Not:** Vercel environment variables GitHub secrets'tan farklıdır ve Vercel Dashboard'dan ayarlanmalıdır.
-
