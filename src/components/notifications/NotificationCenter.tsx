@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import { tr } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
+import { useRealtimeQuery, useRealtimeList } from '@/hooks/useRealtimeQuery';
 
 interface NotificationCenterProps {
   userId: Id<'users'>;
@@ -23,16 +24,31 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
 
-  // Fetch unread count
-  const unreadCount = useQuery(api.workflow_notifications.getUnreadCount, {
-    recipient: userId,
-  });
+  // Fetch unread count with real-time updates
+  const unreadCount = useRealtimeQuery(
+    api.workflow_notifications.getUnreadCount,
+    {
+      recipient: userId,
+    },
+    {
+      notifyOnChange: true,
+      changeMessage: 'Yeni bildiriminiz var',
+      skipInitial: true,
+    }
+  );
 
-  // Fetch recent notifications
-  const allNotifications = useQuery(api.workflow_notifications.getRecent, {
-    recipient: userId,
-    limit: 50,
-  });
+  // Fetch recent notifications with real-time list monitoring
+  const allNotifications = useRealtimeList(
+    api.workflow_notifications.getRecent,
+    {
+      recipient: userId,
+      limit: 50,
+    },
+    {
+      itemName: 'bildirim',
+      skipInitial: true,
+    }
+  );
 
   // Mutations
   const markAsRead = useMutation(api.workflow_notifications.markAsRead);

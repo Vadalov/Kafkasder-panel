@@ -1,8 +1,10 @@
 /**
  * Piggy Bank Information Section for Kumbara Form
  * Extracted from KumbaraForm for better modularity
+ * Memoized to prevent unnecessary re-renders
  */
 
+import { memo } from 'react';
 import { Control } from 'react-hook-form';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
@@ -26,7 +28,7 @@ interface PiggyBankInfoSectionProps {
   control: Control<KumbaraCreateInput>;
 }
 
-export function PiggyBankInfoSection({ control }: PiggyBankInfoSectionProps) {
+export const PiggyBankInfoSection = memo(function PiggyBankInfoSection({ control }: PiggyBankInfoSectionProps) {
   return (
     <div className="space-y-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-md border border-blue-200 dark:border-blue-900/30">
       <div className="flex items-center gap-1.5">
@@ -141,4 +143,4 @@ export function PiggyBankInfoSection({ control }: PiggyBankInfoSectionProps) {
       </div>
     </div>
   );
-}
+});

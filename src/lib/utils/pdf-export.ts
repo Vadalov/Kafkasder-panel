@@ -50,6 +50,37 @@ export interface CategoryBreakdownItem {
   type: 'income' | 'expense';
 }
 
+export interface DonationReportData {
+  topDonors?: Array<{
+    donor: string;
+    amount: number;
+    count: number;
+    average?: string;
+  }>;
+  totalDonations?: number;
+  totalAmount?: number;
+  averageDonation?: number;
+  completedDonations?: number;
+  pendingDonations?: number;
+}
+
+export interface FinancialReportData {
+  categoryBreakdown?: CategoryBreakdownItem[];
+  totalIncome?: number;
+  totalExpense?: number;
+  netIncome?: number;
+}
+
+export interface AidApplication {
+  _id: string;
+  applicant_name: string;
+  applicant_type?: string;
+  need_type?: string;
+  status?: string;
+  request_date?: string;
+  approved_amount?: number;
+}
+
 /**
  * Sanitizes a title string for use in filenames by:
  * 1. Normalizing to NFKD and removing diacritics (Turkish characters become ASCII)
@@ -206,7 +237,7 @@ export const generatePDFReport = (exportData: ExportData): void => {
   doc.save(fileName);
 };
 
-export const generateDonationPDF = (reportData: any): void => {
+export const generateDonationPDF = (reportData: DonationReportData): void => {
   const exportData: ExportData = {
     title: PDF_STRINGS.DONATION_REPORTS_TITLE,
     data: reportData.topDonors || [],
@@ -232,20 +263,20 @@ export const generateDonationPDF = (reportData: any): void => {
   };
 
   // Calculate average for each donor
-  exportData.data = exportData.data.map((donor: any) => ({
+  exportData.data = (reportData.topDonors || []).map((donor) => ({
     ...donor,
     average:
-      donor?.count === 0
+      donor.count === 0
         ? '-'
-        : ((Number(donor?.amount) || 0) / (Number(donor?.count) || 1)).toLocaleString('tr-TR', {
+        : ((donor.amount || 0) / (donor.count || 1)).toLocaleString('tr-TR', {
             maximumFractionDigits: 0,
           }),
-  }));
+  })) as Record<string, unknown>[];
 
   generatePDFReport(exportData);
 };
 
-export const generateFinancialReportPDF = (reportData: any): void => {
+export const generateFinancialReportPDF = (reportData: FinancialReportData): void => {
   const exportData: ExportData = {
     title: PDF_STRINGS.FINANCIAL_REPORT_TITLE,
     data: reportData.categoryBreakdown || [],
@@ -290,7 +321,7 @@ export const generateFinancialReportPDF = (reportData: any): void => {
   generatePDFReport(exportData);
 };
 
-export const generateAidListPDF = (applications: any[]): void => {
+export const generateAidListPDF = (applications: AidApplication[]): void => {
   const exportData: ExportData = {
     title: PDF_STRINGS.AID_LIST_TITLE,
     data: applications.map((app) => ({

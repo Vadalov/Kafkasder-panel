@@ -1,9 +1,10 @@
 /**
  * Location Information Section for Kumbara Form
  * Extracted from KumbaraForm for better modularity
+ * Memoized to prevent unnecessary re-renders
  */
 
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { Control, ControllerRenderProps } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -13,7 +14,7 @@ interface LocationSectionProps {
   control: Control<KumbaraCreateInput>;
 }
 
-export function LocationSection({ control }: LocationSectionProps) {
+export const LocationSection = memo(function LocationSection({ control }: LocationSectionProps) {
   // Handle coordinate updates - memoized
   const handleCoordinateChange = useCallback(
     (
@@ -103,4 +104,4 @@ export function LocationSection({ control }: LocationSectionProps) {
       </div>
     </div>
   );
-}
+});

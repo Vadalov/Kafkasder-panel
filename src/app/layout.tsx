@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { lazyLoadComponent } from '@/lib/performance';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import { ServiceWorkerRegister } from '@/components/pwa/ServiceWorkerRegister';
+import { NetworkStatusIndicator } from '@/components/pwa/NetworkStatusIndicator';
 
 // Optimized font loading with subset optimization
 const inter = Inter({
@@ -58,6 +60,29 @@ const LazyWebVitalsTracker = lazyLoadComponent(
 export const metadata: Metadata = {
   title: 'Dernek Yönetim Sistemi',
   description: 'Modern dernek yönetim sistemi',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Kafkasder',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' }],
+  },
+  themeColor: '#3b82f6',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
 };
 
 export default function RootLayout({
@@ -72,9 +97,11 @@ export default function RootLayout({
       </head>
       <body className={cn(inter.variable, poppins.variable, montserrat.variable, inter.className)}>
         <Providers>
+          <ServiceWorkerRegister />
           <LazyWebVitalsTracker />
           {children}
         </Providers>
+        <NetworkStatusIndicator />
         {process.env.NODE_ENV === 'production' && (
           <>
             <SpeedInsights />
