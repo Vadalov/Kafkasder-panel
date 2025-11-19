@@ -5,7 +5,7 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { format } from 'date-fns';
 
 // Types
@@ -146,7 +146,7 @@ export async function exportToPDF<T = Record<string, unknown>>(options: PDFExpor
 }
 
 /**
- * Export data to Excel format
+ * Export data to Excel format using exceljs (secure alternative to xlsx)
  */
 export async function exportToExcel<T = Record<string, unknown>>(options: ExcelExportOptions<T>): Promise<void> {
   const {
@@ -159,58 +159,82 @@ export async function exportToExcel<T = Record<string, unknown>>(options: ExcelE
     totalColumns = [],
   } = options;
 
+  // Create workbook
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(sheetName);
+
   // Prepare headers
   const headers = columns.map((col) => col.header);
+  worksheet.addRow(headers);
 
-  // Prepare data rows
-  const rows = data.map((row) =>
-    columns.map((col) => {
+  // Style header row
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFE0E0E0' },
+  };
+  headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+  // Add data rows
+  data.forEach((row) => {
+    const rowData = columns.map((col) => {
       const value = row[col.key];
-      return col.formatter ? col.formatter(value) : (value ?? '');
-    })
-  );
+      return col.formatter ? col.formatter(value) : value ?? '';
+    });
+    worksheet.addRow(rowData);
+  });
 
   // Add totals if requested
   if (includeTotal && totalColumns.length > 0) {
     const totalRow = columns.map((col) => {
-      if (totalColumns.includes(col.key)) {
+      const colKeyStr = String(col.key);
+      if (totalColumns.includes(colKeyStr)) {
         const sum = data.reduce((acc, row) => {
-          const value = parseFloat(row[col.key]) || 0;
-          return acc + value;
+          const value = row[col.key];
+          const numValue = typeof value === 'number' ? value : parseFloat(String(value)) || 0;
+          return acc + numValue;
         }, 0);
-        return col.formatter ? col.formatter(sum) : sum;
+        return col.formatter ? col.formatter(sum as T[keyof T]) : sum;
       }
       return col.key === columns[0].key ? 'TOPLAM' : '';
     });
-    rows.push(totalRow);
-  }
-
-  // Create worksheet
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-
-  // Set column widths
-  const colWidths = columns.map((col) => ({
-    wch: col.width ? col.width / 5 : 15, // Convert mm to characters (approximate)
-  }));
-  ws['!cols'] = colWidths;
-
-  // Style headers (bold)
-  const headerRange = XLSX.utils.decode_range(ws['!ref'] || 'A1');
-  for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-    const address = `${XLSX.utils.encode_col(C)}1`;
-    if (!ws[address]) continue;
-    ws[address].s = {
-      font: { bold: true },
-      fill: { fgColor: { rgb: 'E0E0E0' } },
+    const totalRowIndex = worksheet.addRow(totalRow);
+    
+    // Style total row
+    const totalRowObj = worksheet.getRow(totalRowIndex.number);
+    totalRowObj.font = { bold: true };
+    totalRowObj.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFF5F5F5' },
     };
   }
 
-  // Create workbook
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  // Set column widths
+  columns.forEach((col, index) => {
+    const column = worksheet.getColumn(index + 1);
+    column.width = col.width ? col.width / 5 : 15; // Convert mm to characters (approximate)
+  });
 
-  // Save the file
-  XLSX.writeFile(wb, filename);
+  // Generate Excel file buffer
+  const buffer = await workbook.xlsx.writeBuffer();
+  
+  // Create blob and trigger download
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 }
 
 /**
