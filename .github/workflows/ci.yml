@@ -66,14 +66,6 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-      - name: Upload ESLint results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: eslint-results
-          path: eslint-report.json
-          if-no-files-found: ignore
-
   typecheck:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
@@ -136,17 +128,6 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
           verbose: true
-
-      - name: Upload coverage reports to Codacy
-        run: |
-          export CODACY_API_TOKEN="${{ secrets.CODACY_API_TOKEN }}"
-          export CODACY_ORGANIZATION_PROVIDER=gh
-          export CODACY_USERNAME=Vadalov
-          export CODACY_PROJECT_NAME=Kafkasder-panel
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-            --coverage-reports ./coverage/lcov.info \
-            --language typescript \
-            --force-coverage-parser lcov
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
