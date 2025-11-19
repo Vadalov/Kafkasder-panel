@@ -4,7 +4,4 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["fra1"]
-  // Note: Environment variables should be set in Vercel Dashboard
-  // Settings → Environment Variables
-  // See VERCEL_DEPLOYMENT.md for complete setup guide
 }
