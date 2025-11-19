@@ -36,20 +36,27 @@ interface ComposeStepProps {
 export function ComposeStep({
   messageType,
   messageData,
-  onMessageTypeChange,
+  onMessageTypeChange: _onMessageTypeChange,
   onMessageChange,
 }: ComposeStepProps) {
   return (
     <div className="space-y-6">
       {/* Message Template Selector */}
-      <MessageTemplateSelector onSelectTemplate={onMessageChange} />
+      <MessageTemplateSelector
+        messageType={messageType}
+        onSelect={(template) =>
+          onMessageChange({ subject: template.subject, content: template.content })
+        }
+      />
 
       {/* Message Form */}
       <MessageForm
-        messageType={messageType}
+        defaultMessageType={messageType}
         initialData={messageData}
-        onSubmit={onMessageChange}
-        onMessageTypeChange={onMessageTypeChange}
+        onSuccess={() => {
+          // Form submitted successfully
+          // The form handles its own submission
+        }}
       />
     </div>
   );

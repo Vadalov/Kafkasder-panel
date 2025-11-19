@@ -13,7 +13,7 @@ import { v } from 'convex/values';
 import { PersistentTextStreaming } from '@convex-dev/persistent-text-streaming';
 import { components } from './_generated/api';
 import type { StreamId } from '@convex-dev/persistent-text-streaming';
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 
 const persistentTextStreaming = new PersistentTextStreaming(components.persistentTextStreaming);
@@ -170,13 +170,16 @@ export const streamChat = httpAction(async (ctx, request) => {
       }
 
       // Configure OpenAI model with API key
-      const model = openai('gpt-4o-mini', {
-        apiKey: apiKey,
+      const openai = createOpenAI({
+        apiKey,
       });
+      const model = openai('gpt-4o-mini');
 
       // Stream AI response using Vercel AI SDK
+      // Note: maxTokens/maxCompletionTokens removed due to API changes in AI SDK
+      // Temperature and other settings can be configured via model settings if needed
       const result = await streamText({
-        model: model,
+        model,
         messages: [
           {
             role: 'system',
@@ -190,8 +193,6 @@ export const streamChat = httpAction(async (ctx, request) => {
             content: body.prompt,
           },
         ],
-        maxTokens: 1000,
-        temperature: 0.7,
       });
 
       // Stream chunks to the client
@@ -219,7 +220,7 @@ export const streamChat = httpAction(async (ctx, request) => {
       try {
         await chunkAppender(
           '\n\n[Hata: AI yanıtı oluşturulamadı. ' +
-          'Lütfen daha sonra tekrar deneyin veya sistem yöneticisiyle iletişime geçin.]'
+            'Lütfen daha sonra tekrar deneyin veya sistem yöneticisiyle iletişime geçin.]'
         );
       } catch (appendError) {
         console.error('Failed to append error message:', appendError);

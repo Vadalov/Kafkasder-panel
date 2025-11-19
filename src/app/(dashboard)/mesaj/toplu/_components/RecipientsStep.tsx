@@ -20,11 +20,16 @@ const RecipientSelector = dynamic(
 );
 
 interface RecipientsStepProps {
+  messageType: 'sms' | 'email' | 'internal' | 'whatsapp';
   selectedRecipients: string[];
   onRecipientsChange: (recipients: string[]) => void;
 }
 
-export function RecipientsStep({ selectedRecipients, onRecipientsChange }: RecipientsStepProps) {
+export function RecipientsStep({
+  messageType,
+  selectedRecipients,
+  onRecipientsChange,
+}: RecipientsStepProps) {
   return (
     <div className="space-y-6">
       {/* Selected Count Card */}
@@ -34,9 +39,7 @@ export function RecipientsStep({ selectedRecipients, onRecipientsChange }: Recip
             <Users className="h-5 w-5" />
             Seçili Alıcılar
           </CardTitle>
-          <CardDescription>
-            Toplam {selectedRecipients.length} alıcı seçili
-          </CardDescription>
+          <CardDescription>Toplam {selectedRecipients.length} alıcı seçili</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-blue-600">{selectedRecipients.length}</div>
@@ -50,8 +53,9 @@ export function RecipientsStep({ selectedRecipients, onRecipientsChange }: Recip
 
       {/* Recipient Selector */}
       <RecipientSelector
+        messageType={messageType}
         selectedRecipients={selectedRecipients}
-        onSelectionChange={onRecipientsChange}
+        onRecipientsChange={onRecipientsChange}
       />
     </div>
   );

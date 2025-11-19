@@ -13,7 +13,7 @@ import { buildApiRoute } from '@/lib/api/middleware';
 import { successResponse, errorResponse, parseBody } from '@/lib/api/route-helpers';
 import { convexBeneficiaries, normalizeQueryParams } from '@/lib/convex/api';
 import { beneficiarySchema } from '@/lib/validations/beneficiary';
-import type { BeneficiaryInput } from '@/lib/validations/beneficiary';
+import type { BeneficiaryFormData } from '@/lib/validations/beneficiary';
 
 // ========================================
 // EXAMPLE GET HANDLER (Standardized)
@@ -70,7 +70,7 @@ export const POST = buildApiRoute({
   allowedMethods: ['POST'],
   rateLimit: { maxRequests: 20, windowMs: 60000 },
 })(async (request: NextRequest) => {
-  const { data, error: parseError } = await parseBody<BeneficiaryInput>(request);
+  const { data, error: parseError } = await parseBody<BeneficiaryFormData>(request);
 
   if (parseError) {
     return errorResponse(parseError, 400);
@@ -86,7 +86,7 @@ export const POST = buildApiRoute({
     return errorResponse(
       'Doğrulama hatası',
       400,
-      validationResult.error.errors.map((e) => e.message)
+      validationResult.error.issues.map((e) => e.message)
     );
   }
 

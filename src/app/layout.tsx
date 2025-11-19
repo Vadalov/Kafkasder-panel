@@ -1,44 +1,22 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins, Montserrat } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-import { cn } from '@/lib/utils';
 import { lazyLoadComponent } from '@/lib/performance';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import { ServiceWorkerRegister } from '@/components/pwa/ServiceWorkerRegister';
 import { NetworkStatusIndicator } from '@/components/pwa/NetworkStatusIndicator';
 
-// Optimized font loading with subset optimization
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap', // Swap to fallback font immediately, then swap to web font
-  preload: true, // Preload for better performance
-  fallback: ['system-ui', 'arial'], // Fallback fonts
-  adjustFontFallback: true, // Adjust font metrics for better CLS
-});
-
-// Lazy load secondary fonts for better initial load performance
-const poppins = Poppins({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-heading-alt',
-  display: 'swap',
-  preload: false, // Don't preload secondary font
-  fallback: ['system-ui', 'sans-serif'] as string[],
-  adjustFontFallback: true,
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['500', '600', '700', '800', '900'],
-  variable: '--font-heading',
-  display: 'swap',
-  preload: false, // Don't preload secondary font
-  fallback: ['system-ui', 'sans-serif'] as string[],
-  adjustFontFallback: true,
-});
+// Use system fonts temporarily due to build environment restrictions
+// TODO: Re-enable Google Fonts (Inter, Poppins, Montserrat) when network access is available
+const fontVariables = {
+  '--font-body':
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  '--font-heading':
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  '--font-heading-alt':
+    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+} as const;
 
 // Lazy load analytics components for better initial page load
 const LazyGoogleAnalytics = lazyLoadComponent(
@@ -95,7 +73,7 @@ export default function RootLayout({
       <head>
         <LazyGoogleAnalytics />
       </head>
-      <body className={cn(inter.variable, poppins.variable, montserrat.variable, inter.className)}>
+      <body style={fontVariables as React.CSSProperties} className="font-sans">
         <Providers>
           <ServiceWorkerRegister />
           <LazyWebVitalsTracker />

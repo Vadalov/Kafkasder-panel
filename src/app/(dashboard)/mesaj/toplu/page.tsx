@@ -11,7 +11,13 @@ import { ComposeStep } from './_components/ComposeStep';
 import { RecipientsStep } from './_components/RecipientsStep';
 import { PreviewStep } from './_components/PreviewStep';
 import { SendingStep } from './_components/SendingStep';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import type { MessageStatistics, SendingResult } from '@/lib/messages/calculations';
 import type { MessageType } from '@/lib/messages/calculations';
 
@@ -131,15 +137,16 @@ export default function BulkMessagingPage() {
     setWizardStep(step);
   };
 
-  const _handleStartOver = () => {
-    setWizardStep('compose');
-    setMessageType('sms');
-    setMessageData({ content: '' });
-    setSelectedRecipients([]);
-    setConfirmed(false);
-    setSendingProgress(0);
-    setSendingResults(undefined);
-  };
+  // TODO: Implement start over functionality
+  // const handleStartOver = () => {
+  //   setWizardStep('compose');
+  //   setMessageType('sms');
+  //   setMessageData({ content: '' });
+  //   setSelectedRecipients([]);
+  //   setConfirmed(false);
+  //   setSendingProgress(0);
+  //   setSendingResults(undefined);
+  // };
 
   return (
     <div className="space-y-6">
@@ -174,6 +181,7 @@ export default function BulkMessagingPage() {
 
         {wizardStep === 'recipients' && (
           <RecipientsStep
+            messageType={messageType}
             selectedRecipients={selectedRecipients}
             onRecipientsChange={setSelectedRecipients}
           />
