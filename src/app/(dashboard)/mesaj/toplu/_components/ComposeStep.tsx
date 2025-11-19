@@ -29,7 +29,6 @@ const MessageTemplateSelector = dynamic(
 interface ComposeStepProps {
   messageType: MessageType;
   messageData: { subject?: string; content: string };
-  onMessageTypeChange: (type: MessageType) => void;
   onMessageChange: (data: { subject?: string; content: string }) => void;
 }
 

@@ -40,8 +40,6 @@ export default function MeetingsPage() {
   // View state
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [_selectedMeeting, setSelectedMeeting] = useState<MeetingDocument | null>(null);
-  const [meetingToDelete, setMeetingToDelete] = useState<string | null>(null);
 
   // Filter state (unused for now since list view is not implemented)
   const [_search, _setSearch] = useState('');
@@ -170,16 +168,6 @@ export default function MeetingsPage() {
             onSuccess={() => setShowCreateModal(false)}
             onCancel={() => setShowCreateModal(false)}
           />
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Modal */}
-      <Dialog open={!!meetingToDelete} onOpenChange={(open) => !open && setMeetingToDelete(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Toplantıyı Sil?</DialogTitle>
-            <DialogDescription>Bu işlem geri alınamaz. Emin misiniz?</DialogDescription>
-          </DialogHeader>
         </DialogContent>
       </Dialog>
     </div>

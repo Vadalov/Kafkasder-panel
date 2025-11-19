@@ -26,7 +26,7 @@ export default function BulkMessagingPage() {
 
   // Filter & Wizard State
   const [wizardStep, setWizardStep] = useState<WizardStep>('compose');
-  const [messageType, setMessageType] = useState<MessageType>('sms');
+  const [messageType, _setMessageType] = useState<MessageType>('sms');
   const [messageData, setMessageData] = useState<{ subject?: string; content: string }>({
     content: '',
   });
@@ -174,7 +174,6 @@ export default function BulkMessagingPage() {
           <ComposeStep
             messageType={messageType}
             messageData={messageData}
-            onMessageTypeChange={setMessageType}
             onMessageChange={setMessageData}
           />
         )}
