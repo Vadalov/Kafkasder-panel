@@ -122,7 +122,7 @@
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.0.0",
-    "@next/bundle-analyzer": "^14.0.4",
+    "@next/bundle-analyzer": "^16.0.3",
     "@playwright/test": "^1.48.0",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
