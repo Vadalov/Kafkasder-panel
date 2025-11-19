@@ -192,6 +192,20 @@ Projeniz için örnek Agent Task'lar:
 - Aynı anda maksimum 3 aktif task
 - Günlük task limiti: Subscription'a göre değişir
 
+### 💎 Premium İstek Kullanımı
+
+**Önemli Güncelleme:** Copilot coding agent artık daha az premium istek kullanıyor! 
+
+- ✅ **Her session sadece 1 premium istek kullanır** (önceden daha fazla)
+- ✅ Daha uygun maliyetli kullanım
+- ✅ Kullanıcılar daha fazla coding session çalıştırabilir
+- ✅ Kaynak optimizasyonu ve daha verimli kullanım
+
+Bu iyileştirme sayesinde:
+- Aynı subscription ile daha fazla task oluşturabilirsiniz
+- Maliyet verimliliği arttı
+- Premium istek limitiniz daha uzun süre yeter
+
 ### Notlar
 - ⚠️ Copilot her zaman doğru çözümü bulamayabilir
 - ⚠️ Oluşturulan PR'ları mutlaka review edin
@@ -253,4 +267,6 @@ Projeniz için örnek Agent Task'lar:
 **Son Güncelleme:** 2025-11-19
 
 **Not:** Bu özellik GitHub Copilot'un yeni bir özelliğidir ve aktif subscription gerektirir.
+
+**Yeni Özellik (2025-11-19):** Copilot coding agent artık her session için sadece 1 premium istek kullanıyor - daha ekonomik ve verimli!
 
