@@ -118,7 +118,9 @@
     "framer-motion": {
       "react": "19.2.0",
       "react-dom": "19.2.0"
-    }
+    },
+    "tar-fs": "^2.1.4",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.0.0",
