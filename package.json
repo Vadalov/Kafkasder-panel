@@ -4,7 +4,7 @@
   "description": "Dernek Yönetim Sistemi - Next.js 16 + Convex. Modern non-profit association management system.",
   "private": true,
   "engines": {
-    "node": ">=20.9.0",
+    "node": "20.x",
     "npm": ">=9.0.0"
   },
   "scripts": {
