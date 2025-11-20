@@ -28,6 +28,7 @@
     "convex:dev": "convex dev",
     "convex:deploy": "convex deploy",
     "deploy:vercel": "vercel --prod",
+    "setup:vercel": "node scripts/setup-vercel-env.js",
     "validate:deploy": "node -e \"fetch(process.env.DEPLOY_URL + '/api/health').then(r => r.json()).then(console.log)\"",
     "vercel:prod": "vercel --prod",
     "vercel:preview": "vercel",

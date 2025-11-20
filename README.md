@@ -175,13 +175,27 @@ Detaylı environment variables listesi için `src/lib/env-validation.ts` dosyas�
 
 ### Vercel (Önerilen)
 
-```bash
-# Vercel CLI ile
-npm run deploy:vercel
+**Hızlı Başlangıç:**
 
-# Veya GitHub'dan otomatik deploy
-# Vercel GitHub integration aktif olduğunda otomatik deploy edilir
+```bash
+# 1. Environment variables'ları ayarla (otomatik)
+npm run setup:vercel
+
+# 2. Convex'i deploy et
+npm run convex:deploy
+
+# 3. Vercel'e deploy et
+npm run deploy:vercel
 ```
+
+**Detaylı Rehber:**
+
+Kapsamlı deployment rehberi için bakınız:
+- 📘 [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) - Adım adım Vercel deployment rehberi
+- 📋 [VERCEL_ENV_QUICK_REFERENCE.md](./VERCEL_ENV_QUICK_REFERENCE.md) - Environment variables hızlı referans
+
+**GitHub Integration ile Otomatik Deploy:**
+- Vercel GitHub integration aktif olduğunda `main` branch'e her push otomatik deploy edilir
 
 ### Convex Deployment
 
@@ -194,8 +208,11 @@ npm run convex:deploy
 
 Production'da aşağıdaki environment variables'ları ayarlayın:
 
-- Vercel Dashboard → Settings → Environment Variables
-- Convex Dashboard → Settings → Environment Variables
+- **Otomatik:** `npm run setup:vercel` komutu ile interaktif kurulum
+- **Manuel:** Vercel Dashboard → Settings → Environment Variables
+- **CLI:** `vercel env add VARIABLE_NAME production`
+
+Detaylı bilgi için: [VERCEL_ENV_QUICK_REFERENCE.md](./VERCEL_ENV_QUICK_REFERENCE.md)
 
 ## 🧪 Testing
 
