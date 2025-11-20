@@ -36,6 +36,22 @@ export interface BeneficiaryUpdateInput extends Partial<BeneficiaryCreateInput> 
 // DONATION TYPES
 // ========================================
 
+export type PaymentMethod =
+  | 'cash'
+  | 'check'
+  | 'credit_card'
+  | 'online'
+  | 'bank_transfer'
+  | 'sms'
+  | 'in_kind'
+  | 'NAKIT'
+  | 'CEK_SENET'
+  | 'KREDI_KARTI'
+  | 'ONLINE'
+  | 'BANKA_HAVALESI'
+  | 'SMS'
+  | 'AYNI';
+
 export interface DonationCreateInput {
   donor_name: string;
   donor_phone: string;
@@ -43,7 +59,7 @@ export interface DonationCreateInput {
   amount: number;
   currency: 'TRY' | 'USD' | 'EUR';
   donation_type: string;
-  payment_method: string;
+  payment_method: PaymentMethod;
   donation_purpose: string;
   notes?: string;
   receipt_number: string;
@@ -135,10 +151,14 @@ export interface MeetingDecisionUpdateInput extends Partial<MeetingDecisionCreat
 export interface MeetingActionItemCreateInput {
   meeting_id: Id<'meetings'>;
   title: string;
-  assigned_to?: string;
+  assigned_to: Id<'users'>;
+  created_by: Id<'users'>;
+  decision_id?: Id<'meeting_decisions'>;
+  description?: string;
   due_date?: string;
-  status?: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  priority?: 'low' | 'medium' | 'high';
+  status?: 'devam' | 'beklemede' | 'hazir' | 'iptal';
+  notes?: string[];
+  reminder_scheduled_at?: string;
   [key: string]: unknown;
 }
 
