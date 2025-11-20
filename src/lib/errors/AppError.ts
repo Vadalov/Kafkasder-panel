@@ -381,7 +381,7 @@ export class ErrorHandler {
     } else if (error.severity === ErrorSeverity.HIGH) {
       console.warn(logMessage, error.toJSON());
     } else {
-      console.info(logMessage, error.toJSON());
+      console.warn(logMessage, error.toJSON());
     }
   }
 }

@@ -3,7 +3,7 @@
  * Wraps Convex useQuery with real-time notifications and optimistic updates
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery as useConvexQuery } from 'convex/react';
 import { toast } from 'sonner';
 import type { FunctionReference, FunctionArgs, FunctionReturnType } from 'convex/server';
@@ -138,13 +138,18 @@ export function useEditConflictDetection<T extends { _id: string; _updatedAt?: n
   conflictMessage: string | null;
 } {
   const lastSeenTimestampRef = useRef<number | undefined>(undefined);
-  const hasConflict = useRef(false);
-  const conflictMessage = useRef<string | null>(null);
+  const [hasConflict, setHasConflict] = useState(false);
+  const [conflictMessage, setConflictMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    // Handle state reset when record is cleared or editing stops
     if (!record || !isEditing) {
-      hasConflict.current = false;
-      conflictMessage.current = null;
+      if (hasConflict || conflictMessage) {
+        Promise.resolve().then(() => {
+          setHasConflict(false);
+          setConflictMessage(null);
+        });
+      }
       return;
     }
 
@@ -158,25 +163,28 @@ export function useEditConflictDetection<T extends { _id: string; _updatedAt?: n
 
     // Detect if record was updated by someone else
     if (currentTimestamp && currentTimestamp > lastSeenTimestampRef.current) {
-      hasConflict.current = true;
-      conflictMessage.current = 'Bu kayıt başka bir kullanıcı tarafından güncellendi!';
+      // Defer state updates to avoid cascading renders
+      Promise.resolve().then(() => {
+        setHasConflict(true);
+        setConflictMessage('Bu kayıt başka bir kullanıcı tarafından güncellendi!');
 
-      toast.warning('⚠️ Dikkat: Bu kayıt başka biri tarafından değiştirildi', {
-        description: 'Güncel verileri görmek için sayfayı yenileyin.',
-        duration: 8000,
-        action: {
-          label: 'Yenile',
-          onClick: () => window.location.reload(),
-        },
+        toast.warning('⚠️ Dikkat: Bu kayıt başka biri tarafından değiştirildi', {
+          description: 'Güncel verileri görmek için sayfayı yenileyin.',
+          duration: 8000,
+          action: {
+            label: 'Yenile',
+            onClick: () => window.location.reload(),
+          },
+        });
       });
 
       lastSeenTimestampRef.current = currentTimestamp;
     }
-  }, [record, isEditing]);
+  }, [record, isEditing, hasConflict, conflictMessage]);
 
   return {
-    hasConflict: hasConflict.current,
-    conflictMessage: conflictMessage.current,
+    hasConflict,
+    conflictMessage,
   };
 }
 

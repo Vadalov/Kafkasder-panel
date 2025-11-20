@@ -247,9 +247,9 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Hassas bilgiler (şifreler, API key'ler, token'lar) şifreli olarak saklanır. Admin
+              Hassas bilgiler (şifreler, API key&apos;ler, token&apos;lar) şifreli olarak saklanır. Admin
               ve Super Admin rolleri ile erişim kontrolü sağlanır. Tüm değişiklikler audit
-              log'da izlenir.
+              log&apos;da izlenir.
             </p>
           </CardContent>
         </Card>

@@ -180,11 +180,11 @@ export function normalizePhoneNumber(phone: string): string {
 
   // Handle different formats
   if (digits.startsWith('90')) {
-    return '+' + digits;
+    return `+${digits}`;
   } else if (digits.startsWith('0')) {
-    return '+90' + digits.substring(1);
+    return `+90${digits.substring(1)}`;
   } else {
-    return '+90' + digits;
+    return `+90${digits}`;
   }
 }
 

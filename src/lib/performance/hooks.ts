@@ -11,10 +11,15 @@ import { useCallback, useEffect, useRef, useState, useMemo, DependencyList } fro
  */
 export function useDebounce<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number,
-  dependencies?: DependencyList
+  delay: number
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const callbackRef = useRef(callback);
+
+  // Keep callback ref up to date
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
   return useCallback(
     (...args: Parameters<T>) => {
@@ -22,10 +27,10 @@ export function useDebounce<T extends (...args: any[]) => any>(
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
-        callback(...args);
+        callbackRef.current(...args);
       }, delay);
     },
-    [callback, delay, ...(dependencies || [])]
+    [delay]
   ) as T;
 }
 
@@ -35,11 +40,16 @@ export function useDebounce<T extends (...args: any[]) => any>(
  */
 export function useThrottle<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number,
-  dependencies?: DependencyList
+  delay: number
 ): T {
   const lastRunRef = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const callbackRef = useRef(callback);
+
+  // Keep callback ref up to date
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
   return useCallback(
     (...args: Parameters<T>) => {
@@ -47,19 +57,19 @@ export function useThrottle<T extends (...args: any[]) => any>(
       const timeSinceLastRun = now - lastRunRef.current;
 
       if (timeSinceLastRun >= delay) {
-        callback(...args);
+        callbackRef.current(...args);
         lastRunRef.current = now;
       } else {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
         timeoutRef.current = setTimeout(() => {
-          callback(...args);
+          callbackRef.current(...args);
           lastRunRef.current = Date.now();
         }, delay - timeSinceLastRun);
       }
     },
-    [callback, delay, ...(dependencies || [])]
+    [delay]
   ) as T;
 }
 
@@ -89,20 +99,26 @@ export function useThrottledValue<T>(value: T, delay: number): T {
   const [throttledValue, setThrottledValue] = useState<T>(value);
   const lastRunRef = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const pendingValueRef = useRef<T>(value);
 
   useEffect(() => {
+    pendingValueRef.current = value;
+    
     const now = Date.now();
     const timeSinceLastRun = now - lastRunRef.current;
 
     if (timeSinceLastRun >= delay) {
-      setThrottledValue(value);
-      lastRunRef.current = now;
+      // Schedule state update to avoid cascading renders
+      Promise.resolve().then(() => {
+        setThrottledValue(pendingValueRef.current);
+        lastRunRef.current = Date.now();
+      });
     } else {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
-        setThrottledValue(value);
+        setThrottledValue(pendingValueRef.current);
         lastRunRef.current = Date.now();
       }, delay - timeSinceLastRun);
     }
@@ -150,9 +166,11 @@ export function useIntersectionObserver(
 /**
  * Lazy memoization hook
  * Memoizes value based on dependencies
+ * Note: This is a wrapper around useMemo for semantic clarity
  */
-export function useLazyMemo<T>(factory: () => T, deps: DependencyList): T {
-  return useMemo(factory, deps);
+export function useLazyMemo<T>(factory: () => T, deps: React.DependencyList): T {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => factory(), deps);
 }
 
 /**
@@ -185,25 +203,34 @@ export function useEffectAsync(
  */
 export function useAnimationFrame(callback: (deltaTime: number) => void): void {
   const requestRef = useRef<number | undefined>(undefined);
-  const lastTimeRef = useRef<number>(Date.now());
+  const lastTimeRef = useRef<number>(0);
+  const callbackRef = useRef(callback);
 
-  const animate = useCallback(() => {
-    const currentTime = Date.now();
-    const deltaTime = currentTime - lastTimeRef.current;
-
-    callback(deltaTime);
-    lastTimeRef.current = currentTime;
-    requestRef.current = requestAnimationFrame(animate);
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback;
   }, [callback]);
 
   useEffect(() => {
+    // Initialize lastTime on mount
+    lastTimeRef.current = Date.now();
+
+    const animate = () => {
+      const currentTime = Date.now();
+      const deltaTime = currentTime - lastTimeRef.current;
+
+      callbackRef.current(deltaTime);
+      lastTimeRef.current = currentTime;
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
     requestRef.current = requestAnimationFrame(animate);
     return () => {
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
       }
     };
-  }, [animate]);
+  }, []);
 }
 
 /**
@@ -211,11 +238,15 @@ export function useAnimationFrame(callback: (deltaTime: number) => void): void {
  * Tracks whether media query matches
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
-    setMatches(mediaQuery.matches);
 
     const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
     mediaQuery.addEventListener('change', handler);
@@ -291,13 +322,15 @@ export function useSessionStorage<T>(key: string, initialValue: T): [T, (value: 
  * Returns previous value from previous render
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T | undefined>(undefined);
+  const [prev, setPrev] = useState<T | undefined>(undefined);
+  const valueRef = useRef<T>(value);
 
   useEffect(() => {
-    ref.current = value;
+    setPrev(valueRef.current);
+    valueRef.current = value;
   }, [value]);
 
-  return ref.current;
+  return prev;
 }
 
 /**
@@ -308,7 +341,11 @@ export function useIsMounted(): boolean {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    // Use Promise to defer state update
+    Promise.resolve().then(() => setIsMounted(true));
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
 
   return isMounted;
@@ -352,8 +389,15 @@ export function useAsync<T, E = Error>(
   }, [asyncFunction]);
 
   useEffect(() => {
+    mountedRef.current = true;
+    
     if (immediate) {
-      execute();
+      // Defer execute to avoid cascading renders
+      Promise.resolve().then(() => {
+        if (mountedRef.current) {
+          void execute();
+        }
+      });
     }
 
     return () => {

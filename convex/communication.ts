@@ -252,7 +252,7 @@ export const testEmailConnection = action({
     testEmail: v.string(),
   },
   handler: async (_ctx, args) => {
-    console.log('Test email requested for:', args.testEmail);
+    console.warn('[Communication] Test email requested for:', args.testEmail);
     return {
       success: true,
       message: `Test email simulation successful for ${args.testEmail}`,
@@ -310,7 +310,7 @@ export const testSmsConnection = action({
     testPhoneNumber: v.string(),
   },
   handler: async (_ctx, args) => {
-    console.log('Test SMS requested for:', args.testPhoneNumber);
+    console.warn('[Communication] Test SMS requested for:', args.testPhoneNumber);
     return {
       success: true,
       message: `Test SMS simulation successful for ${args.testPhoneNumber}`,
@@ -368,7 +368,7 @@ export const testWhatsAppConnection = action({
     testPhoneNumber: v.string(),
   },
   handler: async (_ctx, args) => {
-    console.log('Test WhatsApp requested for:', args.testPhoneNumber);
+    console.warn('[Communication] Test WhatsApp requested for:', args.testPhoneNumber);
     return {
       success: true,
       message: `Test WhatsApp simulation successful for ${args.testPhoneNumber}`,
@@ -498,6 +498,7 @@ export const seedDefaultCommunication = mutation({
       ...whatsappDefaults.map((d) => ({ ...d, category: 'whatsapp' })),
     ];
 
+    let insertedCount = 0;
     for (const setting of allDefaults) {
       const existing = await ctx.db
         .query('system_settings')
@@ -523,13 +524,14 @@ export const seedDefaultCommunication = mutation({
           updated_at: Date.now(),
           version: 1,
         });
+        insertedCount++;
       }
     }
 
     return {
       success: true,
       message: 'Default communication settings created',
-      count: allDefaults.length,
+      count: insertedCount,
     };
   },
 });
