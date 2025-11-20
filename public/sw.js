@@ -37,14 +37,14 @@ const STALE_WHILE_REVALIDATE_PATTERNS = [
  * Install event - precache essential assets
  */
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+  console.warn('[SW] Installing service worker...');
 
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Precaching assets');
+      console.warn('[SW] Precaching assets');
       return cache.addAll(PRECACHE_ASSETS);
     }).then(() => {
-      console.log('[SW] Service worker installed successfully');
+      console.warn('[SW] Service worker installed successfully');
       return self.skipWaiting();
     }).catch((error) => {
       console.error('[SW] Precache failed:', error);
@@ -56,7 +56,7 @@ self.addEventListener('install', (event) => {
  * Activate event - clean up old caches
  */
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
+  console.warn('[SW] Activating service worker...');
 
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -64,12 +64,12 @@ self.addEventListener('activate', (event) => {
         cacheNames
           .filter((name) => name !== CACHE_NAME)
           .map((name) => {
-            console.log('[SW] Deleting old cache:', name);
+            console.warn('[SW] Deleting old cache:', name);
             return caches.delete(name);
           })
       );
     }).then(() => {
-      console.log('[SW] Service worker activated');
+      console.warn('[SW] Service worker activated');
       return self.clients.claim();
     })
   );
@@ -145,8 +145,8 @@ async function networkFirst(request) {
     }
 
     return response;
-  } catch (error) {
-    console.log('[SW] Network failed, trying cache:', request.url);
+  } catch (_error) {
+    console.warn('[SW] Network failed, trying cache:', request.url);
     const cached = await cache.match(request);
 
     if (cached) {
@@ -192,7 +192,7 @@ async function staleWhileRevalidate(request) {
  * Background sync for offline mutations
  */
 self.addEventListener('sync', (event) => {
-  console.log('[SW] Background sync triggered:', event.tag);
+  console.warn('[SW] Background sync triggered:', event.tag);
 
   if (event.tag === 'sync-offline-data') {
     event.waitUntil(syncOfflineData());
@@ -201,14 +201,14 @@ self.addEventListener('sync', (event) => {
 
 async function syncOfflineData() {
   // TODO: Implement offline data sync with Convex
-  console.log('[SW] Syncing offline data...');
+  console.warn('[SW] Syncing offline data...');
 }
 
 /**
  * Push notifications
  */
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push notification received');
+  console.warn('[SW] Push notification received');
 
   const data = event.data ? event.data.json() : {};
 
@@ -231,7 +231,7 @@ self.addEventListener('push', (event) => {
  * Notification click handler
  */
 self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked');
+  console.warn('[SW] Notification clicked');
 
   event.notification.close();
 
@@ -244,7 +244,7 @@ self.addEventListener('notificationclick', (event) => {
  * Message handler for communication with main thread
  */
 self.addEventListener('message', (event) => {
-  console.log('[SW] Message received:', event.data);
+  console.warn('[SW] Message received:', event.data);
 
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

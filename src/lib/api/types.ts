@@ -142,7 +142,7 @@ export interface MeetingDecisionCreateInput {
   [key: string]: unknown;
 }
 
-export interface MeetingDecisionUpdateInput extends Partial<MeetingDecisionCreateInput> {}
+export type MeetingDecisionUpdateInput = Partial<MeetingDecisionCreateInput>;
 
 // ========================================
 // MEETING ACTION ITEM TYPES
@@ -162,7 +162,7 @@ export interface MeetingActionItemCreateInput {
   [key: string]: unknown;
 }
 
-export interface MeetingActionItemUpdateInput extends Partial<MeetingActionItemCreateInput> {}
+export type MeetingActionItemUpdateInput = Partial<MeetingActionItemCreateInput>;
 
 // ========================================
 // MESSAGE TYPES
@@ -180,7 +180,7 @@ export interface MessageCreateInput {
   [key: string]: unknown;
 }
 
-export interface MessageUpdateInput extends Partial<MessageCreateInput> {}
+export type MessageUpdateInput = Partial<MessageCreateInput>;
 
 // ========================================
 // USER TYPES
@@ -245,7 +245,7 @@ export interface AidApplicationCreateInput {
   [key: string]: unknown;
 }
 
-export interface AidApplicationUpdateInput extends Partial<AidApplicationCreateInput> {}
+export type AidApplicationUpdateInput = Partial<AidApplicationCreateInput>;
 
 // ========================================
 // FINANCE RECORD TYPES
@@ -267,7 +267,7 @@ export interface FinanceRecordCreateInput {
   [key: string]: unknown;
 }
 
-export interface FinanceRecordUpdateInput extends Partial<FinanceRecordCreateInput> {}
+export type FinanceRecordUpdateInput = Partial<FinanceRecordCreateInput>;
 
 // ========================================
 // PARTNER TYPES
@@ -293,7 +293,7 @@ export interface PartnerCreateInput {
   [key: string]: unknown;
 }
 
-export interface PartnerUpdateInput extends Partial<PartnerCreateInput> {}
+export type PartnerUpdateInput = Partial<PartnerCreateInput>;
 
 // ========================================
 // SCHOLARSHIP TYPES
@@ -309,7 +309,7 @@ export interface ScholarshipCreateInput {
   [key: string]: unknown;
 }
 
-export interface ScholarshipUpdateInput extends Partial<ScholarshipCreateInput> {}
+export type ScholarshipUpdateInput = Partial<ScholarshipCreateInput>;
 
 // ========================================
 // GENERIC MUTATION PAYLOAD TYPES

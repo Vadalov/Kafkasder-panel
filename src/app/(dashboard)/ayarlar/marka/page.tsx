@@ -46,8 +46,11 @@ function LogoUploader({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setPreview(currentLogoUrl || null);
-  }, [currentLogoUrl]);
+    // Sync preview with current logo URL from server
+    if (currentLogoUrl !== preview) {
+      setPreview(currentLogoUrl || null);
+    }
+  }, [currentLogoUrl, preview]);
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -226,20 +229,26 @@ export default function BrandingSettingsPage() {
     website: '',
   });
 
-  // Update form when data loads
+  // Initialize form data from branding once it loads
+  const [isInitialized, setIsInitialized] = useState(false);
+  
   useEffect(() => {
-    if (branding) {
-      setFormData({
-        organizationName: branding.organizationName || '',
-        slogan: branding.slogan || '',
-        footerText: branding.footerText || '',
-        contactEmail: branding.contactEmail || '',
-        contactPhone: branding.contactPhone || '',
-        address: branding.address || '',
-        website: branding.website || '',
+    if (branding && !isInitialized) {
+      // Defer state update to avoid cascading renders
+      Promise.resolve().then(() => {
+        setFormData({
+          organizationName: branding.organizationName || '',
+          slogan: branding.slogan || '',
+          footerText: branding.footerText || '',
+          contactEmail: branding.contactEmail || '',
+          contactPhone: branding.contactPhone || '',
+          address: branding.address || '',
+          website: branding.website || '',
+        });
+        setIsInitialized(true);
       });
     }
-  }, [branding]);
+  }, [branding, isInitialized]);
 
   // Update mutation
   const updateMutation = useMutation({
