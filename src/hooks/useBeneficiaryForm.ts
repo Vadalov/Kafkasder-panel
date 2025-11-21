@@ -116,7 +116,9 @@ export function useBeneficiaryForm(beneficiaryId: string): UseBeneficiaryFormRet
   React.useEffect(() => {
     if (beneficiary) {
       // Split name into first and last name if possible
-      const nameParts = beneficiary.name ? beneficiary.name.split(' ') : [''];
+      // Note: This assumes Western naming convention (first name space last name)
+      // For names with multiple words, first word = first name, rest = surname
+      const nameParts = beneficiary.name ? beneficiary.name.trim().split(/\s+/) : [''];
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
@@ -156,7 +158,13 @@ export function useBeneficiaryForm(beneficiaryId: string): UseBeneficiaryFormRet
   const updateMutation = useMutation({
     mutationFn: async (data: FormValues) => {
       // Merge name and surname into the name field for the backend
-      const fullName = `${data.name} ${data.surname}`.trim();
+      // Ensure at least name exists (surname is optional)
+      const fullName = `${data.name} ${data.surname || ''}`.trim();
+      
+      if (!fullName) {
+        throw new Error('Ad gerekli');
+      }
+      
       const updateData = {
         ...data,
         name: fullName,
