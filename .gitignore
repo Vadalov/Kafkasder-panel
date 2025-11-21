@@ -59,6 +59,7 @@ next-env.d.ts
 /test-results/
 *.test-results
 junit.xml
+/playwright-report/
 
 # code quality reports
 /jscpd-report/
