@@ -6,10 +6,12 @@ import { test, expect } from '@playwright/test';
  * This file demonstrates basic Playwright test patterns and serves as a
  * quick validation that Playwright is correctly installed and configured.
  * 
- * Run with: npx playwright test example
+ * Run with: SKIP_WEBSERVER=true npx playwright test example
  * 
  * Note: These tests are self-contained and don't require external network access
  * or a running application server, making them ideal for quick validation.
+ * The SKIP_WEBSERVER flag prevents Playwright from trying to start the Next.js
+ * application, which significantly speeds up test execution for these standalone tests.
  */
 
 test.describe('Example Test Suite - Basic Page Interactions', () => {
