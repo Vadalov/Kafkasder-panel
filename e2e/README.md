@@ -131,4 +131,4 @@ Tests automatically run in CI with:
 
 - [Playwright Documentation](https://playwright.dev/)
 - [Best Practices](https://playwright.dev/docs/best-practices)
-- [Testing Guide](../TESTING_GUIDE.md) - Project-specific testing guide
+- [Testing Guide](../docs/testing.md) - Project-specific testing guide
