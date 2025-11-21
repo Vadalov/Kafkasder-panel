@@ -2,13 +2,12 @@
 
 import React, { use } from 'react';
 import { useBeneficiaryForm } from '@/hooks/useBeneficiaryForm';
-import { ArrowLeft, Save, Trash2, User, AlertCircle, Loader2, MapPin, Users, Heart, GraduationCap, Wallet, FileText } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, User, AlertCircle, Loader2, MapPin, Heart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 
 export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id: string }> }) {
