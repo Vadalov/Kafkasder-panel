@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import { lazyLoadComponent } from '@/lib/performance';
@@ -54,13 +54,14 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' }],
   },
+};
+
+export const viewport: Viewport = {
   themeColor: '#3b82f6',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({

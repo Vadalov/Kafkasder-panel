@@ -104,23 +104,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return (
       <ConvexProvider client={convex}>
         <QueryClientProvider client={queryClient}>
-          <SettingsProvider>
-            <SuspenseBoundary
-              loadingVariant="pulse"
-              fullscreen={true}
-              loadingText="Uygulama yükleniyor..."
-              onSuspend={() => {
-                // Suspended state
-              }}
-              onResume={() => {
-                // Resumed state
-              }}
-            >
-              {children}
-            </SuspenseBoundary>
-            <Toaster position="top-right" richColors />
-            <ReactQueryDevtools initialIsOpen={false} />
-          </SettingsProvider>
+          <SuspenseBoundary
+            loadingVariant="pulse"
+            fullscreen={true}
+            loadingText="Uygulama yükleniyor..."
+            onSuspend={() => {
+              // Suspended state
+            }}
+            onResume={() => {
+              // Resumed state
+            }}
+          >
+            <SettingsProvider>{children}</SettingsProvider>
+          </SuspenseBoundary>
+          <Toaster position="top-right" richColors />
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ConvexProvider>
     );
