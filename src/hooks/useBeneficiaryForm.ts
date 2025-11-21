@@ -115,9 +115,14 @@ export function useBeneficiaryForm(beneficiaryId: string): UseBeneficiaryFormRet
   // Populate form when data is available
   React.useEffect(() => {
     if (beneficiary) {
+      // Split name into first and last name if possible
+      const nameParts = beneficiary.name ? beneficiary.name.split(' ') : [''];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
       form.reset({
-        name: beneficiary.name || '',
-        surname: '', // surname field doesn't exist in BeneficiaryDocument
+        name: firstName,
+        surname: lastName,
         tc_no: beneficiary.tc_no || '',
         phone: beneficiary.phone || '',
         email: beneficiary.email || '',
@@ -136,7 +141,7 @@ export function useBeneficiaryForm(beneficiaryId: string): UseBeneficiaryFormRet
         disease_category: '', // disease_category field doesn't exist in BeneficiaryDocument
         disability_status: beneficiary.has_disability ? 'var' : 'yok', // convert boolean to string
         disability_percentage: '', // disability_percentage field doesn't exist in BeneficiaryDocument
-        contact_preference: '', // contact_preference field doesn't exist in BeneficiaryDocument
+        contact_preference: beneficiary.contact_preference || '',
       });
 
       // Set dropdown selections
@@ -150,7 +155,13 @@ export function useBeneficiaryForm(beneficiaryId: string): UseBeneficiaryFormRet
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (data: FormValues) => {
-      const response = await beneficiaries.update(beneficiaryId, data);
+      // Merge name and surname into the name field for the backend
+      const fullName = `${data.name} ${data.surname}`.trim();
+      const updateData = {
+        ...data,
+        name: fullName,
+      };
+      const response = await beneficiaries.update(beneficiaryId, updateData);
       return response.data;
     },
     onSuccess: () => {
