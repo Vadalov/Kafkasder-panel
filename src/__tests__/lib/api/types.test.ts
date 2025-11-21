@@ -210,7 +210,7 @@ describe('API Type Definitions', () => {
         currency: 'TRY',
         description: 'Monthly donations',
         transaction_date: '2024-12-20',
-        created_by: 'user_123',
+        created_by: 'user_123' as any,
         status: 'pending',
       };
 
@@ -229,7 +229,7 @@ describe('API Type Definitions', () => {
           currency: 'TRY',
           description: 'Test',
           transaction_date: '2024-12-20',
-          created_by: 'user_123',
+          created_by: 'user_123' as any,
           status: 'pending',
         };
 
@@ -302,6 +302,8 @@ describe('API Type Definitions', () => {
         email: 'john@example.com',
         role: 'admin',
         isActive: true,
+        permissions: ['read'],
+        passwordHash: 'hashedPassword123',
       };
 
       expect(user.name).toBeDefined();

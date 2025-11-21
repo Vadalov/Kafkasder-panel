@@ -276,6 +276,7 @@ describe('API Client Integration Tests', () => {
         role: 'admin',
         isActive: true,
         permissions: ['read', 'write', 'delete'],
+        passwordHash: 'hashedPassword123',
       };
 
       mockApiClient.users.create.mockResolvedValue({ _id: 'user_123', ...input });
@@ -312,7 +313,7 @@ describe('API Client Integration Tests', () => {
         currency: 'TRY',
         description: 'Monthly donation campaign',
         transaction_date: '2024-12-20',
-        created_by: 'user_123',
+        created_by: 'user_123' as any,
         status: 'pending',
       };
 
@@ -333,7 +334,7 @@ describe('API Client Integration Tests', () => {
         currency: 'TRY',
         description: 'Monthly scholarship payments',
         transaction_date: '2024-12-20',
-        created_by: 'user_123',
+        created_by: 'user_123' as any,
         status: 'pending',
       };
 
