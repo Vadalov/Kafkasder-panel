@@ -234,6 +234,7 @@ export const useAuthStore = create<AuthStore>()(
                 state.user = user;
                 state.session = sessionObj;
                 state.isAuthenticated = true;
+                state.isInitialized = true;
                 state.isLoading = false;
                 state.error = null;
               });
