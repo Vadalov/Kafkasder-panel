@@ -37,12 +37,43 @@ src/__tests__/
     └── convex-api.ts               # Convex API mocks
 
 e2e/                                # End-to-end tests (Playwright)
+├── example.spec.ts                 # Standalone example tests (no app required)
 ├── auth.spec.ts
 ├── beneficiaries.spec.ts
 ├── donations.spec.ts
 ├── meetings.spec.ts
+├── test-utils.ts                   # E2E test utilities
+├── mock-api.ts                     # API mocking utilities
+├── README.md                       # E2E testing documentation
 └── ...
 ```
+
+### E2E Example Tests
+
+The `e2e/example.spec.ts` file contains standalone tests that demonstrate Playwright capabilities without requiring the application to be running. These tests are perfect for:
+
+- Verifying Playwright installation
+- Learning Playwright test patterns
+- Quick validation during development
+- Testing basic browser interactions
+
+**Features demonstrated:**
+- Page navigation and assertions
+- Form inputs and validation
+- Button and element interactions
+- CSS selectors and class verification
+- Responsive design testing
+- Async operations and waiting
+- Multiple viewport sizes
+
+**Run example tests:**
+```bash
+npm run test:e2e:example
+# or
+SKIP_WEBSERVER=true npx playwright test example
+```
+
+All example tests use self-contained HTML (data URLs) and do not require external network access or a running server.
 
 ## Test Coverage
 
@@ -265,6 +296,11 @@ npm run test:coverage
 
 # Run E2E tests with Playwright
 npm run test:e2e
+
+# Run E2E example test (standalone, no app required)
+npm run test:e2e:example
+# or
+npx playwright test example
 
 # Open E2E test UI
 npm run e2e:ui
