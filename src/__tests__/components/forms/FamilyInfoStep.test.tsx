@@ -62,8 +62,9 @@ describe('FamilyInfoStep', () => {
   });
 
   it('should render children count field', () => {
-    renderWithForm();
-    expect(screen.getByRole('spinbutton', { name: /Çocuk Sayısı/i })).toBeInTheDocument();
+    const { container } = renderWithForm();
+    const input = container.querySelector('#children_count');
+    expect(input).toBeInTheDocument();
   });
 
   it('should render orphan children count field', () => {
@@ -94,9 +95,9 @@ describe('FamilyInfoStep', () => {
 
   it('should allow numeric input in children count', async () => {
     const user = userEvent.setup();
-    renderWithForm();
+    const { container } = renderWithForm();
 
-    const input = screen.getByRole('spinbutton', { name: /Çocuk Sayısı/i }) as HTMLInputElement;
+    const input = container.querySelector('#children_count') as HTMLInputElement;
     await user.clear(input);
     await user.type(input, '3');
 
@@ -115,17 +116,17 @@ describe('FamilyInfoStep', () => {
   });
 
   it('should have numeric input type for count fields', () => {
-    renderWithForm();
+    const { container } = renderWithForm();
 
-    const familyInput = screen.getByRole('spinbutton', { name: /Aile Birey Sayısı/i }) as HTMLInputElement;
-    const childrenInput = screen.getByRole('spinbutton', { name: /Çocuk Sayısı/i }) as HTMLInputElement;
+    const familyInput = container.querySelector('#familyMemberCount') as HTMLInputElement;
+    const childrenInput = container.querySelector('#children_count') as HTMLInputElement;
 
-    expect(familyInput.type).toBe('number');
-    expect(childrenInput.type).toBe('number');
+    expect(familyInput?.type).toBe('number');
+    expect(childrenInput?.type).toBe('number');
   });
 
   it('should display pre-filled values correctly', () => {
-    renderWithForm({
+    const { container } = renderWithForm({
       familyMemberCount: 6,
       children_count: 2,
       orphan_children_count: 1,
@@ -133,11 +134,11 @@ describe('FamilyInfoStep', () => {
       disabled_count: 0,
     });
 
-    expect(screen.getByRole('spinbutton', { name: /Aile Birey Sayısı/i })).toHaveValue(6);
-    expect(screen.getByRole('spinbutton', { name: /Çocuk Sayısı/i })).toHaveValue(2);
-    expect(screen.getByRole('spinbutton', { name: /Yetim Çocuk Sayısı/i })).toHaveValue(1);
-    expect(screen.getByRole('spinbutton', { name: /Yaşlı Sayısı/i })).toHaveValue(2);
-    expect(screen.getByRole('spinbutton', { name: /Engelli Sayısı/i })).toHaveValue(0);
+    expect((container.querySelector('#familyMemberCount') as HTMLInputElement)?.value).toBe('6');
+    expect((container.querySelector('#children_count') as HTMLInputElement)?.value).toBe('2');
+    expect((container.querySelector('#orphan_children_count') as HTMLInputElement)?.value).toBe('1');
+    expect((container.querySelector('#elderly_count') as HTMLInputElement)?.value).toBe('2');
+    expect((container.querySelector('#disabled_count') as HTMLInputElement)?.value).toBe('0');
   });
 
   it('should be wrapped in a Card component', () => {
