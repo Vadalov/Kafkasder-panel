@@ -2,11 +2,12 @@
 
 import React, { use } from 'react';
 import { useBeneficiaryForm } from '@/hooks/useBeneficiaryForm';
-import { ArrowLeft, Save, Trash2, User, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, User, AlertCircle, Loader2, MapPin, Heart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 
 export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -131,6 +132,145 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                 {form.formState.errors.phone && (
                   <p className="text-sm text-red-500">{form.formState.errors.phone.message}</p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">E-posta</Label>
+                <Input id="email" type="email" {...form.register('email')} placeholder="E-posta adresi" />
+                {form.formState.errors.email && (
+                  <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birth_date">Doğum Tarihi</Label>
+                <Input id="birth_date" type="date" {...form.register('birth_date')} />
+                {form.formState.errors.birth_date && (
+                  <p className="text-sm text-red-500">{form.formState.errors.birth_date.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="gender">Cinsiyet</Label>
+                <Input id="gender" {...form.register('gender')} placeholder="Cinsiyet" />
+                {form.formState.errors.gender && (
+                  <p className="text-sm text-red-500">{form.formState.errors.gender.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="marital_status">Medeni Durum</Label>
+                <Input id="marital_status" {...form.register('marital_status')} placeholder="Medeni durum" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="education_status">Eğitim Durumu</Label>
+                <Input id="education_status" {...form.register('education_status')} placeholder="Eğitim durumu" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="occupation">Meslek</Label>
+                <Input id="occupation" {...form.register('occupation')} placeholder="Meslek" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Address Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MapPin className="h-5 w-5 mr-2" />
+                Adres Bilgileri
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="address">Adres</Label>
+                <Textarea id="address" {...form.register('address')} placeholder="Tam adres" rows={3} />
+                {form.formState.errors.address && (
+                  <p className="text-sm text-red-500">{form.formState.errors.address.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="city">Şehir</Label>
+                <Input id="city" {...form.register('city')} placeholder="Şehir" />
+                {form.formState.errors.city && (
+                  <p className="text-sm text-red-500">{form.formState.errors.city.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="district">İlçe</Label>
+                <Input id="district" {...form.register('district')} placeholder="İlçe" />
+                {form.formState.errors.district && (
+                  <p className="text-sm text-red-500">{form.formState.errors.district.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="neighborhood">Mahalle</Label>
+                <Input id="neighborhood" {...form.register('neighborhood')} placeholder="Mahalle" />
+                {form.formState.errors.neighborhood && (
+                  <p className="text-sm text-red-500">{form.formState.errors.neighborhood.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="postal_code">Posta Kodu</Label>
+                <Input id="postal_code" {...form.register('postal_code')} placeholder="Posta kodu" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Health Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Heart className="h-5 w-5 mr-2" />
+                Sağlık Bilgileri
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="blood_type">Kan Grubu</Label>
+                <Input id="blood_type" {...form.register('blood_type')} placeholder="Kan grubu" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="chronic_disease">Kronik Hastalık</Label>
+                <Input id="chronic_disease" {...form.register('chronic_disease')} placeholder="Kronik hastalık varsa belirtiniz" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="disease_category">Hastalık Kategorisi</Label>
+                <Input id="disease_category" {...form.register('disease_category')} placeholder="Hastalık kategorisi" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="disability_status">Engellilik Durumu</Label>
+                <Input id="disability_status" {...form.register('disability_status')} placeholder="Engellilik durumu" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="disability_percentage">Engellilik Oranı (%)</Label>
+                <Input id="disability_percentage" {...form.register('disability_percentage')} placeholder="Engellilik oranı" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contact Preferences */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <FileText className="h-5 w-5 mr-2" />
+                İletişim Tercihi
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label htmlFor="contact_preference">İletişim Tercihi</Label>
+                <Input id="contact_preference" {...form.register('contact_preference')} placeholder="Tercih edilen iletişim yöntemi" />
               </div>
             </CardContent>
           </Card>
