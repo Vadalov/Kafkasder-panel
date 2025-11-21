@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 1 : 4,
-  reporter: [['html', { outputFolder: 'test-results/playwright-report' }], ['list']],
+  reporter: [['html', { outputFolder: 'playwright-report' }], ['list']],
 
   use: {
     baseURL: 'http://localhost:3000',
@@ -39,9 +39,14 @@ export default defineConfig({
     timeout: 10 * 1000,
   },
 
-  webServer: {
-    command: 'npm run build && npm start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  // WebServer configuration - only needed for tests that require the local app
+  // Skip webServer with: SKIP_WEBSERVER=true npx playwright test
+  ...(process.env.SKIP_WEBSERVER !== 'true' && {
+    webServer: {
+      command: 'npm run build && npm start',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000, // 2 minutes for build + start
+    },
+  }),
 });
