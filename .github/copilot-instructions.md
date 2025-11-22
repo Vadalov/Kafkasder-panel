@@ -8,6 +8,7 @@ Non-profit association management system built with Next.js 16, React 19, and Co
 
 - **[CLAUDE.md](../CLAUDE.md)** - Complete AI assistant guide
 - **[docs/](../docs/)** - Technical documentation
+- **[docs/github-mcp-server.md](../docs/github-mcp-server.md)** - GitHub MCP Server usage
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Contribution guidelines
 
 ## Quick Reference

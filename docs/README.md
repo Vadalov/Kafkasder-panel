@@ -4,11 +4,12 @@ Bu klasor projenin tum teknik dokumantasyonunu icerir.
 
 ## Icerik
 
-| Dosya                                | Aciklama                                       |
-| ------------------------------------ | ---------------------------------------------- |
-| [deployment.md](./deployment.md)     | Vercel ve Convex deployment rehberi            |
-| [testing.md](./testing.md)           | Test altyapisi ve yazim rehberi                |
-| [api-patterns.md](./api-patterns.md) | API route standartlari ve middleware kullanimi |
+| Dosya                                          | Aciklama                                       |
+| ---------------------------------------------- | ---------------------------------------------- |
+| [deployment.md](./deployment.md)               | Vercel ve Convex deployment rehberi            |
+| [testing.md](./testing.md)                     | Test altyapisi ve yazim rehberi                |
+| [api-patterns.md](./api-patterns.md)           | API route standartlari ve middleware kullanimi |
+| [github-mcp-server.md](./github-mcp-server.md) | GitHub MCP Server kullanim kilavuzu            |
 
 ## Hizli Erisim
 
