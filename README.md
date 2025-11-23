@@ -27,17 +27,21 @@ Modern, guvenli ve olceklenebilir dernek yonetim platformu.
 
 ### Kurulum
 
+Detayli kurulum icin [docs/setup.md](./docs/setup.md) dosyasina bakin.
+
+Hizli baslangic:
+
 ```bash
 # Repo'yu klonla
-git clone https://github.com/Vadalov/Kafkasder-panel.git
-cd Kafkasder-panel
+git clone https://github.com/kafkasder-org/Kafkasportal.git
+cd Kafkasportal
 
 # Bagimliliklari yukle
 npm install
 
 # Environment variables ayarla
 cp .env.example .env.local
-# .env.local dosyasini duzenle
+# .env.local dosyasini duzenle (Convex URL, secrets vb.)
 
 # Convex ve Next.js'i baslat (ayri terminallerde)
 npm run convex:dev
@@ -65,7 +69,6 @@ npm run test:e2e         # E2E testleri
 # Build & Deploy
 npm run build            # Production build
 npm run convex:deploy    # Convex deploy
-npm run vercel:prod      # Vercel deploy
 ```
 
 ## Proje Yapisi
@@ -85,14 +88,26 @@ npm run vercel:prod      # Vercel deploy
 
 ## Dokumantasyon
 
-| Dosya                                          | Icerik               |
-| ---------------------------------------------- | -------------------- |
-| [docs/](./docs/)                               | Teknik dokumantasyon |
-| [docs/deployment.md](./docs/deployment.md)     | Deployment rehberi   |
-| [docs/testing.md](./docs/testing.md)           | Test rehberi         |
-| [docs/api-patterns.md](./docs/api-patterns.md) | API standartlari     |
-| [CONTRIBUTING.md](./CONTRIBUTING.md)           | Katki rehberi        |
-| [SECURITY.md](./SECURITY.md)                   | Guvenlik politikasi  |
+| Dosya                                          | Icerik                      |
+| ---------------------------------------------- | --------------------------- |
+| [docs/](./docs/)                               | Teknik dokumantasyon        |
+| [docs/setup.md](./docs/setup.md)               | Kurulum rehberi             |
+| [docs/deployment.md](./docs/deployment.md)     | Deployment rehberi          |
+| [docs/testing.md](./docs/testing.md)           | Test rehberi                 |
+| [docs/api-patterns.md](./docs/api-patterns.md) | API standartlari            |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)           | Katki rehberi               |
+| [CLAUDE.md](./CLAUDE.md)                       | AI asistanlari için ref     |
+| [.github/copilot-instructions.md](./.github/copilot-instructions.md) | GitHub Copilot talimatlari |
+
+## GitHub Copilot
+
+Bu proje GitHub Copilot için optimize edilmistir. Copilot kullanirken:
+
+- **Talimatlar**: [.github/copilot-instructions.md](./.github/copilot-instructions.md) dosyasini okuyun
+- **Kod Standartlari**: Proje kurallari ve pattern'ler talimat dosyasinda detaylandirilmistir
+- **AI Asistanlar**: [CLAUDE.md](./CLAUDE.md) dosyasi tum AI asistanlar icin rehberdir
+
+Copilot, proje mimarisi, kod standartlari ve best practice'ler hakkinda bilgilendirilmistir.
 
 ## Teknoloji Yigini
 
@@ -101,7 +116,7 @@ npm run vercel:prod      # Vercel deploy
 - **UI**: Radix UI + Tailwind CSS 4
 - **State**: Zustand + TanStack Query
 - **Testing**: Vitest + Playwright
-- **Deployment**: Vercel + Convex Cloud
+- **Deployment**: Self-hosted Node.js server + Convex Cloud
 
 ## Environment Variables
 
