@@ -1,6 +1,6 @@
 # Kafkasder Panel
 
-Dernek Yonetim Sistemi - Next.js 16 + Convex
+Dernek Yonetim Sistemi - Next.js 16 + Appwrite
 
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Vadalov/Kafkasder-panel?utm_source=oss&utm_medium=github&utm_campaign=Vadalov%2FKafkasder-panel&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
@@ -23,7 +23,7 @@ Modern, guvenli ve olceklenebilir dernek yonetim platformu.
 
 - Node.js >= 20.9.0
 - npm >= 9.0.0
-- Convex hesabi
+- Appwrite hesabi (cloud veya self-hosted)
 
 ### Kurulum
 
@@ -41,10 +41,9 @@ npm install
 
 # Environment variables ayarla
 cp .env.example .env.local
-# .env.local dosyasini duzenle (Convex URL, secrets vb.)
+# .env.local dosyasini duzenle (Appwrite endpoint, project ID, API key vb.)
 
-# Convex ve Next.js'i baslat (ayri terminallerde)
-npm run convex:dev
+# Development server'i baslat
 npm run dev
 ```
 
@@ -55,7 +54,6 @@ Uygulama `http://localhost:3000` adresinde calisacaktir.
 ```bash
 # Development
 npm run dev              # Development server
-npm run convex:dev       # Convex backend
 
 # Kod Kalitesi
 npm run typecheck        # TypeScript kontrolu
@@ -68,7 +66,6 @@ npm run test:e2e         # E2E testleri
 
 # Build & Deploy
 npm run build            # Production build
-npm run convex:deploy    # Convex deploy
 ```
 
 ## Proje Yapisi
@@ -78,10 +75,10 @@ npm run convex:deploy    # Convex deploy
 │   ├── app/              # Next.js App Router
 │   ├── components/       # React componentleri
 │   ├── lib/              # Utility fonksiyonlari
+│   │   └── appwrite/     # Appwrite client ve API helpers
 │   ├── hooks/            # Custom hooks
 │   ├── stores/           # State yonetimi
 │   └── types/            # TypeScript types
-├── convex/               # Backend (Convex)
 ├── e2e/                  # E2E testleri
 └── docs/                 # Teknik dokumantasyon
 ```
@@ -95,6 +92,8 @@ npm run convex:deploy    # Convex deploy
 | [docs/deployment.md](./docs/deployment.md)     | Deployment rehberi          |
 | [docs/testing.md](./docs/testing.md)           | Test rehberi                 |
 | [docs/api-patterns.md](./docs/api-patterns.md) | API standartlari            |
+| [docs/appwrite-migration.md](./docs/appwrite-migration.md) | Appwrite migration rehberi |
+| [docs/appwrite-mcp-guide.md](./docs/appwrite-mcp-guide.md) | Appwrite MCP entegrasyonu |
 | [CONTRIBUTING.md](./CONTRIBUTING.md)           | Katki rehberi               |
 | [CLAUDE.md](./CLAUDE.md)                       | AI asistanlari için ref     |
 | [.github/copilot-instructions.md](./.github/copilot-instructions.md) | GitHub Copilot talimatlari |
@@ -112,17 +111,27 @@ Copilot, proje mimarisi, kod standartlari ve best practice'ler hakkinda bilgilen
 ## Teknoloji Yigini
 
 - **Frontend**: Next.js 16, React 19, TypeScript
-- **Backend**: Convex (serverless database)
+- **Backend**: Appwrite (serverless backend platform)
 - **UI**: Radix UI + Tailwind CSS 4
 - **State**: Zustand + TanStack Query
 - **Testing**: Vitest + Playwright
-- **Deployment**: Self-hosted Node.js server + Convex Cloud
+- **Deployment**: Self-hosted Node.js server + Appwrite Cloud
 
 ## Environment Variables
 
 ```env
-# Zorunlu
-NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+# Appwrite Configuration
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_APPWRITE_DATABASE_ID=your-database-id
+APPWRITE_API_KEY=your-api-key  # Server-side only
+
+# Storage Buckets
+NEXT_PUBLIC_APPWRITE_BUCKET_DOCUMENTS=documents
+NEXT_PUBLIC_APPWRITE_BUCKET_AVATARS=avatars
+NEXT_PUBLIC_APPWRITE_BUCKET_RECEIPTS=receipts
+
+# Security
 CSRF_SECRET=your-32-char-secret
 SESSION_SECRET=your-32-char-secret
 
@@ -141,6 +150,7 @@ Detaylar icin `.env.example` dosyasina bakin.
 - Input Validation (Zod)
 - XSS Korumasi
 - 2FA Destegi
+- Appwrite Permissions
 
 Guvenlik aciklarini bildirmek icin [SECURITY.md](./SECURITY.md) dosyasina bakin.
 
